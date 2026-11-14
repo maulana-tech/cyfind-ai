@@ -1,0 +1,59 @@
+# syntax=docker/dockerfile:1
+#
+# Web3 toolchain layer for CYFIND workers.
+#
+# The base image (Dockerfile) ships only recon CLIs — none of the smart-contract
+# toolchains. This image LAYERS them on top so the Web3 audit skills
+# (skills/{slither,foundry,foundry-invariant,halmos,defi-fork-scenarios,solana-*,
+# move-*,zk-*}) have their binaries present, driven by the worker's Bash /
+# shell_open tools exactly like the kali CLIs. Matches the project's "pre-bake
+# tools in the image, no runtime network download" philosophy.
+#
+# The install logic lives in deploy/web3/*.sh — one source of truth, runnable
+# standalone inside a container too (see docs/WEB3-TOOLCHAIN.md). Build on top of
+# a built cyfind image:
+#
+#   docker build -t cyfind:local .                              # base
+#   docker build -f Dockerfile.web3 -t cyfind:web3 \
+#       --build-arg BASE=cyfind:local \
+#       --build-arg WEB3_EVM=1 --build-arg WEB3_SOLANA=1 \
+#       --build-arg WEB3_MOVE=1 --build-arg WEB3_ZK=1 .
+#
+# Families are ARG-gated; EVM is on by default (the implemented/tested family)
+# and its install FAILS THE BUILD if forge/slither/halmos do not install. The
+# opt-in families are heavier (rust/solana/sui/aptos) and more lenient.
+#
+# NOTE: not build-tested in the session that generated this file. The installers
+# use each tool's official method; pin versions (SOLC_VERSION, foundryup --version,
+# release tags) for a reproducible image.
+
+ARG BASE=cyfind:local
+FROM ${BASE}
+
+ARG WEB3_EVM=1
+ARG WEB3_SOLANA=0
+ARG WEB3_MOVE=0
+ARG WEB3_ZK=0
+
+# Put every toolchain's bin dir on PATH up front so later layers and the running
+# container all see the tools.
+ENV PATH="/root/.foundry/bin:/root/.cargo/bin:/root/.local/bin:/root/.local/share/solana/install/active_release/bin:${PATH}"
+
+COPY deploy/web3/ /opt/web3/
+RUN chmod +x /opt/web3/*.sh
+
+# Shared prerequisites (C toolchain, pip, rust) — needed whenever any family is on.
+RUN if [ "$WEB3_EVM$WEB3_SOLANA$WEB3_MOVE$WEB3_ZK" != "0000" ]; then /opt/web3/install-common.sh; fi
+
+# EVM — fails the build on error (install-evm.sh is set -euo pipefail).
+RUN if [ "$WEB3_EVM" = "1" ]; then /opt/web3/install-evm.sh; fi
+# Opt-in families.
+RUN if [ "$WEB3_SOLANA" = "1" ]; then /opt/web3/install-solana.sh; fi
+RUN if [ "$WEB3_MOVE"   = "1" ]; then /opt/web3/install-move.sh; fi
+RUN if [ "$WEB3_ZK"     = "1" ]; then /opt/web3/install-zk.sh; fi
+
+# Print the final tool inventory into the build log.
+RUN /opt/web3/verify.sh
+
+# The cyfind binary, entrypoint, skills, volumes and ports all come from the base
+# image unchanged — this layer only adds tools to PATH.

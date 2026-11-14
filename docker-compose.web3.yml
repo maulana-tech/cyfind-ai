@@ -1,0 +1,22 @@
+# Overlay that runs the cyfind service from a locally-built Web3 image instead of
+# the published recon-only image. Build the base first, then bring the stack up
+# with both compose files:
+#
+#   docker build -t cyfind:local .
+#   docker compose -f docker-compose.yml -f docker-compose.web3.yml build
+#   docker compose -f docker-compose.yml -f docker-compose.web3.yml up
+#
+# Toggle families with the build args (EVM on by default). The `build` section
+# lets `compose build` produce cyfind:web3 from Dockerfile.web3 on top of the base.
+services:
+  cyfind:
+    image: cyfind:web3
+    build:
+      context: .
+      dockerfile: Dockerfile.web3
+      args:
+        BASE: cyfind:local
+        WEB3_EVM: "1"
+        WEB3_SOLANA: "0"
+        WEB3_MOVE: "0"
+        WEB3_ZK: "0"

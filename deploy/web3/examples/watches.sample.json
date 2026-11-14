@@ -1,0 +1,92 @@
+[
+  {
+    "_name": "token-large-transfer (example: monitor a token for whale transfers)",
+    "_note": "address below is the real USDC on Ethereum mainnet; set a working rpc_url. min_value is in token base units (USDC = 6 decimals), here 1,000,000 USDC.",
+    "chain": "ethereum",
+    "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "rpc_url": "https://REPLACE-WITH-YOUR-RPC-ENDPOINT",
+    "interval_ms": 12000,
+    "conditions": [],
+    "rules": [
+      {
+        "id": "whale-transfer",
+        "type": "event",
+        "desc": "large USDC transfer (>= 1,000,000 USDC)",
+        "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "min_value": "1000000000000",
+        "word_index": 0
+      }
+    ],
+    "preexec": false,
+    "response": { "tier": "observe" }
+  },
+  {
+    "_name": "vault-backing-invariant (example: ERC4626 solvency, bounty-target class)",
+    "_note": "address is real mainnet sDAI (Savings DAI), a verified ERC4626 vault, as a working demo; REPLACE with the vault you are authorized to watch. Invariant: totalAssets() >= totalSupply(). preexec=true also simulates pending txs that would break it.",
+    "chain": "ethereum",
+    "address": "0x83F20F44975D03b1b09e64809B757c47f942BEeA",
+    "rpc_url": "https://REPLACE-WITH-YOUR-RPC-ENDPOINT",
+    "interval_ms": 12000,
+    "conditions": [
+      {
+        "id": "shares-backed",
+        "invariant": "totalAssets() >= totalSupply()",
+        "left":  { "data": "0x01e1d114" },
+        "right": { "data": "0x18160ddd" },
+        "cmp": ">="
+      }
+    ],
+    "rules": [],
+    "preexec": true,
+    "response": { "tier": "recommend", "actions": [
+      { "id": "alert-ops", "desc": "page the protocol ops channel: vault undercollateralized" }
+    ] }
+  },
+  {
+    "_name": "proxy-upgrade + ownership watch, with a GATED pause action",
+    "_note": "REPLACE address with the proxy/admin contract. The act tier is FAIL-SAFE: with no approval Gate wired it records 'blocked' (never pauses autonomously). Wire operator authorization + a signing executor to make it live. data=0x8456cb59 is pause().",
+    "chain": "ethereum",
+    "address": "0x0000000000000000000000000000000000000000",
+    "rpc_url": "https://REPLACE-WITH-YOUR-RPC-ENDPOINT",
+    "interval_ms": 12000,
+    "conditions": [],
+    "rules": [
+      {
+        "id": "proxy-upgraded",
+        "type": "event",
+        "desc": "proxy implementation upgraded",
+        "topic0": "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b"
+      },
+      {
+        "id": "ownership-changed",
+        "type": "event",
+        "desc": "ownership transferred",
+        "topic0": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+      }
+    ],
+    "preexec": false,
+    "response": { "tier": "act", "actions": [
+      { "id": "pause", "desc": "pause the contract on an unexpected upgrade/ownership change", "to": "0x0000000000000000000000000000000000000000", "data": "0x8456cb59", "on_rule_id": "proxy-upgraded" }
+    ] }
+  },
+  {
+    "_name": "oracle-deviation (example: price feed sanity)",
+    "_note": "address is the real mainnet Chainlink ETH/USD feed (8 decimals), as a working demo; REPLACE with the oracle/aggregator you want. Fires when latestAnswer() moves more than 10% (1000 bps) between polls. data=0x50d25bcd is latestAnswer().",
+    "chain": "ethereum",
+    "address": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+    "rpc_url": "https://REPLACE-WITH-YOUR-RPC-ENDPOINT",
+    "interval_ms": 12000,
+    "conditions": [],
+    "rules": [
+      {
+        "id": "price-jump",
+        "type": "delta",
+        "desc": "oracle price moved > 10% between polls",
+        "call": { "data": "0x50d25bcd" },
+        "max_bps": 1000
+      }
+    ],
+    "preexec": false,
+    "response": { "tier": "observe" }
+  }
+]

@@ -1,0 +1,73 @@
+name: web3-image
+
+# Lints the Web3 provisioning scripts on every change to them, and (manually or
+# on a PR that touches the provisioning files) builds the EVM-only web3 worker
+# image end-to-end as a real smoke test. The full build is heavy (Foundry +
+# Slither + solc + Halmos), so it is gated — it does not run on every push.
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - "Dockerfile.web3"
+      - "deploy/web3/**"
+      - "docker-compose.web3.yml"
+      - ".github/workflows/web3-image.yml"
+
+jobs:
+  lint-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bash syntax check
+        run: for f in deploy/web3/*.sh; do bash -n "$f"; done
+      - name: shellcheck (errors only)
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          shellcheck -S error deploy/web3/*.sh
+
+  build-evm-image:
+    # Build the base image, then the EVM-only web3 layer, then run verify.sh.
+    needs: lint-scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      # Frontend static export (embedded into the binary).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npm run build:static
+        working-directory: web
+
+      # Build the linux/amd64 cyfind binary the base image expects at dist/amd64/.
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache: true
+      - name: build cyfind binary (embedui)
+        run: |
+          cp -r web/out server/webui/dist
+          mkdir -p dist/amd64
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+            go build -tags embedui -o dist/amd64/cyfind ./cmd/cyfind
+
+      # Base image (recon only), then the EVM-only web3 layer.
+      - name: docker build base
+        run: docker build -t cyfind:local .
+      - name: docker build web3 (EVM-only)
+        run: |
+          docker build -f Dockerfile.web3 -t cyfind:web3 \
+            --build-arg BASE=cyfind:local \
+            --build-arg WEB3_EVM=1 \
+            --build-arg WEB3_SOLANA=0 \
+            --build-arg WEB3_MOVE=0 \
+            --build-arg WEB3_ZK=0 .
+      - name: verify toolchain in the image
+        run: docker run --rm --entrypoint /opt/web3/verify.sh cyfind:web3
