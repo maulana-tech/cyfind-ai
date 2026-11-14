@@ -259,6 +259,7 @@ func New(ctx context.Context, m *Manager, skillDir string, dataDir string, keyDi
 	s.startTaskArchiveWorker()
 	s.wireInterceptReviewer() // LLM fallback approval: commands that hit no intercept rule are judged by the model
 	s.startWatchRegistry()    // runtime-watch mode (Web3 monitoring, observe-only); no-op if there are no active watches
+	go s.oastCleanupLoop()
 	return s
 }
 
@@ -650,6 +651,47 @@ func (s *Server) chatAgentRef() *agent.ChatAgent {
 	return s.chatAgent
 }
 
+func (s *Server) oastCleanupLoop() {
+	ticker := time.NewTicker(10 * time.Minute)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-s.ctx.Done():
+			return
+		case <-ticker.C:
+			s.m.OAST().Cleanup(2 * time.Hour)
+		}
+	}
+}
+
+// oastCallback records an inbound request from a target hitting an OOB webhook URL.
+func (s *Server) oastCallback(w http.ResponseWriter, r *http.Request) {
+	token := r.PathValue("token")
+	if token == "" {
+		http.NotFound(w, r)
+		return
+	}
+	bodyBytes, _ := io.ReadAll(io.LimitReader(r.Body, 64_000))
+	hdrs := make(map[string]string, len(r.Header))
+	for k := range r.Header {
+		hdrs[k] = r.Header.Get(k)
+	}
+	cb := agent.OASTCallback{
+		Time:    time.Now(),
+		Method:  r.Method,
+		Path:    r.URL.Path,
+		Headers: hdrs,
+		Body:    string(bodyBytes),
+		From:    r.RemoteAddr,
+	}
+	if !s.m.OAST().RecordCallback(token, cb) {
+		http.NotFound(w, r)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("ok"))
+}
+
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	s.registerSideRoutes(mux)
@@ -948,6 +990,7 @@ func (s *Server) Handler() http.Handler {
 	api := cors(s.requireAuth(mux))
 	root := http.NewServeMux()
 	root.Handle("/api/", api)
+	root.HandleFunc("/oast/{token}", s.oastCallback)
 	root.Handle("/", s.webuiHandler())
 	return root
 }
@@ -1407,9 +1450,10 @@ func (s *Server) testLLM(w http.ResponseWriter, r *http.Request) {
 	// API key resolution priority: form input > the specified profile's stored key > the global config's key.
 	// An existing profile's key is not sent back to the browser, so when testing an existing config the form is empty and it must be fetched from the DB.
 	// The session-header name is the same: when the form omits it, fall back to the existing profile's value.
-	if req.ProfileID != nil && (cfg.APIKey == "" || cfg.SessionHeaderKey == "") {
+	needKey := cfg.APIKey == ""
+	if req.ProfileID != nil && (needKey || cfg.SessionHeaderKey == "") {
 		if p, err := s.m.pg.ProfileByID(*req.ProfileID); err == nil && p != nil {
-			if cfg.APIKey == "" {
+			if needKey {
 				cfg.APIKey = p.APIKey
 			}
 			if cfg.SessionHeaderKey == "" {

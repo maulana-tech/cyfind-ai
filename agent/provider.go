@@ -77,6 +77,10 @@ type Config struct {
 	// Retry is the resolved retry parameters for this config (profile override -> global policy -> built-in default, resolved
 	// on the server side). For the meaning of the three layers see RetryConfig; the zero value = fully use the built-in default.
 	Retry RetryConfig
+	// IsBedrock indicates this config targets AWS Bedrock (Converse API with
+	// Bearer token auth). AWSRegion holds the region; APIKey holds the API key.
+	IsBedrock bool
+	AWSRegion string
 }
 
 // RetryConfig is the retry parameters that travel with an LLM config. Each layer's "count" has a uniform meaning:
@@ -137,11 +141,12 @@ func compactionConfig(windowTokens int) *compaction.Config {
 
 // FromEnv resolves the LLM provider config:
 //
-//	CYFIND_LLM_PROVIDER = anthropic|openai (default: inferred from keys)
+//	CYFIND_LLM_PROVIDER = anthropic|openai|bedrock (default: inferred from keys)
 //	CYFIND_LLM_MODEL    = model id        (default: per provider)
 //	CYFIND_LLM_BASE_URL = endpoint        (optional)
 //	CYFIND_LLM_PROXY    = proxy URL        (optional; http/https/socks5)
 //	ANTHROPIC_API_KEY / OPENAI_API_KEY         = credentials
+//	BEDROCK_API_KEY / BEDROCK_REGION / BEDROCK_MODEL = Bedrock credentials
 func FromEnv() (Config, bool) {
 	prov := os.Getenv("CYFIND_LLM_PROVIDER")
 	anthKey := os.Getenv("ANTHROPIC_API_KEY")
@@ -153,6 +158,8 @@ func FromEnv() (Config, bool) {
 			prov = "anthropic"
 		case oaiKey != "":
 			prov = "openai"
+		case os.Getenv("BEDROCK_API_KEY") != "":
+			prov = "bedrock"
 		default:
 			return Config{}, false
 		}
@@ -162,8 +169,7 @@ func FromEnv() (Config, bool) {
 		BaseURL: os.Getenv("CYFIND_LLM_BASE_URL"),
 		Model:   os.Getenv("CYFIND_LLM_MODEL"),
 		Proxy:   strings.TrimSpace(os.Getenv("CYFIND_LLM_PROXY")),
-		// Streaming by default; CYFIND_LLM_STREAM=false/0/off explicitly disables it and goes non-streaming.
-		Stream: !isFalsy(os.Getenv("CYFIND_LLM_STREAM")),
+		Stream:  !isFalsy(os.Getenv("CYFIND_LLM_STREAM")),
 	}
 	switch prov {
 	case "openai":
@@ -177,6 +183,18 @@ func FromEnv() (Config, bool) {
 		c.APIKey = oaiKey
 		if c.Model == "" {
 			c.Model = "gpt-5"
+		}
+	case "bedrock":
+		c.Format = llm.FormatAnthropic
+		c.IsBedrock = true
+		c.APIKey = os.Getenv("BEDROCK_API_KEY")
+		c.AWSRegion = bedrockRegionFromEnv()
+		if c.Model == "" {
+			if m := os.Getenv("BEDROCK_MODEL"); m != "" {
+				c.Model = m
+			} else {
+				c.Model = "qwen.qwen3-coder-next"
+			}
 		}
 	default:
 		c.Format = llm.FormatAnthropic
@@ -206,21 +224,30 @@ func ConfigFrom(provider, model, baseURL, apiKey, proxy string) Config {
 	switch strings.TrimSpace(provider) {
 	case "openai":
 		c.Format = llm.FormatOpenAI
-		// provider appends "/chat/completions"; tolerate a full endpoint URL.
 		c.BaseURL = strings.TrimRight(strings.TrimSuffix(c.BaseURL, "/chat/completions"), "/")
 		if c.Model == "" {
 			c.Model = "gpt-4o"
 		}
 	case "openai-responses":
 		c.Format = llm.FormatOpenAIResponses
-		// provider appends "/responses"; tolerate a full endpoint URL.
 		c.BaseURL = strings.TrimRight(strings.TrimSuffix(c.BaseURL, "/responses"), "/")
 		if c.Model == "" {
 			c.Model = "gpt-5"
 		}
+	case "bedrock":
+		c.Format = llm.FormatAnthropic
+		c.IsBedrock = true
+		// For Bedrock, baseURL carries the AWS region; apiKey is the Bearer token.
+		c.AWSRegion = c.BaseURL
+		c.BaseURL = ""
+		if c.AWSRegion == "" {
+			c.AWSRegion = bedrockRegionFromEnv()
+		}
+		if c.Model == "" {
+			c.Model = "qwen.qwen3-coder-next"
+		}
 	default:
 		c.Format = llm.FormatAnthropic
-		// provider appends "/v1/messages".
 		c.BaseURL = strings.TrimRight(strings.TrimSuffix(c.BaseURL, "/v1/messages"), "/")
 		if c.Model == "" {
 			c.Model = "claude-opus-4-8"
@@ -239,8 +266,11 @@ func isFalsy(s string) bool {
 	return false
 }
 
-// Provider returns the short provider name ("anthropic"/"openai").
+// Provider returns the short provider name ("anthropic"/"openai"/"bedrock").
 func (c Config) Provider() string {
+	if c.IsBedrock {
+		return "bedrock"
+	}
 	switch c.Format {
 	case llm.FormatOpenAI:
 		return "openai"
@@ -254,6 +284,9 @@ func (c Config) Provider() string {
 // limiter lives on the single provider instance — so planner + all workers +
 // main agent (which share this provider) are bounded by one shared rate limit.
 func (c Config) NewProvider() (llm.Provider, error) {
+	if c.IsBedrock {
+		return newBedrockProvider(c.AWSRegion, c.APIKey, c.Model, c)
+	}
 	client, err := quotaAwareHTTPClient(c.Proxy, c.SessionHeaderKey)
 	if err != nil {
 		return nil, err

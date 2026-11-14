@@ -26,7 +26,7 @@ import { ApprovalExecutionFocus, useApprovalFocus, useApprovalHistory } from "@/
 import { MentionTextarea } from "@/components/mention-textarea";
 import { SideQuestionButton, SideQuestionWorkspace } from "@/components/side-question-workspace";
 import { TodoPopover } from "@/components/todo-popover";
-import { Transcript } from "@/components/transcript";
+import { Transcript, DetailPanelProvider, DetailPanelView } from "@/components/transcript";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -779,6 +779,7 @@ function ChatView({
   }
 
   return (
+    <DetailPanelProvider>
     <SideQuestionWorkspace side={side} label={agent?.name ?? conv.agent_key} composerLayout="inline">
       {/* header: which agent + live + token meta */}
       <div className="flex min-w-0 flex-wrap items-center gap-2 border-b px-4 py-2.5">
@@ -811,31 +812,34 @@ function ChatView({
 
       <ApprovalExecutionFocus focus={approvalFocus} history={focusHistory} />
 
-      {/* messages */}
-      <ScrollArea type="auto" className="min-h-0 min-w-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
-        <div className="min-w-0 max-w-full px-4 py-3" ref={contentRef}>
-          {messages.length === 0 && !running ? (
-            <div className="text-muted-foreground py-10 text-center text-sm">
-              {t("开始和「{name}」对话", { name: agent?.name ?? conv.agent_key })}
-            </div>
-          ) : (
-            <>
-              {hasMore && (
-                <div className="text-muted-foreground/70 pb-2 text-center text-[11px]">
-                  {t("向上滚动加载更早的消息…")}
-                </div>
-              )}
-              <Transcript
-                activity={messages}
-                live={running}
-                chat
-                fetchDetail={fetchDetail}
-                focusedSeq={focusHistory.ready ? approvalFocus.state?.source?.seq : undefined}
-              />
-            </>
-          )}
-        </div>
-      </ScrollArea>
+      {/* messages + inline detail panel */}
+      <div className="flex min-h-0 flex-1">
+        <ScrollArea type="auto" className="min-h-0 min-w-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
+          <div className="min-w-0 max-w-full px-4 py-3" ref={contentRef}>
+            {messages.length === 0 && !running ? (
+              <div className="text-muted-foreground py-10 text-center text-sm">
+                {t("开始和「{name}」对话", { name: agent?.name ?? conv.agent_key })}
+              </div>
+            ) : (
+              <>
+                {hasMore && (
+                  <div className="text-muted-foreground/70 pb-2 text-center text-[11px]">
+                    {t("向上滚动加载更早的消息…")}
+                  </div>
+                )}
+                <Transcript
+                  activity={messages}
+                  live={running}
+                  chat
+                  fetchDetail={fetchDetail}
+                  focusedSeq={focusHistory.ready ? approvalFocus.state?.source?.seq : undefined}
+                />
+              </>
+            )}
+          </div>
+        </ScrollArea>
+        <DetailPanelView />
+      </div>
 
       <Composer
         value={input}
@@ -860,6 +864,7 @@ function ChatView({
         rightSlot={<TodoPopover seq={latestTodoSeq} fetchDetail={fetchDetail} />}
       />
     </SideQuestionWorkspace>
+    </DetailPanelProvider>
   );
 }
 

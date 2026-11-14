@@ -222,6 +222,7 @@ type Manager struct {
 	traffic     *traffic.Traffic       // process-wide recording proxy (may be nil)
 	enrich      *enrich.Engine         // engine-side asset auto-completion (DNS/HTTP)
 	interceptor *intercept.Interceptor // user-configured tool-call interception rules
+	oast        *agent.OASTStore       // out-of-band callback hooks (webhook_create / webhook_check)
 
 	companyMu sync.Mutex // serializes task/company-scope commits with live handle registration
 	// taskStateMu preserves commit order between PostgreSQL lifecycle writes and
@@ -440,11 +441,15 @@ func NewManager(dir, proxyAddr string) (*Manager, error) {
 		}
 	}
 	m.enrich = enrich.New(m.assets, m.ProxyAddr, 4)
+	m.oast = agent.NewOASTStore("")
 	// Reconcile the seeded browser MCP with the persisted capture state, so a
 	// restart with capture already on keeps Playwright routed through the proxy.
 	m.syncBrowserMCPProxy()
 	return m, nil
 }
+
+// OAST returns the process-wide out-of-band callback store (webhook_create / webhook_check).
+func (m *Manager) OAST() *agent.OASTStore { return m.oast }
 
 // TrafficEnabled reports whether traffic capture is on (default off). When off,
 // no proxy/traffic tools/prompt are injected into agents (nothing is recorded).

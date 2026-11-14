@@ -422,7 +422,7 @@ CREATE TABLE IF NOT EXISTS settings (
 CREATE TABLE IF NOT EXISTS llm_profiles (
     id               BIGSERIAL PRIMARY KEY,
     name             TEXT NOT NULL UNIQUE,
-    format           TEXT NOT NULL CHECK (format IN ('openai','anthropic','openai-responses')),
+    format           TEXT NOT NULL CHECK (format IN ('openai','anthropic','openai-responses','bedrock')),
     base_url         TEXT,
     proxy            TEXT,
     model            TEXT NOT NULL,
@@ -479,7 +479,7 @@ ALTER TABLE llm_profiles ADD COLUMN IF NOT EXISTS streaming    BOOLEAN NOT NULL 
 -- Runs on every startup, idempotent: drop the old CHECK then create the new CHECK with the three values.
 ALTER TABLE llm_profiles DROP CONSTRAINT IF EXISTS llm_profiles_format_check;
 ALTER TABLE llm_profiles ADD  CONSTRAINT llm_profiles_format_check
-    CHECK (format IN ('openai','anthropic','openai-responses'));
+    CHECK (format IN ('openai','anthropic','openai-responses','bedrock'));
 
 -- The output cap and its field name; backfilled for old databases. Default 0 / '' = send no cap and use the max_tokens field name,
 -- so old configs behave exactly as before.

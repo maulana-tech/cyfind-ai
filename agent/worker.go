@@ -360,6 +360,7 @@ func (w *Worker) ExecuteWithMessage(ctx context.Context, name string, taskID int
 
 func (w *Worker) execute(ctx context.Context, name string, taskID int64, as *db.AssetStore, ts *db.ExplorationStore, intent *db.Node, hooks harness.HookRunner, emit func(db.Activity), enr EnrichTrigger, notifyFinding func(int64, string), requestID, message string) (harness.TerminalReason, WriteCounts, error) {
 	tsx := NewToolSet(ts, name)
+	defer tsx.CleanupHTTPSession()
 	tsx.SetFindingRecorder(w.findingRecorder)
 	tsx.SetTaskID(taskID)
 	coverageEnabled := as == nil || as.CoverageEnabled(taskID)

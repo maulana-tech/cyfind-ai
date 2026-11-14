@@ -5,6 +5,7 @@ import {
   CheckIcon,
   ChevronDown,
   ChevronRight,
+  ClipboardIcon,
   CrosshairIcon,
   Flag,
   MessageSquare,
@@ -71,6 +72,202 @@ function useInView(rootMargin = "400px"): [React.RefObject<HTMLDivElement | null
     return () => ob.disconnect();
   }, [inView, rootMargin]);
   return [ref, inView];
+}
+
+type DetailPanelState = {
+  title: string;
+  icon: "tool" | "msg";
+  status?: string;
+  statusTone?: string;
+  content: string | null;
+  loading: boolean;
+};
+type DetailPanelCtx = {
+  open: (state: Omit<DetailPanelState, "loading"> & { load?: () => Promise<string> }) => void;
+  close: () => void;
+  state: DetailPanelState;
+  isOpen: boolean;
+};
+const DetailPanelContext = React.createContext<DetailPanelCtx | null>(null);
+
+function CopyButton({ text, size = "sm" }: { text: string; size?: "sm" | "md" }) {
+  const [copied, setCopied] = React.useState(false);
+  const cls = size === "md"
+    ? "inline-flex items-center gap-1.5 rounded-md border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
+    : "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground";
+  return (
+    <button
+      type="button"
+      className={cls}
+      onClick={() => {
+        void navigator.clipboard.writeText(text).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        });
+      }}
+    >
+      {copied ? <CheckIcon className={size === "md" ? "size-3.5" : "size-3"} /> : <ClipboardIcon className={size === "md" ? "size-3.5" : "size-3"} />}
+      {copied ? "Copied!" : "Copy"}
+    </button>
+  );
+}
+
+type ContentSection = { label: string; tone: string; bg: string; border: string; iconBg: string; body: string };
+
+function parseDetailSections(raw: string): ContentSection[] {
+  const parts = raw.split(/^\[(.+?)\]$/m);
+  if (parts.length < 3) return [{ label: "", tone: "", bg: "", border: "", iconBg: "", body: raw }];
+  const sections: ContentSection[] = [];
+  for (let i = 1; i < parts.length; i += 2) {
+    const label = parts[i].trim();
+    const body = (parts[i + 1] ?? "").trim();
+    let tone = "text-muted-foreground";
+    let bg = "bg-muted/30";
+    let border = "border-border";
+    let iconBg = "bg-muted";
+    if (label.includes("✓")) {
+      tone = "text-emerald-600 dark:text-emerald-400";
+      bg = "bg-emerald-500/5 dark:bg-emerald-500/5";
+      border = "border-emerald-500/20";
+      iconBg = "bg-emerald-500/10";
+    } else if (label.includes("✕")) {
+      tone = "text-red-600 dark:text-red-400";
+      bg = "bg-red-500/5 dark:bg-red-500/5";
+      border = "border-red-500/20";
+      iconBg = "bg-red-500/10";
+    } else if (/command/i.test(label)) {
+      tone = "text-sky-600 dark:text-sky-400";
+      bg = "bg-sky-500/5 dark:bg-sky-500/5";
+      border = "border-sky-500/20";
+      iconBg = "bg-sky-500/10";
+    }
+    sections.push({ label, tone, bg, border, iconBg, body });
+  }
+  return sections;
+}
+
+export function DetailPanelProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [state, setState] = React.useState<DetailPanelState>({
+    title: "",
+    icon: "tool",
+    content: null,
+    loading: false,
+  });
+
+  const ctx = React.useMemo<DetailPanelCtx>(
+    () => ({
+      open: ({ load, ...rest }) => {
+        setState({ ...rest, loading: !rest.content });
+        setIsOpen(true);
+        if (load && !rest.content) {
+          void load().then((c) => setState((s) => ({ ...s, content: c, loading: false })));
+        }
+      },
+      close: () => setIsOpen(false),
+      state,
+      isOpen,
+    }),
+    [state, isOpen],
+  );
+
+  return (
+    <DetailPanelContext.Provider value={ctx}>
+      {children}
+    </DetailPanelContext.Provider>
+  );
+}
+
+export function DetailPanelView() {
+  const ctx = React.useContext(DetailPanelContext);
+  if (!ctx?.isOpen) return null;
+
+  const { state, close } = ctx;
+  const Icon = state.icon === "tool" ? Wrench : MessageSquare;
+  const sections = state.content ? parseDetailSections(state.content) : [];
+  const isOk = state.statusTone === "text-emerald-600 dark:text-emerald-400";
+  const isFail = state.statusTone === "text-red-600 dark:text-red-400";
+
+  return (
+    <div className="flex w-[45%] max-w-2xl shrink-0 flex-col border-l">
+      {/* Header */}
+      <div className="flex items-start gap-3 border-b bg-muted/30 px-4 py-3">
+        <div className={"mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg " + (isFail ? "bg-red-500/15 text-red-600 dark:text-red-400" : isOk ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-primary/10 text-primary")}>
+          <Icon className="size-4" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="min-w-0 break-words text-[13px] font-semibold leading-snug">{state.title}</h3>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
+            {state.status && (
+              <span className={"inline-flex items-center gap-1 font-medium " + (state.statusTone ?? "text-muted-foreground")}>
+                {isOk ? <CheckIcon className="size-3" /> : isFail ? <XIcon className="size-3" /> : null}
+                {state.status}
+              </span>
+            )}
+            {state.content && (
+              <span className="text-muted-foreground/70">
+                {state.content.length.toLocaleString()} chars
+              </span>
+            )}
+          </div>
+        </div>
+        {state.content && <CopyButton text={state.content} size="md" />}
+        <button type="button" onClick={close} className="mt-0.5 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Close">
+          <XIcon className="size-4" />
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-auto">
+        {state.loading ? (
+          <div className="flex flex-1 flex-col gap-px bg-border/50">
+            <div className="bg-card px-4 py-2">
+              <div className="h-3.5 w-20 animate-pulse rounded bg-muted" />
+            </div>
+            <div className="space-y-2 bg-card px-4 py-3">
+              <div className="h-3 w-4/5 animate-pulse rounded bg-muted" />
+              <div className="h-3 w-full animate-pulse rounded bg-muted" />
+              <div className="h-3 w-3/5 animate-pulse rounded bg-muted" />
+            </div>
+            <div className="bg-card px-4 py-2">
+              <div className="h-3.5 w-16 animate-pulse rounded bg-muted" />
+            </div>
+            <div className="flex-1 space-y-2 bg-card px-4 py-3">
+              <div className="h-3 w-full animate-pulse rounded bg-muted" />
+              <div className="h-3 w-5/6 animate-pulse rounded bg-muted" />
+              <div className="h-3 w-full animate-pulse rounded bg-muted" />
+            </div>
+          </div>
+        ) : sections.length > 0 ? (
+          <div className="flex flex-1 flex-col">
+            {sections.map((sec, i) => {
+              const isLast = i === sections.length - 1;
+              return (
+                <div key={i} className={"flex flex-col " + (isLast ? "flex-1" : "")}>
+                  {sec.label && (
+                    <div className={"sticky top-0 z-10 flex items-center justify-between border-b px-4 py-2 " + sec.bg}>
+                      <div className="flex items-center gap-1.5">
+                        {sec.label.includes("✓") ? <CheckIcon className={"size-3.5 " + sec.tone} /> : sec.label.includes("✕") ? <XIcon className={"size-3.5 " + sec.tone} /> : <Terminal className={"size-3.5 " + sec.tone} />}
+                        <span className={"text-xs font-semibold " + sec.tone}>{sec.label}</span>
+                      </div>
+                      <CopyButton text={sec.body} />
+                    </div>
+                  )}
+                  <div className={"overflow-auto " + (isLast ? "flex-1" : "border-b")}>
+                    <pre className="whitespace-pre-wrap break-all px-4 py-3 font-mono text-[12px] leading-relaxed text-foreground/90">{sec.body}</pre>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex-1 overflow-auto">
+            <pre className="whitespace-pre-wrap break-all p-4 font-mono text-[12px] leading-relaxed">{state.content}</pre>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 // A tool group pairs a tool_use with its matching tool_result (by tool_use_id);
@@ -362,12 +559,8 @@ function ToolBlock({
   showWorker?: boolean;
   focused?: boolean;
 }) {
-  const [open, setOpen] = React.useState(focused);
   const targetRef = React.useRef<HTMLElement>(null);
   const [detail, setDetail] = React.useState<string | null>(null);
-  // what we last loaded, keyed by the underlying step seqs. When the tool result
-  // arrives after we expanded mid-run (command only), this key changes and the
-  // effect below re-fetches — so the output shows up instead of being cached out.
   const loadedKey = React.useRef<string | null>(null);
   const { use, result } = group;
   const toolName = use?.tool || result?.tool || "tool";
@@ -382,77 +575,58 @@ function ToolBlock({
   const rawCmd =
     use && use.summary.startsWith(toolName) ? use.summary.slice(toolName.length).trimStart() : (use?.summary ?? "");
   const cmd = toolInputText(toolName, rawCmd);
-  // status only — the full result lives behind the expand ([Output]), not previewed inline
   const statusText = running ? "Running…" : ok ? "✓" : "✕ Failed";
-
-  // key over the seqs we'd load; changes when the result (or command) arrives.
   const detailKey = `${use?.seq ?? ""}:${result?.seq ?? ""}`;
-  React.useEffect(() => {
-    if (!open || loadedKey.current === detailKey) return;
-    let live = true;
-    const segs: { label: string; seq: number }[] = [];
-    if (use) segs.push({ label: "Command", seq: use.seq });
-    if (result) segs.push({ label: "Output" + (result.is_error ? " ✕" : " ✓"), seq: result.seq });
-    void Promise.all(
-      segs.map((x) =>
-        getDetail(x.seq)
-          .then((d) => d || "(empty)")
-          .catch(() => "(load failed)"),
-      ),
-    ).then((parts) => {
-      if (!live) return;
-      setDetail(
-        segs
-          .map((x, i) => `[${x.label}]\n${x.label === "Command" ? toolInputText(toolName, parts[i]) : parts[i]}`)
-          .join("\n\n"),
-      );
-      loadedKey.current = detailKey;
+
+  const panel = React.useContext(DetailPanelContext);
+
+  function openPanel() {
+    if (!panel) return;
+    panel.open({
+      title: `${toolName} ${cmd}`,
+      icon: "tool",
+      status: statusText,
+      statusTone,
+      content: detail,
+      load: detail
+        ? undefined
+        : async () => {
+            const segs: { label: string; seq: number }[] = [];
+            if (use) segs.push({ label: "Command", seq: use.seq });
+            if (result) segs.push({ label: "Output" + (result.is_error ? " ✕" : " ✓"), seq: result.seq });
+            const parts = await Promise.all(
+              segs.map((x) =>
+                getDetail(x.seq)
+                  .then((d) => d || "(empty)")
+                  .catch(() => "(load failed)"),
+              ),
+            );
+            const text = segs
+              .map((x, i) => `[${x.label}]\n${x.label === "Command" ? toolInputText(toolName, parts[i]) : parts[i]}`)
+              .join("\n\n");
+            setDetail(text);
+            loadedKey.current = detailKey;
+            return text;
+          },
     });
-    return () => {
-      live = false;
-    };
-  }, [open, detailKey, use, result, getDetail, toolName]);
+  }
 
   const scrolledRef = React.useRef(false);
   React.useEffect(() => {
     scrolledRef.current = false;
-    if (focused) setOpen(true);
   }, [focused]);
   React.useEffect(() => {
-    if (!focused || !open || detail === null || scrolledRef.current) return;
+    if (!focused || scrolledRef.current) return;
     const el = targetRef.current;
     const viewport = el?.closest('[data-slot="scroll-area-viewport"]');
     if (!el || !viewport) return;
     scrolledRef.current = true;
-    const center = () => {
+    requestAnimationFrame(() => {
       const rect = el.getBoundingClientRect();
       const bounds = viewport.getBoundingClientRect();
       viewport.scrollTop += rect.top + rect.height / 2 - bounds.top - bounds.height / 2;
-    };
-    // User bubbles load their full text lazily. Allow their initial layout to
-    // settle, but stop anchoring immediately if the user interacts or after 2s.
-    const observer = new ResizeObserver(center);
-    observer.observe(el.parentElement ?? el);
-    observer.observe(viewport);
-    const stop = () => observer.disconnect();
-    viewport.addEventListener("wheel", stop, { passive: true, once: true });
-    viewport.addEventListener("touchstart", stop, { passive: true, once: true });
-    viewport.addEventListener("pointerdown", stop, { once: true });
-    const frame = requestAnimationFrame(center);
-    const timer = setTimeout(stop, 2000);
-    return () => {
-      cancelAnimationFrame(frame);
-      clearTimeout(timer);
-      stop();
-      viewport.removeEventListener("wheel", stop);
-      viewport.removeEventListener("touchstart", stop);
-      viewport.removeEventListener("pointerdown", stop);
-    };
-  }, [focused, open, detail]);
-
-  function toggle() {
-    setOpen((o) => !o);
-  }
+    });
+  }, [focused]);
 
   return (
     <section
@@ -460,9 +634,13 @@ function ToolBlock({
       aria-label={focused ? `Located tool call #${use?.seq}` : undefined}
       className={focused ? "rounded-lg border-2 border-primary bg-primary/5 p-3 text-xs" : "text-xs"}
     >
-      <button type="button" onClick={toggle} className="flex w-full items-start gap-2 py-1 text-left hover:bg-muted/40">
+      <button
+        type="button"
+        onClick={openPanel}
+        className="flex w-full items-start gap-2 rounded py-1 text-left hover:bg-muted/40"
+      >
         <span className="mt-0.5 text-muted-foreground">
-          {open ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+          <ChevronRight className="size-3" />
         </span>
         <ToolIcon className={"mt-0.5 size-3.5 shrink-0 " + (running ? "text-sky-600 dark:text-sky-400" : statusTone)} />
         {showWorker && <span className={chip(group.worker)}>{group.worker}</span>}
@@ -470,11 +648,6 @@ function ToolBlock({
         {cmd && <span className="min-w-0 flex-1 truncate font-mono text-muted-foreground">{cmd}</span>}
         <span className={"ml-auto shrink-0 font-medium " + statusTone}>{statusText}</span>
       </button>
-      {open && (
-        <pre className="ml-7 mb-1 max-h-72 overflow-auto whitespace-pre-wrap break-all rounded bg-muted/50 p-2 font-mono text-[11px] leading-relaxed">
-          {detail ?? "Loading…"}
-        </pre>
-      )}
     </section>
   );
 }
@@ -522,13 +695,13 @@ function MessageBlock({
     };
   }, [open, detailKey, group.steps, getDetail]);
 
-  function toggle() {
-    setOpen((o) => !o);
-  }
-
   return (
     <div className="text-xs">
-      <button type="button" onClick={toggle} className="flex w-full items-start gap-2 py-1 text-left hover:bg-muted/40">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-start gap-2 py-1 text-left hover:bg-muted/40"
+      >
         <span className="mt-0.5 text-muted-foreground">
           {open ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
         </span>

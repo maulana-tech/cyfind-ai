@@ -46,7 +46,7 @@ export function ScopeTextEditor({
         rows={8}
         value={value}
         aria-invalid={parsed.errors.length > 0}
-        placeholder={"example.com\n203.0.113.10\n198.51.100.0/24\n京ICP备12345678号-1\ncompany keyword"}
+        placeholder={"example.com\n203.0.113.10\n198.51.100.0/24\nICP-12345678-1\ncompany keyword"}
         className="min-h-36 resize-y font-mono text-sm"
         onChange={(event) => onValueChange(event.target.value)}
       />

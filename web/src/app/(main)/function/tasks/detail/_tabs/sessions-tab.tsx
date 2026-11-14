@@ -31,7 +31,7 @@ import { ApprovalExecutionFocus, useApprovalFocus, useApprovalHistory } from "@/
 import { MentionTextarea } from "@/components/mention-textarea";
 import { SideQuestionButton, SideQuestionWorkspace } from "@/components/side-question-workspace";
 import { TodoPopover } from "@/components/todo-popover";
-import { Transcript } from "@/components/transcript";
+import { Transcript, DetailPanelProvider, DetailPanelView } from "@/components/transcript";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -511,7 +511,9 @@ export function SessionsTab({ taskId }: { taskId: string }) {
   // Keep a located archived/older session selectable after leaving focus mode.
   const [locatedSession, setLocatedSession] = React.useState<{ taskId: string; session: Session }>();
   React.useEffect(() => {
-    if (focusSession) setLocatedSession({ taskId, session: focusSession });
+    if (focusSession) {
+      setLocatedSession({ taskId, session: focusSession });
+    }
   }, [taskId, focusSession]);
   const retainedSession = locatedSession?.taskId === taskId ? locatedSession.session : undefined;
   const activeId = focusSession?.id ?? selectedSessionId;
@@ -1577,41 +1579,14 @@ export function SessionsTab({ taskId }: { taskId: string }) {
       {/* Height reservation: page header (title row + goal + Tabs ≈ 7.5rem) + content padding. Mobile p-4,
         desktop lg:p-6, and desktop also needs scroll headroom, so the two tiers reserve 10rem / 13rem respectively — on mobile,
         reusing 13rem would needlessly eat 3rem of transcript height. */}
-      <div
-        className={cn(
-          "grid h-[calc(100svh-10rem)] min-h-0 grid-cols-1 gap-4",
-          listOpen ? "grid-rows-[minmax(0,40svh)_minmax(0,1fr)]" : "grid-rows-[auto_minmax(0,1fr)]",
-          "lg:h-[calc(100svh-13rem)] lg:grid-cols-[18rem_1fr] lg:grid-rows-[minmax(0,1fr)]",
-        )}
-      >
+      <div className="grid h-[calc(100svh-10rem)] min-h-0 gap-4 lg:grid-cols-[18rem_1fr] lg:h-[calc(100svh-13rem)]">
         {/* Left: session list */}
-        <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border bg-card">
+        <div className="flex min-h-0 flex-col overflow-hidden rounded-lg border bg-card max-lg:max-h-60">
           <div className="border-b px-3 py-2">
             <div className="flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => setListOpen((open) => !open)}
-                aria-expanded={listOpen}
-                aria-controls="session-list-panel"
-                className="flex min-w-0 flex-1 items-center gap-1 text-left text-xs font-medium text-muted-foreground lg:pointer-events-none"
-              >
-                <ChevronDownIcon
-                  className={cn("size-3.5 shrink-0 transition-transform lg:hidden", !listOpen && "-rotate-90")}
-                />
+              <span className="flex min-w-0 flex-1 items-center gap-1 text-xs font-medium text-muted-foreground">
                 <span className="shrink-0">{t("会话列表")}</span>
-                {!listOpen && (
-                  <>
-                    <span className="min-w-0 truncate text-foreground lg:hidden" title={activeDisplayTitle}>
-                      · {activeDisplayTitle}
-                    </span>
-                    {hiddenUnread > 0 && (
-                      <span className="inline-flex min-w-4 shrink-0 items-center justify-center rounded-full bg-blue-500/15 px-1 text-[10px] font-medium tabular-nums text-blue-600 lg:hidden dark:text-blue-400">
-                        {hiddenUnread > 99 ? "99+" : hiddenUnread}
-                      </span>
-                    )}
-                  </>
-                )}
-              </button>
+              </span>
               {!MOCK && (
                 <span
                   className={cn(
@@ -1661,10 +1636,7 @@ export function SessionsTab({ taskId }: { taskId: string }) {
           <ScrollArea
             id="session-list-panel"
             type="auto"
-            className={cn(
-              "min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!",
-              !listOpen && "max-lg:hidden",
-            )}
+            className="min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!"
           >
             <div className="flex w-full flex-col gap-3 p-2">
               {(["mainagent", "planner", "system", "worker"] as const).map((role) => {
@@ -1707,7 +1679,7 @@ export function SessionsTab({ taskId }: { taskId: string }) {
                           onClick={() => {
                             approvalFocus.close();
                             setActiveId(s.id);
-                            setListOpen(false); // on mobile, collapse right after selecting, returning the height to the transcript
+                            setListOpen(false);
                             setWorkerMessage("");
                             setWorkerMessageRequestId("");
                           }}
@@ -1749,15 +1721,14 @@ export function SessionsTab({ taskId }: { taskId: string }) {
           side={side}
           label={active.role === "worker" ? `Worker #${active.intent_id} · ${activeDisplayTitle}` : activeDisplayTitle}
         >
+          <DetailPanelProvider>
           <div className="flex min-h-0 flex-1 min-w-0 flex-col overflow-hidden rounded-lg border bg-card">
-            <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 border-b px-3 py-2 sm:px-4 sm:py-2.5">
+            <div className="flex flex-row flex-wrap items-center gap-x-2 gap-y-1 border-b px-3 py-2 sm:px-4 sm:py-2.5">
               {(() => {
                 const isWorker = active.role === "worker";
                 const meta = isWorker ? sessionMeta.get(active.id) : undefined;
-                // Worker: the intent moved into the transcript as a message, so the
-                // header shows a stable generic label (intent JSON stays on hover).
                 const title = isWorker ? t("Worker 执行会话") : t(active.title);
-                const titleEl = <span className="min-w-0 truncate text-sm font-medium">{title}</span>;
+                const titleEl = <h3 className="min-w-0 truncate text-sm font-semibold">{title}</h3>;
                 return meta?.json ? (
                   <Tooltip>
                     <TooltipTrigger asChild>{titleEl}</TooltipTrigger>
@@ -1881,51 +1852,55 @@ export function SessionsTab({ taskId }: { taskId: string }) {
               }}
               history={focusHistory}
             />
-            {/* Force Radix's internal viewport wrapper (display:table, sizes to content)
-            to block so wide/unbreakable steps (long commands, code, URLs) can't blow
-            out the width and defeat the truncation below — the transcript wraps to
-            the panel instead of overflowing horizontally. */}
-            <ScrollArea type="auto" className="min-h-0 min-w-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
-              <div className="min-w-0 max-w-full p-4" ref={contentRef}>
-                {activeState?.loadingMore && (
-                  <div className="flex items-center justify-center gap-2 pb-2 text-xs text-muted-foreground">
-                    <Loader2Icon className="size-3.5 animate-spin" />
-                    {t("加载更早历史…")}
-                  </div>
-                )}
-                {showLoader ? (
-                  <div className="flex items-center gap-2 pl-9 text-xs text-muted-foreground">
-                    <Loader2Icon className="size-3.5 animate-spin" />
-                    {t("加载活动流…")}
-                  </div>
-                ) : activeState?.error ? (
-                  <div className="flex items-center gap-2 pl-9 text-xs text-red-500">
-                    <CircleXIcon className="size-3.5" />
-                    {activeState.error ? t("加载失败：{error}", { error: activeState.error }) : t("加载失败")}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 px-2 text-xs"
-                      onClick={() => loadSession(activeKey)}
-                    >
-                      {t("重试")}
-                    </Button>
-                  </div>
-                ) : activity.length ? (
-                  <Transcript
-                    activity={activity}
-                    live={active.live}
-                    taskId={taskId}
-                    chat={isMain}
-                    focusedSeq={focusHistory.ready ? approvalFocus.state?.source?.seq : undefined}
-                  />
-                ) : (
-                  <div className="pl-9 text-xs text-muted-foreground">
-                    {isMain ? t("还没有对话。在下方给主 Agent 发消息，引导探索方向或介入流程。") : t("暂无活动记录。")}
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
+            {/* Transcript + inline detail panel side by side */}
+            <div className="flex min-h-0 flex-1">
+              {/* Force Radix's internal viewport wrapper (display:table, sizes to content)
+              to block so wide/unbreakable steps (long commands, code, URLs) can't blow
+              out the width and defeat the truncation below — the transcript wraps to
+              the panel instead of overflowing horizontally. */}
+              <ScrollArea type="auto" className="min-h-0 min-w-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
+                <div className="min-w-0 max-w-full p-4" ref={contentRef}>
+                  {activeState?.loadingMore && (
+                    <div className="flex items-center justify-center gap-2 pb-2 text-xs text-muted-foreground">
+                      <Loader2Icon className="size-3.5 animate-spin" />
+                      {t("加载更早历史…")}
+                    </div>
+                  )}
+                  {showLoader ? (
+                    <div className="flex items-center gap-2 pl-9 text-xs text-muted-foreground">
+                      <Loader2Icon className="size-3.5 animate-spin" />
+                      {t("加载活动流…")}
+                    </div>
+                  ) : activeState?.error ? (
+                    <div className="flex items-center gap-2 pl-9 text-xs text-red-500">
+                      <CircleXIcon className="size-3.5" />
+                      {activeState.error ? t("加载失败：{error}", { error: activeState.error }) : t("加载失败")}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-xs"
+                        onClick={() => loadSession(activeKey)}
+                      >
+                        {t("重试")}
+                      </Button>
+                    </div>
+                  ) : activity.length ? (
+                    <Transcript
+                      activity={activity}
+                      live={active.live}
+                      taskId={taskId}
+                      chat={isMain}
+                      focusedSeq={focusHistory.ready ? approvalFocus.state?.source?.seq : undefined}
+                    />
+                  ) : (
+                    <div className="pl-9 text-xs text-muted-foreground">
+                      {isMain ? t("还没有对话。在下方给主 Agent 发消息，引导探索方向或介入流程。") : t("暂无活动记录。")}
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+              <DetailPanelView />
+            </div>
             {isMain ? (
               <div className="border-t p-3">
                 {attachments.length > 0 && (
@@ -2119,7 +2094,9 @@ export function SessionsTab({ taskId }: { taskId: string }) {
               </div>
             )}
           </div>
+          </DetailPanelProvider>
         </SideQuestionWorkspace>
+      </div>
         <AlertDialog
           open={cancelIntent !== null}
           onOpenChange={(open) => {
@@ -2222,7 +2199,6 @@ export function SessionsTab({ taskId }: { taskId: string }) {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
     </TooltipProvider>
   );
 }

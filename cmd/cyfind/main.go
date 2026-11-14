@@ -13,6 +13,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"syscall"
 	"time"
 
@@ -106,6 +107,13 @@ func run() int {
 	// increments the count and a build that keeps dying gets rolled back.
 	settle := time.AfterFunc(selfupdate.SettleDelay, selfupdate.Settle)
 	defer settle.Stop()
+
+	// Derive the OAST (out-of-band webhook) base URL from the listen address.
+	oastHost := *addr
+	if strings.HasPrefix(oastHost, ":") {
+		oastHost = "127.0.0.1" + oastHost
+	}
+	mgr.OAST().SetBaseURL("http://" + oastHost)
 
 	skillDir := config.SkillDir()
 	if abs, err := filepath.Abs(skillDir); err == nil {

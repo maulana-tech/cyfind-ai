@@ -1201,8 +1201,13 @@ func (t *ToolSet) WorkerTools() []actool.CoreTool {
 		t.searchAllWorkerTraces(), t.getWorkerTrace(),
 		// node_detail: once the worker has an intent_id/node id it can fetch that node's full detail (together with the review above).
 		t.nodeDetail(),
-		// The following tools are still not given to the worker, only to planner/main (reading context and cross-work review are planning jobs,
-		// the worker only executes and writes back a single intent): list_facts / list_companies / list_worker_traces.
+		// http_request: session-aware HTTP client with persistent cookie jar for authenticated flows and multi-step API testing.
+		t.httpRequest(),
+		// payload_encode / payload_decode: encode/decode payloads for filter bypass and response analysis.
+		payloadEncodeTool(),
+		payloadDecodeTool(),
+		// response_analyze: automated vulnerability indicator detection in HTTP responses.
+		responseAnalyzeTool(),
 	}
 }
 

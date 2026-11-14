@@ -56,6 +56,7 @@ const MAX_TOKENS_FIELD_HINTS: Record<string, string> = {
     "上限发哪个键。max_tokens 是默认，绝大多数兼容网关只认它；OpenAI 官方推理模型（o 系列 / GPT-5）反过来只认 max_completion_tokens，收到 max_tokens 会直接报 unsupported_parameter。",
   anthropic: "仅 openai 格式可选。Anthropic 的字段名固定为 max_tokens。",
   "openai-responses": "仅 openai 格式可选。Responses API 的字段名固定为 max_output_tokens。",
+  bedrock: "Only selectable for the openai format. Bedrock uses the Converse API field maxTokens.",
 };
 const EFFORT_LEVELS: { value: string; label: string }[] = [
   { value: NONE, label: "不发送（默认）" },
@@ -308,6 +309,8 @@ function PoolSheet({
 // Model config drawer (create / edit share the same form)
 // ─────────────────────────────────────────────────────────────────────────────
 
+const bedrockKeyPlaceholder = (fmt: string) => (fmt === "bedrock" ? "ABSK… (Bedrock API Key)" : "sk-…");
+
 function ProfileSheet({
   profile,
   open,
@@ -322,7 +325,7 @@ function ProfileSheet({
   const t = useT();
   const isNew = !profile;
   const [name, setName] = React.useState("");
-  const [format, setFormat] = React.useState<"anthropic" | "openai" | "openai-responses">("anthropic");
+  const [format, setFormat] = React.useState<"anthropic" | "openai" | "openai-responses" | "bedrock">("anthropic");
   const [model, setModel] = React.useState("");
   const [baseUrl, setBaseUrl] = React.useState("");
   const [proxy, setProxy] = React.useState("");
@@ -351,7 +354,11 @@ function ProfileSheet({
   React.useEffect(() => {
     if (!open) return;
     setName(profile?.name ?? "");
-    setFormat(profile?.format === "openai" || profile?.format === "openai-responses" ? profile.format : "anthropic");
+    setFormat(
+      profile?.format === "openai" || profile?.format === "openai-responses" || profile?.format === "bedrock"
+        ? profile.format
+        : "anthropic",
+    );
     setModel(profile?.model ?? "");
     setBaseUrl(profile?.base_url ?? "");
     setProxy(profile?.proxy ?? "");
@@ -506,7 +513,10 @@ function ProfileSheet({
             </div>
             <div className="grid gap-2">
               <Label>{t("格式")}</Label>
-              <Select value={format} onValueChange={(v) => setFormat(v as "anthropic" | "openai" | "openai-responses")}>
+              <Select
+                value={format}
+                onValueChange={(v) => setFormat(v as "anthropic" | "openai" | "openai-responses" | "bedrock")}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder={t("选择格式")} />
                 </SelectTrigger>
@@ -514,6 +524,7 @@ function ProfileSheet({
                   <SelectItem value="anthropic">Anthropic</SelectItem>
                   <SelectItem value="openai">OpenAI (Chat Completions)</SelectItem>
                   <SelectItem value="openai-responses">OpenAI (Responses API)</SelectItem>
+                  <SelectItem value="bedrock">AWS Bedrock</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -525,7 +536,7 @@ function ProfileSheet({
               <Input
                 id="p-model"
                 className="font-mono"
-                placeholder="claude-opus-4-8"
+                placeholder={format === "bedrock" ? "qwen.qwen3-coder-next" : "claude-opus-4-8"}
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
               />
@@ -567,11 +578,11 @@ function ProfileSheet({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="p-base-url">{t("Base URL（可选）")}</Label>
+            <Label htmlFor="p-base-url">{format === "bedrock" ? t("AWS Region") : t("Base URL（可选）")}</Label>
             <Input
               id="p-base-url"
               className="font-mono"
-              placeholder="https://api.openai.com/v1"
+              placeholder={format === "bedrock" ? "ap-southeast-2" : "https://api.openai.com/v1"}
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
             />
@@ -612,14 +623,22 @@ function ProfileSheet({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="p-api-key">API Key</Label>
+            <Label htmlFor="p-api-key">{format === "bedrock" ? "Bedrock API Key" : "API Key"}</Label>
             <Input
               id="p-api-key"
               type="password"
-              placeholder={keyHint ? t("已设置（{hint}），留空保持不变", { hint: keyHint }) : "sk-…"}
+              placeholder={
+                keyHint ? t("已设置（{hint}），留空保持不变", { hint: keyHint }) : bedrockKeyPlaceholder(format)
+              }
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
             />
+            {format === "bedrock" && (
+              <p className="text-muted-foreground text-xs">
+                The base64-encoded Bedrock API key (starts with ABSK). Leave empty to use the BEDROCK_API_KEY
+                environment variable.
+              </p>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">

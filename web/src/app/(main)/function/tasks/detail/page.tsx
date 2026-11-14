@@ -5,7 +5,16 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { ArchiveIcon, ArrowLeftIcon, BrainIcon, CheckIcon, CircleAlertIcon, PauseIcon, PlayIcon } from "lucide-react";
+import {
+  ArchiveIcon,
+  ArrowLeftIcon,
+  BrainIcon,
+  CheckIcon,
+  ChevronRightIcon,
+  CircleAlertIcon,
+  PauseIcon,
+  PlayIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { StatusBadge } from "@/components/status-badge";
@@ -50,18 +59,24 @@ import { ReportTab } from "./_tabs/report-tab";
 import { RetestsTab } from "./_tabs/retests-tab";
 import { SessionsTab } from "./_tabs/sessions-tab";
 
-const TABS = [
+const PRIMARY_TABS = [
   { value: "sessions", label: "Sessions" },
   { value: "overview", label: "Overview" },
+  { value: "findings", label: "Findings" },
+  { value: "report", label: "Report" },
+];
+
+const MORE_TABS = [
   { value: "graph", label: "Exploration" },
   { value: "broadcast", label: "Broadcast" },
-  { value: "findings", label: "Findings" },
   { value: "retests", label: "Retests" },
   { value: "assets", label: "Test assets" },
   { value: "coverage", label: "Coverage map" },
   { value: "intercept", label: "Interception approvals" },
-  { value: "report", label: "Report" },
 ];
+
+const ALL_TABS = [...PRIMARY_TABS, ...MORE_TABS];
+const moreTabValues = new Set(MORE_TABS.map((t) => t.value));
 
 function taskProfileIDs(task: Task): string[] {
   if (task.llm_profile_ids && task.llm_profile_ids.length > 0) {
@@ -199,6 +214,62 @@ function TaskLLMControl({ task, profiles, onUpdated }: { task: Task; profiles: L
         </div>
       </PopoverContent>
     </Popover>
+  );
+}
+
+function MoreTabsExpand({
+  tab,
+  interceptPendingCount,
+}: {
+  tab: string;
+  setTab: (v: string) => void;
+  interceptPendingCount: number;
+}) {
+  const [expanded, setExpanded] = React.useState(() => moreTabValues.has(tab));
+
+  if (!expanded) {
+    return (
+      <Button
+        variant={moreTabValues.has(tab) ? "secondary" : "ghost"}
+        size="sm"
+        className="h-8 shrink-0 gap-1 px-2.5 text-xs font-medium"
+        onClick={() => setExpanded(true)}
+      >
+        More
+        {interceptPendingCount > 0 && (
+          <span className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-semibold leading-none text-white">
+            {interceptPendingCount > 99 ? "99+" : interceptPendingCount}
+          </span>
+        )}
+        <ChevronRightIcon className="size-3.5" />
+      </Button>
+    );
+  }
+
+  return (
+    <>
+      <TabsList variant="default" className="min-w-max">
+        {MORE_TABS.map((t) => (
+          <TabsTrigger key={t.value} value={t.value} className="gap-1">
+            {t.label}
+            {t.value === "intercept" && interceptPendingCount > 0 && (
+              <span className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-semibold leading-none text-white">
+                {interceptPendingCount > 99 ? "99+" : interceptPendingCount}
+              </span>
+            )}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        className="size-7 shrink-0"
+        onClick={() => setExpanded(false)}
+        aria-label="Hide extra tabs"
+      >
+        <ChevronRightIcon className="size-3.5 rotate-180" />
+      </Button>
+    </>
   );
 }
 
@@ -398,20 +469,20 @@ function TaskDetailInner() {
           </Button>
         </div>
         <p className="truncate text-xs text-muted-foreground">{task.goal}</p>
-        {/* Tabs */}
-        <div className="no-scrollbar min-w-0 overflow-x-auto">
+        {/* Tabs — primary always visible; secondary collapsed into "More" */}
+        <div className="no-scrollbar flex min-w-0 items-center gap-1 overflow-x-auto">
           <TabsList variant="default" className="min-w-max">
-            {TABS.map((t) => (
+            {PRIMARY_TABS.map((t) => (
               <TabsTrigger key={t.value} value={t.value}>
                 {t.label}
-                {t.value === "intercept" && interceptPendingCount > 0 && (
-                  <span className="ml-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-semibold leading-none text-white">
-                    {interceptPendingCount > 99 ? "99+" : interceptPendingCount}
-                  </span>
-                )}
               </TabsTrigger>
             ))}
           </TabsList>
+          <MoreTabsExpand
+            tab={tab}
+            setTab={setTab}
+            interceptPendingCount={interceptPendingCount}
+          />
         </div>
       </header>
 
