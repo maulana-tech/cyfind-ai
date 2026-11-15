@@ -14,11 +14,12 @@ import {
   ShieldCheck,
   Terminal,
   Workflow,
-  Zap,
 } from "lucide-react";
 import type { Metadata } from "next";
 
+import { FlowStepper } from "./_components/flow-stepper";
 import { HeroVisual } from "./_components/hero-visual";
+import { CountUp } from "./_components/motion";
 import { LandingNav } from "./_components/nav";
 import { Reveal } from "./_components/reveal";
 
@@ -37,6 +38,7 @@ export default function LandingPage() {
         <CapabilityStrip />
         <Platform />
         <DualGraph />
+        <Metrics />
         <Flow />
         <Safety />
         <CTA />
@@ -294,34 +296,35 @@ function DualGraph() {
   );
 }
 
-/* ------------------------------------------------------------------- Flow */
+/* ---------------------------------------------------------------- Metrics */
 
-const STEPS = [
-  {
-    n: "01",
-    icon: <Radar className="size-5" />,
-    title: "Scope",
-    body: "Point CYFIND at an isolated lab target and set the goals. Scope and constraints become the agents' boundaries.",
-  },
-  {
-    n: "02",
-    icon: <Workflow className="size-5" />,
-    title: "Plan",
-    body: "The planner reads the live graph, judges progress against the goal, and emits prioritized intents into the frontier.",
-  },
-  {
-    n: "03",
-    icon: <Zap className="size-5" />,
-    title: "Execute",
-    body: "Workers claim intents and run real tools through the recording proxy, writing assets, facts and findings back as they go.",
-  },
-  {
-    n: "04",
-    icon: <ShieldCheck className="size-5" />,
-    title: "Report",
-    body: "Confirmed findings land with reproducible PoCs and a coverage map — every result traceable to its asset.",
-  },
+const METRICS = [
+  { to: 2.7, decimals: 1, suffix: "M", label: "avg tokens per task run" },
+  { to: 143, decimals: 0, suffix: "", label: "assets mapped per run" },
+  { to: 41, decimals: 0, suffix: "%", label: "prompt cache hit rate" },
+  { to: 3, decimals: 0, suffix: "", label: "LLM providers, with failover" },
 ];
+
+function Metrics() {
+  return (
+    <section className="border-[var(--cf-border)] border-y bg-[var(--cf-surface)] px-5 py-16 sm:px-6">
+      <div className="mx-auto grid max-w-[1200px] gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        {METRICS.map((m) => (
+          <Reveal key={m.label}>
+            <div>
+              <div className="font-light text-[48px] text-[var(--cf-text)] tracking-[-0.03em] tabular-nums sm:text-[56px]">
+                <CountUp to={m.to} decimals={m.decimals} suffix={m.suffix} />
+              </div>
+              <div className="mt-1 text-[15px] text-[var(--cf-muted)]">{m.label}</div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------- Flow */
 
 function Flow() {
   return (
@@ -330,24 +333,11 @@ function Flow() {
         <SectionHeading
           eyebrow="How it works"
           title="Scope. Plan. Execute. Report."
-          sub="One continuous loop. You set the target and watch the graph fill in."
+          sub="One continuous loop. You set the target and watch the graph fill in — step through it."
         />
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((s) => (
-            <Reveal key={s.n} delay={Number(s.n) * 40}>
-              <div className="relative h-full rounded-[18px] cf-card p-6 shadow-[var(--cf-shadow-sm)]">
-                <div className="flex items-center justify-between">
-                  <IconChip>{s.icon}</IconChip>
-                  <span className="font-[family-name:var(--font-geist-mono)] text-[22px] text-[var(--cf-border-strong)]">
-                    {s.n}
-                  </span>
-                </div>
-                <h3 className="mt-5 font-medium text-[16px] text-[var(--cf-text)] tracking-[-0.011em]">{s.title}</h3>
-                <p className="mt-2 text-[13.5px] text-[var(--cf-muted)] leading-[1.6]">{s.body}</p>
-              </div>
-            </Reveal>
-          ))}
+        <div className="mt-8">
+          <FlowStepper />
         </div>
       </div>
     </section>
