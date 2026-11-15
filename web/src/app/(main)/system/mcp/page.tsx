@@ -1,27 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { toast } from "sonner";
-import { PlusIcon, RefreshCwIcon, ServerIcon, Trash2Icon } from "lucide-react";
 
+import { PlusIcon, RefreshCwIcon, ServerIcon, Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
-import type { MCPServer, MCPTool, Agent } from "@/lib/types";
+import type { Agent, MCPServer, MCPTool } from "@/lib/types";
 
 type Transport = "stdio" | "http" | "sse";
 type FormState = {
@@ -58,7 +53,10 @@ export default function MCPPage() {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const load = React.useCallback(() => {
-    api.agents().then(setAgents).catch(() => {});
+    api
+      .agents()
+      .then(setAgents)
+      .catch(() => {});
     api
       .mcpServers()
       .then((ss) => {
@@ -300,10 +298,7 @@ export default function MCPPage() {
               onChange={(e) => setF({ url: e.target.value })}
             />
             <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.insecure}
-                onCheckedChange={(v) => setF({ insecure: v === true })}
-              />
+              <Checkbox checked={form.insecure} onCheckedChange={(v) => setF({ insecure: v === true })} />
               Skip TLS certificate verification (self-signed cert)
             </label>
           </div>
@@ -317,9 +312,7 @@ export default function MCPPage() {
           <Textarea
             id="m-env"
             className="font-mono"
-            placeholder={
-              form.transport !== "stdio" ? "Authorization=Bearer xxxx" : "API_KEY=xxxx\nFOO=bar"
-            }
+            placeholder={form.transport !== "stdio" ? "Authorization=Bearer xxxx" : "API_KEY=xxxx\nFOO=bar"}
             value={form.env}
             onChange={(e) => setF({ env: e.target.value })}
           />
@@ -347,9 +340,7 @@ export default function MCPPage() {
               <div key={t.name} className="py-2.5">
                 <code className="font-mono text-sm">{t.name}</code>
                 {t.description && (
-                  <p className="text-muted-foreground mt-0.5 text-xs leading-relaxed">
-                    {t.description}
-                  </p>
+                  <p className="text-muted-foreground mt-0.5 text-xs leading-relaxed">{t.description}</p>
                 )}
               </div>
             ))}
@@ -361,84 +352,113 @@ export default function MCPPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4 md:gap-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">MCP</h1>
-        <p className="text-muted-foreground text-sm">External MCP tool servers · visibility granted per Agent</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="font-semibold text-xl tracking-tight">MCP</h1>
+          <p className="text-muted-foreground text-sm">External MCP tool servers · access granted per agent</p>
+        </div>
+        <Button onClick={openAdd}>
+          <PlusIcon /> Add server
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <button
-          type="button"
-          onClick={openAdd}
-          className="text-foreground/70 border-foreground/70 hover:bg-muted/60 hover:shadow-sm flex min-h-[116px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed transition"
-        >
-          <PlusIcon className="size-6" />
-          <span className="text-sm">Add MCP</span>
-        </button>
+      {servers.length === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed py-16 text-center">
+          <span className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <ServerIcon className="size-6" />
+          </span>
+          <div>
+            <p className="font-medium">No MCP servers yet</p>
+            <p className="mx-auto mt-1 max-w-sm text-muted-foreground text-sm">
+              Connect external Model Context Protocol tool servers, then grant each agent access to the tools it needs.
+            </p>
+          </div>
+          <Button onClick={openAdd}>
+            <PlusIcon /> Add your first server
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {servers.map((s) => (
+            <Card key={s.id} className="flex flex-col gap-0 transition hover:border-primary/50 hover:shadow-sm">
+              <CardHeader className="gap-0 pb-3">
+                <div className="flex items-start gap-3">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <ServerIcon className="size-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="truncate text-base">{s.name}</CardTitle>
+                      <Badge variant="outline" className="shrink-0 text-[10px] uppercase">
+                        {s.transport}
+                      </Badge>
+                    </div>
+                    <p className="mt-0.5 truncate font-mono text-muted-foreground text-xs">
+                      {s.transport === "stdio" ? s.command || "—" : s.url || "—"}
+                    </p>
+                  </div>
+                  <Switch checked={s.enabled} onCheckedChange={() => toggleEnabled(s)} aria-label="Enable" />
+                </div>
+              </CardHeader>
+              <CardContent className="flex flex-1 flex-col gap-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <span
+                    className={`inline-flex items-center gap-1.5 ${s.enabled ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}`}
+                  >
+                    <span
+                      className={`size-1.5 rounded-full ${s.enabled ? "bg-emerald-500" : "bg-muted-foreground/50"}`}
+                    />
+                    {s.enabled ? "Enabled" : "Disabled"}
+                  </span>
+                  <span className="text-muted-foreground/50">·</span>
+                  <span className="text-muted-foreground">
+                    {s.tools && s.tools.length > 0 ? `${s.tools.length} tools` : "No tools yet"}
+                  </span>
+                </div>
 
-        {servers.map((s) => (
-          <Card
-            key={s.id}
-            onClick={() => openEdit(s)}
-            className="hover:border-primary/60 cursor-pointer gap-3 transition hover:shadow-sm"
-          >
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <ServerIcon className="text-muted-foreground size-4 shrink-0" />
-                <CardTitle className="truncate text-base">{s.name}</CardTitle>
-                <Badge variant="outline" className="uppercase">
-                  {s.transport}
-                </Badge>
-                <div className="ml-auto flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                  <Switch
-                    checked={s.enabled}
-                    onCheckedChange={() => toggleEnabled(s)}
-                    aria-label="Enable"
-                  />
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-muted-foreground text-xs">Visible to agents</span>
+                  {agents.length === 0 ? (
+                    <span className="text-muted-foreground/70 text-xs">No agents configured</span>
+                  ) : (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                      {agents.map((a) => (
+                        <label key={a.key} className="flex items-center gap-2 text-sm">
+                          <Checkbox
+                            checked={(visibility[s.id] ?? []).includes(a.id)}
+                            onCheckedChange={() => toggleVisibility(s.id, a.id, a.name)}
+                          />
+                          {a.name}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-auto flex items-center gap-1 pt-1">
+                  <Button size="sm" variant="outline" onClick={() => openEdit(s)}>
+                    Configure
+                  </Button>
                   <Button
-                    size="icon"
-                    variant="outline"
-                    aria-label="Delete"
+                    size="sm"
+                    variant="ghost"
+                    className="text-destructive hover:text-destructive"
                     onClick={() => removeServer(s)}
                   >
-                    <Trash2Icon className="text-destructive" />
+                    <Trash2Icon /> Delete
                   </Button>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="grid gap-3">
-              <p className="text-muted-foreground text-sm">
-                {s.tools && s.tools.length > 0 ? `${s.tools.length} tools` : "No tools discovered yet"}
-              </p>
-              <div className="grid gap-2" onClick={(e) => e.stopPropagation()}>
-                <span className="text-muted-foreground text-xs">Visibility (granted per Agent)</span>
-                <div className="flex flex-wrap gap-x-4 gap-y-2">
-                  {agents.map((a) => (
-                    <label key={a.key} className="flex items-center gap-2 text-sm">
-                      <Checkbox
-                        checked={(visibility[s.id] ?? []).includes(a.id)}
-                        onCheckedChange={() => toggleVisibility(s.id, a.id, a.name)}
-                      />
-                      {a.name}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent
-          side="right"
-          className="w-full data-[side=right]:sm:max-w-lg"
-        >
+        <SheetContent side="right" className="w-full data-[side=right]:sm:max-w-lg">
           <SheetHeader>
             <SheetTitle>{editing ? editing.name : "Add MCP server"}</SheetTitle>
-            <SheetDescription>
-              stdio (spawn a local process) or http (remote Streamable HTTP)
-            </SheetDescription>
+            <SheetDescription>stdio (spawn a local process) or http (remote Streamable HTTP)</SheetDescription>
           </SheetHeader>
 
           {editing ? (
@@ -449,9 +469,7 @@ export default function MCPPage() {
             >
               <TabsList>
                 <TabsTrigger value="config">Config</TabsTrigger>
-                <TabsTrigger value="tools">
-                  Tool list{tools.length ? ` (${tools.length})` : ""}
-                </TabsTrigger>
+                <TabsTrigger value="tools">Tool list{tools.length ? ` (${tools.length})` : ""}</TabsTrigger>
               </TabsList>
               <TabsContent value="config" className="min-h-0 flex-1 overflow-y-auto">
                 {renderForm()}
