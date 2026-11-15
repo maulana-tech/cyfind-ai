@@ -60,3 +60,8 @@ Thumbs.db
 /Dockerfile.bench.v2.env.bak
 .env.bak
 .env
+
+# build artifacts / stray binaries
+.archify/
+/artex
+/cyfind
