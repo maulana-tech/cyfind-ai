@@ -17,7 +17,7 @@ const BAR = "rgba(23,32,64,0.14)";
 const easeBar = "cubic-bezier(0.22,1,0.36,1)";
 
 const card =
-  "group/card relative flex h-full flex-col overflow-hidden rounded-[22px] border border-[var(--cf-border)] bg-[var(--cf-card)] shadow-[var(--cf-shadow)] transition-colors hover:border-[var(--cf-border-strong)]";
+  "group/card relative flex h-full flex-col overflow-hidden rounded-[22px] border border-[var(--cf-border)] bg-[var(--cf-card)] shadow-[var(--cf-shadow-sm)] transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[3px] hover:border-[var(--cf-border-strong)] hover:shadow-[var(--cf-shadow-lg)]";
 const panel = "rounded-[14px] border border-[var(--cf-border)] bg-[var(--cf-surface)]";
 
 /* ---------------------------------------------------------------- visuals */

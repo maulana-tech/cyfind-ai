@@ -288,34 +288,37 @@ html {
    not depend on dashboard theme presets.
    ===================================================================== */
 .cf-root {
-  /* Light theme matching the app's `aera` content area: white page, white cards,
-     navy text, brand blue (hue 258) as the accent, soft blue-tinted shadows. */
-  --cf-bg: oklch(1 0 0);                 /* white page */
-  --cf-surface: oklch(0.975 0.008 260);  /* faint blue-grey section band */
-  --cf-card: oklch(1 0 0);               /* white card */
-  --cf-text: oklch(0.22 0.05 255);       /* headings: deep navy */
-  --cf-body: oklch(0.38 0.045 255);      /* body */
-  --cf-muted: oklch(0.52 0.035 255);     /* muted/secondary */
-  --cf-faint: oklch(0.62 0.03 255);      /* captions */
-  --cf-border: oklch(0.92 0.012 260);    /* hairline border */
-  --cf-border-strong: oklch(0.88 0.016 260);
+  /* aera look: a soft brand-blue CANVAS with pure-white cards floating on it,
+     navy text (reads on the light-blue page), brand blue (hue 258) accent. */
+  --cf-bg: oklch(0.905 0.045 258); /* soft denim-blue page canvas */
+  --cf-surface: oklch(0.945 0.028 258); /* lighter panel band (inside cards) */
+  --cf-card: oklch(1 0 0); /* pure-white card */
+  --cf-text: oklch(0.22 0.05 255); /* headings: deep navy */
+  --cf-body: oklch(0.34 0.05 255); /* body */
+  --cf-muted: oklch(0.44 0.05 258); /* muted/secondary */
+  --cf-faint: oklch(0.52 0.045 258); /* captions */
+  --cf-border: oklch(0.85 0.03 258); /* hairline border (reads on blue + white) */
+  --cf-border-strong: oklch(0.78 0.04 258);
   /* accent — cyfind brand blue, white label on the filled button */
-  --cf-accent: oklch(0.40 0.15 258);
+  --cf-accent: oklch(0.42 0.16 258);
   --cf-on-accent: oklch(1 0 0);
-  --cf-accent-hover: oklch(0.34 0.14 258);
-  --cf-accent-soft: oklch(0.955 0.02 260); /* light blue tint fill */
+  --cf-accent-hover: oklch(0.36 0.15 258);
+  --cf-accent-soft: oklch(0.955 0.03 258); /* near-white blue chip fill */
   /* supporting tag accents (product-mock chips only) */
   --cf-green: #1f9d57;
   --cf-teal: #0e8fb0;
   --cf-iris: #4f5bd5;
   --cf-lavender: #7c5cf0;
   /* soft brand-tinted shadows (match aera) */
-  --cf-shadow-sm: 0 1px 3px oklch(0.15 0.05 258 / 6%);
-  --cf-shadow: 0 4px 14px oklch(0.15 0.05 258 / 9%);
-  --cf-shadow-lg: 0 18px 48px oklch(0.15 0.05 258 / 16%);
+  --cf-shadow-sm: 0 1px 3px oklch(0.2 0.08 258 / 8%);
+  --cf-shadow: 0 6px 20px oklch(0.2 0.08 258 / 12%);
+  --cf-shadow-lg: 0 22px 56px oklch(0.2 0.08 258 / 20%);
 
   font-family: "Inter", "Inter Variable", var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: "cv01" on, "ss03" on, "zero" on;
+  font-feature-settings:
+    "cv01" on,
+    "ss03" on,
+    "zero" on;
   background: var(--cf-bg);
   color: var(--cf-body);
 }
@@ -341,28 +344,54 @@ html {
 }
 
 @keyframes cf-fade-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes cf-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes cf-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
-.cf-reveal { opacity: 0; }
-.cf-reveal.cf-in { animation: cf-fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-.cf-reveal-fade.cf-in { animation: cf-fade-in 0.8s ease forwards; }
+.cf-reveal {
+  opacity: 0;
+}
+.cf-reveal.cf-in {
+  animation: cf-fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.cf-reveal-fade.cf-in {
+  animation: cf-fade-in 0.8s ease forwards;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .cf-reveal, .cf-reveal.cf-in, .cf-reveal-fade.cf-in {
+  .cf-reveal,
+  .cf-reveal.cf-in,
+  .cf-reveal-fade.cf-in {
     animation: none !important;
     opacity: 1 !important;
   }
-  .cf-marquee-track { animation: none !important; }
+  .cf-marquee-track {
+    animation: none !important;
+  }
 }
 
-.cf-marquee-track { animation: cf-marquee 36s linear infinite; }
+.cf-marquee-track {
+  animation: cf-marquee 36s linear infinite;
+}

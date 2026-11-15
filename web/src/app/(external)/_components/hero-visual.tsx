@@ -1,14 +1,46 @@
 "use client";
 
-import { Activity, ShieldCheck, Target } from "lucide-react";
+import { Activity, Bug, Compass, FlaskConical, ShieldCheck, Target } from "lucide-react";
 
 /**
- * Stylized product surface shown in the hero: a mock CYFIND task window with an
- * exploration graph, a live worker feed and a coverage meter. Intentionally a
- * crisp WHITE app window (the app's light content area) floating on the blue
- * brand canvas — so its palette is hardcoded light, not the page's blue tokens.
- * Original artwork — SVG + markup, not a screenshot.
+ * Stylized product surface shown in the hero: a mock Cyfind task window whose
+ * left pane is an exploration graph rendered to match the real app's graph
+ * (white rounded node cards with a colored type chip + icon, bezier edges, a
+ * dot grid), and a live worker feed on the right. Original artwork — markup +
+ * SVG, not a screenshot. The window is a crisp WHITE app surface floating on
+ * the blue brand canvas, so its palette is hardcoded light, not the page tokens.
  */
+
+type NodeType = "goal" | "intent" | "fact" | "finding";
+
+const NODE_META: Record<NodeType, { label: string; Icon: typeof Target; bg: string }> = {
+  goal: { label: "goal", Icon: Target, bg: "#10b981" },
+  intent: { label: "intent", Icon: Compass, bg: "#3b82f6" },
+  fact: { label: "fact", Icon: FlaskConical, bg: "#f59e0b" },
+  finding: { label: "finding", Icon: Bug, bg: "#f43f5e" },
+};
+
+type GNode = { id: string; type: NodeType; title: string; x: number; y: number; live?: boolean };
+
+// anchors are the CARD CENTERS in % of the canvas; cards are translate(-50%,-50%)
+const NODES: GNode[] = [
+  { id: "goal", type: "goal", title: "Breach admin panel", x: 13, y: 50 },
+  { id: "i1", type: "intent", title: "Enumerate subdomains", x: 42, y: 20, live: true },
+  { id: "i2", type: "intent", title: "Probe login form", x: 42, y: 80 },
+  { id: "f1", type: "fact", title: "14 live hosts", x: 74, y: 20 },
+  { id: "find", type: "finding", title: "SQL injection · /api/auth", x: 74, y: 80 },
+];
+
+const EDGES: [string, string, boolean?][] = [
+  ["goal", "i1", true],
+  ["goal", "i2"],
+  ["i1", "f1"],
+  ["i2", "find"],
+  ["f1", "find"],
+];
+
+const byId = Object.fromEntries(NODES.map((n) => [n.id, n]));
+
 export function HeroVisual() {
   return (
     <div className="overflow-hidden rounded-[18px] border border-[var(--cf-border)] bg-white shadow-[var(--cf-shadow-lg)]">
@@ -27,9 +59,9 @@ export function HeroVisual() {
         </span>
       </div>
 
-      <div className="grid gap-px bg-[#e6e8ef] sm:grid-cols-[1.55fr_1fr]">
-        {/* graph canvas */}
-        <div className="relative min-h-[300px] bg-[#f7f8fb] p-4">
+      <div className="grid gap-px bg-[#e6e8ef] sm:grid-cols-[1.6fr_1fr]">
+        {/* exploration graph */}
+        <div className="relative min-h-[360px] overflow-hidden bg-[#f7f8fb] p-4">
           <GraphCanvas />
         </div>
 
@@ -39,10 +71,10 @@ export function HeroVisual() {
             <span className="font-medium text-[11px] text-[#8a92a6] uppercase tracking-wider">Worker feed</span>
             <Activity className="size-3.5 text-[#5b6478]" />
           </div>
-          <FeedItem dot="#4f5bd5" worker="worker#1" text="subdomain brute → 14 hosts" />
-          <FeedItem dot="#7c5cf0" worker="worker#2" text="port scan 10.0.3.0/24" />
+          <FeedItem dot="#3b82f6" worker="worker#1" text="subdomain brute → 14 hosts" />
+          <FeedItem dot="#8b5cf6" worker="worker#2" text="port scan 10.0.3.0/24" />
           <FeedItem dot="#0e8fb0" worker="worker#3" text="probing login form…" />
-          <FeedItem dot="#1f9d57" worker="planner" text="intent: test SQLi on /api/auth" />
+          <FeedItem dot="#10b981" worker="planner" text="intent: test SQLi on /api/auth" />
 
           <div className="mt-1 rounded-[10px] border border-[#e6e8ef] bg-[#f7f8fb] p-3">
             <div className="mb-2 flex items-center justify-between text-[11px]">
@@ -70,39 +102,82 @@ export function HeroVisual() {
 
 function GraphCanvas() {
   return (
-    <svg viewBox="0 0 440 300" className="relative h-full w-full" aria-hidden="true">
-      {/* edges — soft hairline */}
-      {[
-        "M90,150 L200,70",
-        "M90,150 L200,150",
-        "M90,150 L200,230",
-        "M200,70 L330,50",
-        "M200,150 L330,120",
-        "M200,150 L330,190",
-        "M200,230 L330,250",
-      ].map((d) => (
-        <path key={d} d={d} stroke="#c9cedd" strokeWidth="1.2" fill="none" />
+    <div
+      className="relative h-full min-h-[328px] w-full"
+      style={{
+        backgroundImage: "radial-gradient(circle, #d4d9e6 1px, transparent 1px)",
+        backgroundSize: "18px 18px",
+      }}
+    >
+      {/* edges */}
+      <svg
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        {EDGES.map(([a, b, live]) => {
+          const s = byId[a];
+          const t = byId[b];
+          const mx = (s.x + t.x) / 2;
+          const d = `M ${s.x} ${s.y} C ${mx} ${s.y}, ${mx} ${t.y}, ${t.x} ${t.y}`;
+          return (
+            <path
+              key={`${a}-${b}`}
+              d={d}
+              fill="none"
+              stroke={live ? "#9bb0ec" : "#cdd3e2"}
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+              strokeDasharray={live ? "4 4" : undefined}
+            >
+              {live ? (
+                <animate attributeName="stroke-dashoffset" from="16" to="0" dur="0.9s" repeatCount="indefinite" />
+              ) : null}
+            </path>
+          );
+        })}
+      </svg>
+
+      {/* nodes */}
+      {NODES.map((n) => (
+        <NodeCard key={n.id} node={n} />
       ))}
-      <GraphNode x={90} y={150} label="goal" fill="#2f49c0" r={11} />
-      <GraphNode x={200} y={70} label="intent" fill="#4f5bd5" r={9} />
-      <GraphNode x={200} y={150} label="fact" fill="#7c5cf0" r={9} />
-      <GraphNode x={200} y={230} label="intent" fill="#4f5bd5" r={9} />
-      <GraphNode x={330} y={50} label="asset" fill="#aab2c6" r={6} />
-      <GraphNode x={330} y={120} label="finding" fill="#d6456b" r={9} />
-      <GraphNode x={330} y={190} label="asset" fill="#aab2c6" r={6} />
-      <GraphNode x={330} y={250} label="asset" fill="#aab2c6" r={6} />
-    </svg>
+    </div>
   );
 }
 
-function GraphNode({ x, y, label, fill, r }: { x: number; y: number; label: string; fill: string; r: number }) {
+function NodeCard({ node }: { node: GNode }) {
+  const meta = NODE_META[node.type];
+  const { Icon } = meta;
   return (
-    <g>
-      <circle cx={x} cy={y} r={r} fill={fill} stroke="#ffffff" strokeWidth="2.5" />
-      <text x={x} y={y - r - 6} textAnchor="middle" fontSize="9" fill="#8a92a6" fontWeight="500">
-        {label}
-      </text>
-    </g>
+    <div
+      className="-translate-x-1/2 -translate-y-1/2 absolute w-[150px]"
+      style={{ left: `${node.x}%`, top: `${node.y}%` }}
+    >
+      <div
+        className="flex items-center gap-2 rounded-[13px] border bg-white px-2.5 py-2 shadow-[0_2px_8px_rgba(23,32,64,0.08)]"
+        style={{ borderColor: node.type === "finding" ? "rgba(244,63,94,0.35)" : "rgba(10,15,35,0.08)" }}
+      >
+        <span
+          className="relative flex size-6 shrink-0 items-center justify-center rounded-lg shadow-sm"
+          style={{ background: meta.bg }}
+        >
+          <Icon className="size-3.5 text-white" strokeWidth={2.2} />
+          {node.live ? (
+            <>
+              <span className="-right-0.5 -top-0.5 absolute inline-flex size-2 animate-ping rounded-full bg-blue-400 opacity-75" />
+              <span className="-right-0.5 -top-0.5 absolute inline-flex size-2 rounded-full bg-blue-500" />
+            </>
+          ) : null}
+        </span>
+        <div className="min-w-0">
+          <div className="font-semibold text-[8.5px] text-[#8a92a6] uppercase tracking-wider">{meta.label}</div>
+          <div className="truncate font-medium text-[11px] text-[#1b2440] leading-tight">{node.title}</div>
+        </div>
+      </div>
+    </div>
   );
 }
 

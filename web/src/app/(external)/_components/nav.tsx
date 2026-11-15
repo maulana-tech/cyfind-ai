@@ -15,9 +15,23 @@ const LINKS = [
 
 export function LandingNav() {
   const [open, setOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        scrolled
+          ? "border-[var(--cf-border)] border-b bg-[color-mix(in_oklch,var(--cf-bg),transparent_18%)] backdrop-blur-md"
+          : "border-transparent border-b"
+      }`}
+    >
       <nav className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 sm:px-6">
         {/* brand */}
         <Link href="/" className="flex items-center gap-2">
