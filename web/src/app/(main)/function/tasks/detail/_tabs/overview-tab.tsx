@@ -10,6 +10,7 @@ import {
   ClockIcon,
   CoinsIcon,
   ListChecksIcon,
+  NetworkIcon,
   PencilIcon,
   PlusIcon,
   RefreshCwIcon,
@@ -20,6 +21,7 @@ import {
   XIcon,
 } from "lucide-react";
 
+import { ExplorationGraph } from "@/components/exploration-graph";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +34,7 @@ import { api } from "@/lib/api";
 import type {
   AssetInterceptKind,
   AssetInterceptRule,
+  Edge,
   Finding,
   ModelTokenStat,
   Stats,
@@ -452,6 +455,9 @@ export function OverviewTab({ taskId }: { taskId: string }) {
           </div>
         </CardContent>
       </Card>
+      {/* Exploration graph preview: the live reasoning graph, surfaced on Overview for at-a-glance progress
+          (the full-size, interactive version lives in the "Exploration" tab). */}
+      <OverviewExplorationGraph taskId={taskId} />
       {/* Goal management: view/add/edit/delete this task's exploration goals. Adding and editing notify the planner and revive the task,
           while deleting only notifies the planner (no revive). A goal = a final deliverable/verifiable result, not an attack step or a recon action. */}
       <Card>
@@ -1327,6 +1333,73 @@ function TaskInterceptRulesCard({ taskId }: { taskId: string }) {
               "暂无任务级规则。「拦截」命中即禁止测试；「允许」为白名单——配置后本任务只允许命中允许规则的资产（未配置则不启用白名单）。",
             )}
           </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// OverviewExplorationGraph renders a compact, live preview of the task's exploration
+// graph on the Overview tab. It reuses the same ExplorationGraph component and data
+// source as the full-size "Exploration" tab, polling every 20s. The interactive
+// full-height view stays in the dedicated tab; this is an at-a-glance summary.
+function OverviewExplorationGraph({ taskId }: { taskId: string }) {
+  const t = useT();
+  const [nodes, setNodes] = React.useState<TaskNode[]>([]);
+  const [edges, setEdges] = React.useState<Edge[]>([]);
+  const sigRef = React.useRef("");
+
+  React.useEffect(() => {
+    let cancelled = false;
+    sigRef.current = "";
+    const load = () => {
+      api
+        .explorationGraph(taskId)
+        .then((g) => {
+          if (cancelled) return;
+          const ns = g.nodes ?? [];
+          const es = g.edges ?? [];
+          const sig = JSON.stringify([
+            ns.map((n) => [n.id, n.type, n.state, n.priority, n.payload]),
+            es.map((e) => [e.src, e.dst, e.rel]),
+          ]);
+          if (sig === sigRef.current) return;
+          sigRef.current = sig;
+          setNodes(ns);
+          setEdges(es);
+        })
+        .catch(() => {
+          /* keep last good data */
+        });
+    };
+    load();
+    const timer = setInterval(load, 20000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [taskId]);
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <NetworkIcon className="size-4 text-primary" /> {t("探索图谱")}
+          <span className="text-muted-foreground text-xs font-normal">
+            {t("（{n} 个节点 · {e} 条关系；完整交互视图见「探索」标签页）", {
+              n: nodes.length,
+              e: edges.length,
+            })}
+          </span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {nodes.length === 0 ? (
+          <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
+            {t("等待探索开始……")}
+          </div>
+        ) : (
+          <ExplorationGraph nodes={nodes} edges={edges} className="h-[42vh] min-h-[320px]" />
         )}
       </CardContent>
     </Card>

@@ -79,13 +79,15 @@ const ASSET_TYPE_LABELS: Record<string, string> = {
   endpoint: "Endpoint",
 };
 
+// Asset-type dots: a cohesive cool-blue family anchored on the brand primary
+// (hue 258), so the six types stay distinguishable while reading as one system.
 const ASSET_COLORS: Record<string, string> = {
-  root_domain: "bg-blue-500",
-  ip: "bg-indigo-400",
-  subdomain: "bg-violet-500",
-  app: "bg-orange-400",
+  root_domain: "bg-primary",
+  ip: "bg-blue-500",
+  subdomain: "bg-indigo-500",
+  app: "bg-sky-500",
   service: "bg-cyan-500",
-  endpoint: "bg-emerald-500",
+  endpoint: "bg-teal-500",
 };
 
 function statusColor(code: number): string {
@@ -480,15 +482,15 @@ export default function DashboardPage() {
   }
 
   function workerColor(w: string): string {
-    if (w === "planner") return "text-violet-400";
-    if (w === "mainagent") return "text-cyan-400";
-    return "text-blue-400";
+    if (w === "planner") return "text-slate-500 dark:text-slate-400";
+    if (w === "mainagent") return "text-primary";
+    return "text-blue-500 dark:text-blue-400";
   }
 
   function workerBg(w: string): string {
-    if (w === "planner") return "bg-violet-500/10 text-violet-400 border-violet-500/20";
-    if (w === "mainagent") return "bg-cyan-500/10 text-cyan-400 border-cyan-500/20";
-    return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+    if (w === "planner") return "bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20";
+    if (w === "mainagent") return "bg-primary/10 text-primary border-primary/25";
+    return "bg-blue-500/10 text-blue-500 dark:text-blue-400 border-blue-500/20";
   }
 
   // ── render ────────────────────────────────────────────────────────────────

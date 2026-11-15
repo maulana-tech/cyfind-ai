@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+
 import {
   CheckIcon,
   ChevronDown,
@@ -17,24 +18,23 @@ import {
   XIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { api } from "@/lib/api";
+
+import { ApprovalDetail } from "@/components/approval-records";
 import { Markdown } from "@/components/markdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ApprovalDetail } from "@/components/approval-records";
+import { api } from "@/lib/api";
 import type { Activity, InterceptPending } from "@/lib/types";
 
-// ---- per-agent lane color (planner + work#1/#2/#3 …) ---------------------------
-const workerColors = [
-  "bg-sky-600",
-  "bg-violet-600",
-  "bg-teal-600",
-  "bg-pink-600",
-  "bg-orange-600",
-];
+// ---- per-agent lane color ------------------------------------------------------
+// A cohesive cool-blue family (brand hue 258 and its neighbours) so the workers
+// stay distinguishable from one another while reading as one on-brand system —
+// no warm/off-brand hues. The planner (orchestrator) is a neutral slate ink and
+// the main agent carries the brand primary.
+const workerColors = ["bg-indigo-600", "bg-blue-600", "bg-sky-600", "bg-cyan-600", "bg-violet-600"];
 function workerColor(name: string): string {
-  if (name === "planner") return "bg-amber-600"; // the intent generator, distinct
+  if (name === "planner") return "bg-slate-600"; // the intent generator, distinct (neutral ink)
   if (name === "mainagent") return "bg-primary";
   const m = /#(\d+)/.exec(name);
   const i = m ? (parseInt(m[1], 10) - 1) % workerColors.length : 0;
@@ -92,9 +92,10 @@ const DetailPanelContext = React.createContext<DetailPanelCtx | null>(null);
 
 function CopyButton({ text, size = "sm" }: { text: string; size?: "sm" | "md" }) {
   const [copied, setCopied] = React.useState(false);
-  const cls = size === "md"
-    ? "inline-flex items-center gap-1.5 rounded-md border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
-    : "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground";
+  const cls =
+    size === "md"
+      ? "inline-flex items-center gap-1.5 rounded-md border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
+      : "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground";
   return (
     <button
       type="button"
@@ -106,7 +107,11 @@ function CopyButton({ text, size = "sm" }: { text: string; size?: "sm" | "md" })
         });
       }}
     >
-      {copied ? <CheckIcon className={size === "md" ? "size-3.5" : "size-3"} /> : <ClipboardIcon className={size === "md" ? "size-3.5" : "size-3"} />}
+      {copied ? (
+        <CheckIcon className={size === "md" ? "size-3.5" : "size-3"} />
+      ) : (
+        <ClipboardIcon className={size === "md" ? "size-3.5" : "size-3"} />
+      )}
       {copied ? "Copied!" : "Copy"}
     </button>
   );
@@ -136,10 +141,10 @@ function parseDetailSections(raw: string): ContentSection[] {
       border = "border-red-500/20";
       iconBg = "bg-red-500/10";
     } else if (/command/i.test(label)) {
-      tone = "text-sky-600 dark:text-sky-400";
-      bg = "bg-sky-500/5 dark:bg-sky-500/5";
-      border = "border-sky-500/20";
-      iconBg = "bg-sky-500/10";
+      tone = "text-primary";
+      bg = "bg-primary/5";
+      border = "border-primary/20";
+      iconBg = "bg-primary/10";
     }
     sections.push({ label, tone, bg, border, iconBg, body });
   }
@@ -171,11 +176,7 @@ export function DetailPanelProvider({ children }: { children: React.ReactNode })
     [state, isOpen],
   );
 
-  return (
-    <DetailPanelContext.Provider value={ctx}>
-      {children}
-    </DetailPanelContext.Provider>
-  );
+  return <DetailPanelContext.Provider value={ctx}>{children}</DetailPanelContext.Provider>;
 }
 
 export function DetailPanelView() {
@@ -192,27 +193,43 @@ export function DetailPanelView() {
     <div className="flex w-[45%] max-w-2xl shrink-0 flex-col border-l">
       {/* Header */}
       <div className="flex items-start gap-3 border-b bg-muted/30 px-4 py-3">
-        <div className={"mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg " + (isFail ? "bg-red-500/15 text-red-600 dark:text-red-400" : isOk ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-primary/10 text-primary")}>
+        <div
+          className={
+            "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg " +
+            (isFail
+              ? "bg-red-500/15 text-red-600 dark:text-red-400"
+              : isOk
+                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                : "bg-primary/10 text-primary")
+          }
+        >
           <Icon className="size-4" />
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="min-w-0 break-words text-[13px] font-semibold leading-snug">{state.title}</h3>
           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
             {state.status && (
-              <span className={"inline-flex items-center gap-1 font-medium " + (state.statusTone ?? "text-muted-foreground")}>
+              <span
+                className={
+                  "inline-flex items-center gap-1 font-medium " + (state.statusTone ?? "text-muted-foreground")
+                }
+              >
                 {isOk ? <CheckIcon className="size-3" /> : isFail ? <XIcon className="size-3" /> : null}
                 {state.status}
               </span>
             )}
             {state.content && (
-              <span className="text-muted-foreground/70">
-                {state.content.length.toLocaleString()} chars
-              </span>
+              <span className="text-muted-foreground/70">{state.content.length.toLocaleString()} chars</span>
             )}
           </div>
         </div>
         {state.content && <CopyButton text={state.content} size="md" />}
-        <button type="button" onClick={close} className="mt-0.5 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Close">
+        <button
+          type="button"
+          onClick={close}
+          className="mt-0.5 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label="Close"
+        >
           <XIcon className="size-4" />
         </button>
       </div>
@@ -247,14 +264,22 @@ export function DetailPanelView() {
                   {sec.label && (
                     <div className={"sticky top-0 z-10 flex items-center justify-between border-b px-4 py-2 " + sec.bg}>
                       <div className="flex items-center gap-1.5">
-                        {sec.label.includes("✓") ? <CheckIcon className={"size-3.5 " + sec.tone} /> : sec.label.includes("✕") ? <XIcon className={"size-3.5 " + sec.tone} /> : <Terminal className={"size-3.5 " + sec.tone} />}
+                        {sec.label.includes("✓") ? (
+                          <CheckIcon className={"size-3.5 " + sec.tone} />
+                        ) : sec.label.includes("✕") ? (
+                          <XIcon className={"size-3.5 " + sec.tone} />
+                        ) : (
+                          <Terminal className={"size-3.5 " + sec.tone} />
+                        )}
                         <span className={"text-xs font-semibold " + sec.tone}>{sec.label}</span>
                       </div>
                       <CopyButton text={sec.body} />
                     </div>
                   )}
                   <div className={"overflow-auto " + (isLast ? "flex-1" : "border-b")}>
-                    <pre className="whitespace-pre-wrap break-all px-4 py-3 font-mono text-[12px] leading-relaxed text-foreground/90">{sec.body}</pre>
+                    <pre className="whitespace-pre-wrap break-all px-4 py-3 font-mono text-[12px] leading-relaxed text-foreground/90">
+                      {sec.body}
+                    </pre>
                   </div>
                 </div>
               );
@@ -262,7 +287,9 @@ export function DetailPanelView() {
           </div>
         ) : (
           <div className="flex-1 overflow-auto">
-            <pre className="whitespace-pre-wrap break-all p-4 font-mono text-[12px] leading-relaxed">{state.content}</pre>
+            <pre className="whitespace-pre-wrap break-all p-4 font-mono text-[12px] leading-relaxed">
+              {state.content}
+            </pre>
           </div>
         )}
       </div>
@@ -370,9 +397,7 @@ function toolInputText(tool: string, raw: string): string {
       return JSON.parse('"' + m[1] + '"');
     } catch {
       // truncated mid-escape — unescape the common sequences best-effort.
-      return m[1].replace(/\\(["\\/nrt])/g, (_s, c) =>
-        c === "n" ? "\n" : c === "r" ? "\r" : c === "t" ? "\t" : c,
-      );
+      return m[1].replace(/\\(["\\/nrt])/g, (_s, c) => (c === "n" ? "\n" : c === "r" ? "\r" : c === "t" ? "\t" : c));
     }
   }
   return raw;
@@ -381,13 +406,7 @@ function toolInputText(tool: string, raw: string): string {
 // InterceptCard renders an inline intercept_request approval card. The pending_id
 // is extracted from the summary (format: "tool X requests approval (#N)") so buttons are
 // available immediately without waiting for the detail load.
-function InterceptCard({
-  step,
-  getDetail,
-}: {
-  step: Activity;
-  getDetail: (seq: number) => Promise<string>;
-}) {
+function InterceptCard({ step, getDetail }: { step: Activity; getDetail: (seq: number) => Promise<string> }) {
   // extract pending_id from summary: "tool Bash requests approval (#42)"
   const pendingId = React.useMemo(() => {
     const m = /\(#(\d+)\)/.exec(step.summary);
@@ -414,25 +433,38 @@ function InterceptCard({
     getDetail(step.seq)
       .then((raw) => {
         if (!live || !raw) return;
-        try { setDetail(JSON.parse(raw)); } catch { /* ignore */ }
+        try {
+          setDetail(JSON.parse(raw));
+        } catch {
+          /* ignore */
+        }
       })
-      .catch(() => {/* ignore */});
-    return () => { live = false; };
+      .catch(() => {
+        /* ignore */
+      });
+    return () => {
+      live = false;
+    };
   }, [step.seq, getDetail]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Retry explicitly reloads the same approval after a failed request.
   React.useEffect(() => {
     if (!pendingId) return;
     let live = true;
-    api.interceptGetOne(pendingId)
+    api
+      .interceptGetOne(pendingId)
       .then((p) => {
         if (!live) return;
         setPending(p);
         setStatusError("");
         if (p.status !== "pending") setDecided(p.status as "allowed" | "denied" | "timeout");
       })
-      .catch((error) => { if (live) setStatusError((error as Error).message || "Failed to load approval details"); });
-    return () => { live = false; };
+      .catch((error) => {
+        if (live) setStatusError((error as Error).message || "Failed to load approval details");
+      });
+    return () => {
+      live = false;
+    };
   }, [pendingId, retry]);
 
   async function decide(decision: "allowed" | "denied") {
@@ -449,11 +481,11 @@ function InterceptCard({
     }
   }
 
-  const inputStr = detail?.input
-    ? JSON.stringify(detail.input).slice(0, 200)
-    : null;
+  const inputStr = detail?.input ? JSON.stringify(detail.input).slice(0, 200) : null;
 
-  const row = pending ? { ...pending, status: decided || pending.status, conv_title: "", conv_agent_key: "", rule_name: "" } : null;
+  const row = pending
+    ? { ...pending, status: decided || pending.status, conv_title: "", conv_agent_key: "", rule_name: "" }
+    : null;
 
   return (
     <div className="my-2 rounded-lg border border-amber-400/50 bg-amber-50/40 dark:bg-amber-950/15 p-3 text-xs">
@@ -466,27 +498,25 @@ function InterceptCard({
               <code className="rounded bg-amber-100 dark:bg-amber-900/50 px-1 font-mono text-amber-800 dark:text-amber-300">
                 {toolName}
               </code>
-              {pendingId && (
-                <span className="text-muted-foreground">#{pendingId}</span>
-              )}
+              {pendingId && <span className="text-muted-foreground">#{pendingId}</span>}
             </div>
-            {inputStr && (
-              <p className="font-mono text-muted-foreground truncate">{inputStr}</p>
-            )}
+            {inputStr && <p className="font-mono text-muted-foreground truncate">{inputStr}</p>}
           </div>
         </div>
 
         {step.inherited ? (
           <Badge variant="outline">History · read-only</Badge>
         ) : decided ? (
-          <span className={
-            "shrink-0 rounded px-2 py-0.5 text-[11px] font-medium " +
-            (decided === "allowed"
-              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400"
-              : decided === "timeout"
-                ? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400")
-          }>
+          <span
+            className={
+              "shrink-0 rounded px-2 py-0.5 text-[11px] font-medium " +
+              (decided === "allowed"
+                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400"
+                : decided === "timeout"
+                  ? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                  : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400")
+            }
+          >
             {decided === "allowed" ? "Allowed" : decided === "timeout" ? "Timed out" : "Denied"}
           </span>
         ) : (
@@ -516,7 +546,11 @@ function InterceptCard({
       {pendingId ? (
         <Collapsible open={expanded} onOpenChange={setExpanded} className="mt-2 min-w-0">
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label={expanded ? "Collapse approval details" : "Expand approval details"}>
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={expanded ? "Collapse approval details" : "Expand approval details"}
+            >
               {expanded ? <ChevronDown data-icon="inline-start" /> : <ChevronRight data-icon="inline-start" />}
               {expanded ? "Collapse approval details" : "Expand approval details"}
             </Button>
@@ -535,9 +569,13 @@ function InterceptCard({
             ) : statusError ? (
               <div className="flex flex-wrap items-center gap-2 p-3" role="alert">
                 <span>{statusError}</span>
-                <Button variant="outline" size="sm" onClick={() => setRetry((value) => value + 1)}>Retry details</Button>
+                <Button variant="outline" size="sm" onClick={() => setRetry((value) => value + 1)}>
+                  Retry details
+                </Button>
               </div>
-            ) : <p className="p-3 text-muted-foreground">Loading approval details…</p>}
+            ) : (
+              <p className="p-3 text-muted-foreground">Loading approval details…</p>
+            )}
           </CollapsibleContent>
         </Collapsible>
       ) : null}
@@ -642,9 +680,9 @@ function ToolBlock({
         <span className="mt-0.5 text-muted-foreground">
           <ChevronRight className="size-3" />
         </span>
-        <ToolIcon className={"mt-0.5 size-3.5 shrink-0 " + (running ? "text-sky-600 dark:text-sky-400" : statusTone)} />
+        <ToolIcon className={"mt-0.5 size-3.5 shrink-0 " + (running ? "text-primary" : statusTone)} />
         {showWorker && <span className={chip(group.worker)}>{group.worker}</span>}
-        <span className="shrink-0 font-medium text-sky-600 dark:text-sky-400">{toolName}</span>
+        <span className="shrink-0 font-medium text-primary">{toolName}</span>
         {cmd && <span className="min-w-0 flex-1 truncate font-mono text-muted-foreground">{cmd}</span>}
         <span className={"ml-auto shrink-0 font-medium " + statusTone}>{statusText}</span>
       </button>
@@ -752,7 +790,15 @@ function parseUserBody(body: string): { text: string; attachments: MsgAttachment
   return { text: body, attachments: [] };
 }
 
-function UserRow({ step, intent, getDetail }: { step: Activity; intent?: boolean; getDetail: (seq: number) => Promise<string> }) {
+function UserRow({
+  step,
+  intent,
+  getDetail,
+}: {
+  step: Activity;
+  intent?: boolean;
+  getDetail: (seq: number) => Promise<string>;
+}) {
   const Icon = intent ? CrosshairIcon : UserIcon;
   const [ref, inView] = useInView();
   // Optimistic echoes carry their detail inline; persisted rows lazy-load it on scroll.
@@ -921,7 +967,10 @@ export function Transcript({
   const transcriptRef = React.useRef<HTMLDivElement>(null);
   const [focusPadding, setFocusPadding] = React.useState(0);
   React.useLayoutEffect(() => {
-    if (focusedSeq == null) { setFocusPadding(0); return; }
+    if (focusedSeq == null) {
+      setFocusPadding(0);
+      return;
+    }
     const viewport = transcriptRef.current?.closest('[data-slot="scroll-area-viewport"]');
     if (!viewport) return;
     const measure = () => setFocusPadding(viewport.clientHeight / 2);
@@ -931,14 +980,18 @@ export function Transcript({
     return () => observer.disconnect();
   }, [focusedSeq]);
   return (
-    <div ref={transcriptRef} className="flex flex-col gap-1" style={focusPadding ? { paddingBlock: focusPadding } : undefined}>
+    <div
+      ref={transcriptRef}
+      className="flex flex-col gap-1"
+      style={focusPadding ? { paddingBlock: focusPadding } : undefined}
+    >
       <ExecView activity={activity} taskId={taskId} chat={chat} fetchDetail={fetchDetail} focusedSeq={focusedSeq} />
       {live && (
         <div className="flex items-center gap-2 pl-2 pt-1 text-xs text-muted-foreground">
           <span className="flex gap-1">
-            <span className="size-1.5 animate-bounce rounded-full bg-blue-500 [animation-delay:-0.3s]" />
-            <span className="size-1.5 animate-bounce rounded-full bg-blue-500 [animation-delay:-0.15s]" />
-            <span className="size-1.5 animate-bounce rounded-full bg-blue-500" />
+            <span className="size-1.5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]" />
+            <span className="size-1.5 animate-bounce rounded-full bg-primary [animation-delay:-0.15s]" />
+            <span className="size-1.5 animate-bounce rounded-full bg-primary" />
           </span>
           Live streaming…
         </div>
