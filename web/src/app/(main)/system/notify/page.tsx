@@ -61,13 +61,13 @@ export default function NotifyPage() {
         setBaseURL(m.public_base_url);
         setDigestMin(m.digest_interval_min);
       })
-      .catch((e) => toast.error(tMod("读取推送配置失败：{message}", { message: (e as Error).message })));
+      .catch((e) => toast.error(tMod("Failed to load push config: {message}", { message: (e as Error).message })));
     // A channel-list load failure must be surfaced: a silent failure would look like "no channels at all",
     // and the user would think their config was lost, which is more alarming than an explicit error.
     api
       .notifyChannels()
       .then(setChannels)
-      .catch((e) => toast.error(tMod("读取渠道列表失败：{message}", { message: (e as Error).message })));
+      .catch((e) => toast.error(tMod("Failed to load channel list: {message}", { message: (e as Error).message })));
   }, []);
   React.useEffect(() => {
     load();
@@ -167,7 +167,7 @@ export default function NotifyPage() {
 
   async function saveForm() {
     if (!form.name.trim()) {
-      toast.error(t("请填写渠道名称"));
+      toast.error(t("Please fill in the channel name"));
       return;
     }
     setSaving(true);
@@ -183,16 +183,16 @@ export default function NotifyPage() {
       };
       if (editing) {
         await api.notifyUpdateChannel(editing.id, payload);
-        toast.success(t("已保存"));
+        toast.success(t("Saved"));
         setOpen(false);
       } else {
         await api.notifyCreateChannel(payload);
-        toast.success(t("已添加渠道"));
+        toast.success(t("Channel added"));
         setOpen(false);
       }
       load();
     } catch (e) {
-      toast.error(t("保存失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Save failed: {message}", { message: (e as Error).message }));
     } finally {
       setSaving(false);
     }
@@ -203,10 +203,10 @@ export default function NotifyPage() {
     setTesting(true);
     try {
       const r = await api.notifyTestChannel(editing.id);
-      toast.success(t("已发出测试消息（{ms} ms），请到群里确认", { ms: r.latency_ms }));
+      toast.success(t("Test message sent ({ms} ms), please confirm in the group", { ms: r.latency_ms }));
     } catch (e) {
       // The backend faithfully returns the raw error from the channel; it is the only clue for troubleshooting the config, so show it as-is.
-      toast.error(t("测试失败：{message}", { message: (e as Error).message }), { duration: 12000 });
+      toast.error(t("Test failed: {message}", { message: (e as Error).message }), { duration: 12000 });
     } finally {
       setTesting(false);
     }
@@ -215,11 +215,11 @@ export default function NotifyPage() {
   async function removeChannel(ch: NotificationChannel) {
     try {
       await api.notifyDeleteChannel(ch.id);
-      toast.success(t("已删除：{name}", { name: ch.name }));
+      toast.success(t("Deleted: {name}", { name: ch.name }));
       setOpen(false);
       load();
     } catch (e) {
-      toast.error(t("删除失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Delete failed: {message}", { message: (e as Error).message }));
     }
   }
 
@@ -228,7 +228,7 @@ export default function NotifyPage() {
       await api.notifyUpdateChannel(ch.id, { enabled: !ch.enabled });
       load();
     } catch (e) {
-      toast.error(t("操作失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Operation failed: {message}", { message: (e as Error).message }));
     }
   }
 
@@ -237,9 +237,9 @@ export default function NotifyPage() {
     try {
       await api.setSettings({ notify_enabled: on });
       setMeta((m) => (m ? { ...m, enabled: on } : m));
-      toast.success(on ? t("推送已开启") : t("推送已暂停"));
+      toast.success(on ? t("Push enabled") : t("Push paused"));
     } catch (e) {
-      toast.error(t("操作失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Operation failed: {message}", { message: (e as Error).message }));
     } finally {
       setGlobalSaving(false);
     }
@@ -252,10 +252,10 @@ export default function NotifyPage() {
       const n = Number(digestMin);
       if (Number.isFinite(n) && n > 0) patch.notify_digest_interval_min = n;
       await api.setSettings(patch);
-      toast.success(t("已保存"));
+      toast.success(t("Saved"));
       load();
     } catch (e) {
-      toast.error(t("保存失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Save failed: {message}", { message: (e as Error).message }));
     } finally {
       setGlobalSaving(false);
     }
@@ -269,21 +269,21 @@ export default function NotifyPage() {
     <div className="flex flex-1 flex-col gap-4 md:gap-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">{t("通知推送")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("Notifications")}</h1>
           <p className="text-muted-foreground text-sm">
-            {t("发现漏洞时推送到钉钉 / 飞书 / 企业微信等渠道 · 每个渠道可独立设推送时机与过滤规则")}
+            {t("Push to DingTalk / Feishu / WeCom and other channels when a vulnerability is found · each channel can set its push timing and filter rules independently")}
           </p>
         </div>
         {meta && (
           // Use a div rather than a label: the Switch has its own aria-label, so wrapping another label outside
           // associates with no native control and makes clicking the text look like it should toggle.
           <div className="flex shrink-0 items-center gap-2 text-sm">
-            <span className="text-muted-foreground">{t("总开关")}</span>
+            <span className="text-muted-foreground">{t("Master switch")}</span>
             <Switch
               checked={meta.enabled}
               disabled={globalSaving}
               onCheckedChange={toggleGlobal}
-              aria-label={t("推送总开关")}
+              aria-label={t("Push master switch")}
             />
           </div>
         )}
@@ -292,18 +292,18 @@ export default function NotifyPage() {
       {meta && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <StatTile
-            label={t("渠道")}
+            label={t("Channels")}
             value={`${meta.stats.channels_on} / ${meta.stats.channels}`}
-            hint={t("启用 / 总数")}
+            hint={t("Enabled / total")}
           />
-          <StatTile label={t("今日送达")} value={String(meta.stats.sent_today)} />
-          <StatTile label={t("待发送")} value={String(meta.stats.pending)} />
-          <StatTile label={t("失败")} value={String(meta.stats.failed)} tone={meta.stats.failed > 0 ? "red" : undefined} />
+          <StatTile label={t("Delivered today")} value={String(meta.stats.sent_today)} />
+          <StatTile label={t("Pending Send")} value={String(meta.stats.pending)} />
+          <StatTile label={t("Failed")} value={String(meta.stats.failed)} tone={meta.stats.failed > 0 ? "red" : undefined} />
           <StatTile
-            label={t("最久积压")}
+            label={t("Longest backlog")}
             value={formatBacklog(meta.stats.backlog_age_ms)}
             // The backlog age is far more useful than the backlog count: a backlog of 3 can be anywhere from 3 seconds to 3 hours.
-            hint={meta.stats.backlog_age_ms > 5 * 60_000 ? t("推送可能卡住了") : undefined}
+            hint={meta.stats.backlog_age_ms > 5 * 60_000 ? t("Push may be stuck") : undefined}
             tone={meta.stats.backlog_age_ms > 5 * 60_000 ? "red" : undefined}
           />
         </div>
@@ -311,21 +311,21 @@ export default function NotifyPage() {
 
       <Card className="gap-3">
         <CardHeader>
-          <CardTitle className="text-base">{t("全局设置")}</CardTitle>
+          <CardTitle className="text-base">{t("Global settings")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="grid gap-2">
-            <Label htmlFor="n-base">{t("回链地址")}</Label>
+            <Label htmlFor="n-base">{t("Back-link address")}</Label>
             <Input
               id="n-base"
               placeholder="https://cyfind.example.com"
               value={baseURL}
               onChange={(e) => setBaseURL(e.target.value)}
             />
-            <p className="text-muted-foreground text-xs">{t("消息里「查看详情」按钮指向的地址。留空则不带按钮。")}</p>
+            <p className="text-muted-foreground text-xs">{t("The address the \"View detail\" button in the message points to. Leave empty to omit the button.")}</p>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="n-digest">{t("汇总周期（分钟）")}</Label>
+            <Label htmlFor="n-digest">{t("Digest cycle (minutes)")}</Label>
             <Input
               id="n-digest"
               type="number"
@@ -335,11 +335,11 @@ export default function NotifyPage() {
               value={digestMin}
               onChange={(e) => setDigestMin(e.target.value)}
             />
-            <p className="text-muted-foreground text-xs">{t("仅对「汇总」模式的渠道生效。")}</p>
+            <p className="text-muted-foreground text-xs">{t("Only effective for channels in \"digest\" mode.")}</p>
           </div>
           <div className="sm:col-span-2">
             <Button onClick={saveGlobal} disabled={globalSaving}>
-              {t("保存全局设置")}
+              {t("Save global settings")}
             </Button>
           </div>
         </CardContent>
@@ -347,8 +347,8 @@ export default function NotifyPage() {
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as "channels" | "deliveries")} className="flex flex-col gap-4">
         <TabsList>
-          <TabsTrigger value="channels">{t("渠道")}</TabsTrigger>
-          <TabsTrigger value="deliveries">{t("投递记录")}</TabsTrigger>
+          <TabsTrigger value="channels">{t("Channels")}</TabsTrigger>
+          <TabsTrigger value="deliveries">{t("Delivery records")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="channels">
@@ -359,7 +359,7 @@ export default function NotifyPage() {
               className="text-foreground/70 border-foreground/70 hover:bg-muted/60 hover:shadow-sm flex min-h-[130px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed transition"
             >
               <PlusIcon className="size-6" />
-              <span className="text-sm">{t("添加渠道")}</span>
+              <span className="text-sm">{t("Add channel")}</span>
             </button>
 
             {channels.map((ch) => (
@@ -381,12 +381,12 @@ export default function NotifyPage() {
                         checked={ch.enabled}
                         onCheckedChange={() => toggleEnabled(ch)}
                         onClick={(e) => e.stopPropagation()}
-                        aria-label={t("启用")}
+                        aria-label={t("Enabled")}
                       />
                       <Button
                         size="icon"
                         variant="outline"
-                        aria-label={t("删除")}
+                        aria-label={t("Delete")}
                         onClick={(e) => {
                           e.stopPropagation();
                           // void explicitly discards the Promise: removeChannel catches and toasts on its own,
@@ -402,8 +402,8 @@ export default function NotifyPage() {
                 <CardContent className="grid gap-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="outline">{t(KIND_LABEL[ch.kind] ?? ch.kind)}</Badge>
-                    <Badge variant="outline">{ch.mode === "digest" ? t("汇总") : t("实时")}</Badge>
-                    {!ch.enabled && <Badge variant="outline">{t("已停用")}</Badge>}
+                    <Badge variant="outline">{ch.mode === "digest" ? t("Digest") : t("Live")}</Badge>
+                    {!ch.enabled && <Badge variant="outline">{t("Disabled")}</Badge>}
                   </div>
                   <FilterSummary filter={ch.filter} />
                 </CardContent>
@@ -420,17 +420,17 @@ export default function NotifyPage() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right" className="w-full data-[side=right]:sm:max-w-lg">
           <SheetHeader>
-            <SheetTitle>{editing ? editing.name : t("添加通知渠道")}</SheetTitle>
+            <SheetTitle>{editing ? editing.name : t("Add notification channel")}</SheetTitle>
             <SheetDescription>
               {t(KIND_LABEL[form.kind] ?? form.kind)}
-              {` · ${defaultRate > 0 ? t("默认限流 {n} 条/分钟", { n: defaultRate }) : t("不限流")}`}
+              {` · ${defaultRate > 0 ? t("Default rate limit {n}/minute", { n: defaultRate }) : t("No rate limit")}`}
             </SheetDescription>
           </SheetHeader>
 
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4">
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label>{t("渠道类型")}</Label>
+                <Label>{t("Channel type")}</Label>
                 <Select
                   value={form.kind}
                   onValueChange={(v) => {
@@ -452,16 +452,16 @@ export default function NotifyPage() {
                 </Select>
                 {editing && (
                   <p className="text-muted-foreground text-xs">
-                    {t("渠道类型不可修改——改了类型等于换一套凭据，请新建渠道。")}
+                    {t("The channel type cannot be changed — changing the type means a different set of credentials, so create a new channel instead.")}
                   </p>
                 )}
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="n-name">{t("渠道名称")}</Label>
+                <Label htmlFor="n-name">{t("Channel name")}</Label>
                 <Input
                   id="n-name"
-                  placeholder={t("应急响应群 / 日常播报群")}
+                  placeholder={t("Incident-response group / daily-broadcast group")}
                   value={form.name}
                   onChange={(e) => setF({ name: e.target.value })}
                 />
@@ -469,7 +469,7 @@ export default function NotifyPage() {
 
               {fields.length === 0 ? (
                 <p className="text-muted-foreground text-sm">
-                  {t("该渠道的表单尚未定义（前端缺 CHANNEL_FIELDS 条目），请补全后再试。")}
+                  {t("This channel's form is not yet defined (the frontend is missing a CHANNEL_FIELDS entry); please complete it and try again.")}
                 </p>
               ) : (
                 fields.map((d) => (
@@ -484,41 +484,41 @@ export default function NotifyPage() {
               )}
 
               <div className="grid gap-2">
-                <Label>{t("推送时机")}</Label>
+                <Label>{t("Push timing")}</Label>
                 <Select value={form.mode} onValueChange={(v) => setF({ mode: v as "realtime" | "digest" })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="realtime">{t("实时 · 每条漏洞单独发一条")}</SelectItem>
-                    <SelectItem value="digest">{t("汇总 · 按周期合并成一条")}</SelectItem>
+                    <SelectItem value="realtime">{t("Realtime · send one message per vulnerability")}</SelectItem>
+                    <SelectItem value="digest">{t("Digest · merge into one message per cycle")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-muted-foreground text-xs">
-                  {t("想做「高危实时、其余汇总」就建两个渠道：一个实时 + 门槛高危，一个汇总 + 不限级别。")}
+                  {t("To do \"high-risk realtime, the rest digest\", create two channels: one realtime + high-risk threshold, and one digest + no level limit.")}
                 </p>
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="n-rate">{t("限流（条/分钟）")}</Label>
+                <Label htmlFor="n-rate">{t("Rate limit (per minute)")}</Label>
                 <Input
                   id="n-rate"
                   type="number"
                   min={0}
-                  placeholder={defaultRate > 0 ? String(defaultRate) : t("0 = 不限")}
+                  placeholder={defaultRate > 0 ? String(defaultRate) : t("0 = unlimited")}
                   value={form.ratePerMin}
                   onChange={(e) => setF({ ratePerMin: e.target.value })}
                 />
                 <p className="text-muted-foreground text-xs">
-                  {t("留空用渠道默认值；0 表示不限流。超限不会丢消息，只会推迟发送。")}
+                  {t("Leave empty to use the channel default; 0 means no rate limit. Exceeding the limit does not drop messages, it only delays sending.")}
                 </p>
               </div>
 
               <div className="border-t pt-4">
-                <p className="mb-3 text-sm font-medium">{t("过滤规则（留空即不过滤）")}</p>
+                <p className="mb-3 text-sm font-medium">{t("Filter rules (empty means no filtering)")}</p>
                 <div className="grid gap-4">
                   <div className="grid gap-2">
-                    <Label>{t("最低级别")}</Label>
+                    <Label>{t("Minimum level")}</Label>
                     <Select
                       value={form.minSeverity || "all"}
                       onValueChange={(v) => setF({ minSeverity: v === "all" ? "" : v })}
@@ -536,29 +536,29 @@ export default function NotifyPage() {
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="n-inc">{t("只推这些漏洞类型")}</Label>
+                    <Label htmlFor="n-inc">{t("Only push these vulnerability types")}</Label>
                     <Textarea
                       id="n-inc"
-                      placeholder={t("SQL注入\n命令执行")}
+                      placeholder={t("SQL injection\nCommand execution")}
                       value={form.includeText}
                       onChange={(e) => setF({ includeText: e.target.value })}
                     />
                     <p className="text-muted-foreground text-xs">
-                      {t("每行一个关键词，大小写不敏感的子串匹配。留空=全部类型。")}
+                      {t("One keyword per line, case-insensitive substring match. Empty = all types.")}
                     </p>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="n-exc">{t("排除这些漏洞类型")}</Label>
+                    <Label htmlFor="n-exc">{t("Exclude these vulnerability types")}</Label>
                     <Textarea
                       id="n-exc"
-                      placeholder={t("信息泄露")}
+                      placeholder={t("Information disclosure")}
                       value={form.excludeText}
                       onChange={(e) => setF({ excludeText: e.target.value })}
                     />
-                    <p className="text-muted-foreground text-xs">{t("排除优先于包含：同时命中时会被排除。")}</p>
+                    <p className="text-muted-foreground text-xs">{t("Exclude takes priority over include: when both match, it is excluded.")}</p>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="n-tasks">{t("限定任务 ID")}</Label>
+                    <Label htmlFor="n-tasks">{t("Restrict to task IDs")}</Label>
                     <Input
                       id="n-tasks"
                       placeholder="1, 2, 3"
@@ -567,39 +567,39 @@ export default function NotifyPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="n-assets">{t("限定资产 ID")}</Label>
+                    <Label htmlFor="n-assets">{t("Restrict to asset IDs")}</Label>
                     <Input
                       id="n-assets"
                       placeholder="10, 11"
                       value={form.assetIDsText}
                       onChange={(e) => setF({ assetIDsText: e.target.value })}
                     />
-                    <p className="text-muted-foreground text-xs">{t("任务/资产留空=不限；填写后要求与漏洞有交集。")}</p>
+                    <p className="text-muted-foreground text-xs">{t("Leaving task/asset empty = unrestricted; once filled, the vulnerability is required to intersect with it.")}</p>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Switch
                       checked={form.onStatusChange}
                       onCheckedChange={(v) => setF({ onStatusChange: v })}
-                      aria-label={t("接收状态变更")}
+                      aria-label={t("Receive status changes")}
                     />
-                    {t("漏洞处置状态变更时也推送（仅实时模式）")}
+                    {t("Also push when a vulnerability's disposition status changes (realtime mode only)")}
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 text-sm">
-                <Switch checked={form.enabled} onCheckedChange={(v) => setF({ enabled: v })} aria-label={t("启用")} />
-                {t("启用该渠道")}
+                <Switch checked={form.enabled} onCheckedChange={(v) => setF({ enabled: v })} aria-label={t("Enabled")} />
+                {t("Enable this channel")}
               </div>
             </div>
 
             <div className="flex gap-2 pt-2 pb-6">
               <Button onClick={saveForm} disabled={saving}>
-                {editing ? t("保存") : t("添加")}
+                {editing ? t("Save") : t("Add")}
               </Button>
               {editing && (
                 <Button variant="outline" onClick={testChannel} disabled={testing}>
-                  <SendIcon /> {t("发送测试消息")}
+                  <SendIcon /> {t("Send a test message")}
                 </Button>
               )}
             </div>

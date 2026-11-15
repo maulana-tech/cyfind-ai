@@ -3,10 +3,10 @@
  */
 
 const messages = {
-  "无链路可展示（该漏洞未关联探索节点，或所属任务已删除）。":
+  "No lineage to show (this finding has no linked exploration node, or its task was deleted).":
     "Tidak ada rantai untuk ditampilkan (temuan ini tidak terhubung ke node eksplorasi, atau tugasnya sudah dihapus).",
-  无链路: "Tidak ada rantai",
-  "加载中…": "Memuat…",
+  "No lineage": "Tidak ada rantai",
+  "Loading…": "Memuat…",
 } satisfies Record<string, string>;
 
 export default messages;

@@ -183,7 +183,7 @@ export default function FindingsPage() {
         failed = false;
       } catch (error) {
         if (!disposed && !failed)
-          toast.error(tFn("加载复测状态失败：{message}", { message: (error as Error).message }));
+          toast.error(tFn("Failed to load retest status: {message}", { message: (error as Error).message }));
         failed = true;
       } finally {
         if (!disposed) timer = setTimeout(() => void refreshRetests(), 3000);
@@ -294,9 +294,9 @@ export default function FindingsPage() {
         ids: [...selectedIds],
       });
       setExportOpen(false);
-      toast.success(tFn("已开始下载导出文件"));
+      toast.success(tFn("The export download has started"));
     } catch (e) {
-      toast.error(tFn("导出失败：{message}", { message: (e as Error).message }));
+      toast.error(tFn("Export failed: {message}", { message: (e as Error).message }));
     } finally {
       setExporting(false);
     }
@@ -366,7 +366,7 @@ export default function FindingsPage() {
     } catch (e) {
       if (request !== assetTreeRequest.current || activeFilterFingerprint.current !== requestFilter) return;
       setAssetTree((current) => ({ ...current, loading: false }));
-      toast.error(tFn("资产树加载失败：{message}", { message: (e as Error).message }));
+      toast.error(tFn("Failed to load the asset tree: {message}", { message: (e as Error).message }));
     }
   }, [filterFingerprint, severity, status, tFn, vulnclass, task, query, sort]);
 
@@ -611,7 +611,7 @@ export default function FindingsPage() {
       setFindings((cur) => cur.map((x) => (isSameFinding(x, f) ? { ...x, status: next } : x)));
       try {
         await api.setFindingStatus(f.finding_id, next);
-        toast.success(tFn("已标记为「{label}」", { label: tFn(statusMeta("finding", next).label) }));
+        toast.success(tFn("Marked as “{label}”", { label: tFn(statusMeta("finding", next).label) }));
         // refresh stat cards (pending count) and drop the row if it no longer matches the status filter
         api
           .findingStats()
@@ -627,7 +627,7 @@ export default function FindingsPage() {
         refreshAfterMutation(f);
       } catch (e) {
         setFindings((cur) => cur.map((x) => (isSameFinding(x, f) ? { ...x, status: prev } : x)));
-        toast.error(tFn("更新失败：{message}", { message: (e as Error).message }));
+        toast.error(tFn("Update failed: {message}", { message: (e as Error).message }));
       }
     },
     [refreshAfterMutation, setFindings, status, tFn],
@@ -682,7 +682,7 @@ export default function FindingsPage() {
               : x,
           ),
         );
-        toast.success(tFn("已保存"));
+        toast.success(tFn("Saved"));
         api
           .findingStats()
           .then(setStats)
@@ -691,7 +691,7 @@ export default function FindingsPage() {
           });
         refreshAfterMutation(f);
       } catch (e) {
-        toast.error(tFn("保存失败：{message}", { message: (e as Error).message }));
+        toast.error(tFn("Save failed: {message}", { message: (e as Error).message }));
       } finally {
         setSaving(false);
       }
@@ -715,7 +715,7 @@ export default function FindingsPage() {
         setFlat((cur) => ({ ...cur, total: Math.max(0, cur.total - 1) }));
         const rowKey = findingRowKey(f);
         setExpanded((cur) => (cur === rowKey ? null : cur));
-        toast.success(tFn("已删除漏洞"));
+        toast.success(tFn("Finding deleted"));
         api
           .findingStats()
           .then(setStats)
@@ -724,7 +724,7 @@ export default function FindingsPage() {
           });
         refreshAfterMutation(f, true);
       } catch (e) {
-        toast.error(tFn("删除失败：{message}", { message: (e as Error).message }));
+        toast.error(tFn("Delete failed: {message}", { message: (e as Error).message }));
       }
     },
     [refreshAfterMutation, setFindings],
@@ -742,14 +742,14 @@ export default function FindingsPage() {
       const result = await api.deepenFinding(deepenFinding.finding_id, deepenDescription.trim());
       toast.success(
         result.queued
-          ? tFn("深入意图 #{id} 已进入任务队列", { id: result.intent_id })
-          : tFn("已创建高优先级 Worker 意图 #{id}", { id: result.intent_id }),
+          ? tFn("Deepen intent #{id} queued", { id: result.intent_id })
+          : tFn("High-priority Worker intent #{id} created", { id: result.intent_id }),
       );
       refreshAfterMutation(deepenFinding);
       setDeepenFinding(null);
       setDeepenDescription("");
     } catch (error) {
-      toast.error(tFn("提交失败：{message}", { message: (error as Error).message }));
+      toast.error(tFn("Submission failed: {message}", { message: (error as Error).message }));
     } finally {
       setDeepening(false);
     }
@@ -822,14 +822,14 @@ export default function FindingsPage() {
     <div className="flex flex-1 flex-col gap-4 md:gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">{tFn("发现")}</h1>
-          <p className="text-muted-foreground text-sm">{tFn("跨任务漏洞汇总")}</p>
+          <h1 className="text-xl font-semibold tracking-tight">{tFn("Findings")}</h1>
+          <p className="text-muted-foreground text-sm">{tFn("Findings across tasks")}</p>
         </div>
         <Tabs value={view} onValueChange={(v) => setView(v as FindingView)}>
           <TabsList>
-            <TabsTrigger value="flat">{tFn("全部发现")}</TabsTrigger>
-            <TabsTrigger value="grouped">{tFn("按任务分组")}</TabsTrigger>
-            <TabsTrigger value="asset">{tFn("按资产")}</TabsTrigger>
+            <TabsTrigger value="flat">{tFn("All findings")}</TabsTrigger>
+            <TabsTrigger value="grouped">{tFn("By task")}</TabsTrigger>
+            <TabsTrigger value="asset">{tFn("By asset")}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -857,8 +857,8 @@ export default function FindingsPage() {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder={tFn("检索漏洞内容")}
-              aria-label={tFn("检索漏洞内容")}
+              placeholder={tFn("Search findings")}
+              aria-label={tFn("Search findings")}
             />
             <InputGroupAddon>
               <SearchIcon aria-hidden="true" />
@@ -882,7 +882,7 @@ export default function FindingsPage() {
                 ["low", "Low"],
               ] as const
             ).map(([val, label]) => (
-              <ToggleGroupItem key={val} value={val} aria-label={tFn("按{label}等级筛选", { label: tFn(label) })}>
+              <ToggleGroupItem key={val} value={val} aria-label={tFn("Filter by {label}", { label: tFn(label) })}>
                 {tFn(label)}
               </ToggleGroupItem>
             ))}
@@ -890,10 +890,10 @@ export default function FindingsPage() {
 
           <Select value={status} onValueChange={(v) => setStatus(v as "all" | FindingStatus)}>
             <SelectTrigger size="sm" className="w-32">
-              <SelectValue placeholder={tFn("状态")} />
+              <SelectValue placeholder={tFn("Status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{tFn("全部状态")}</SelectItem>
+              <SelectItem value="all">{tFn("All statuses")}</SelectItem>
               {FINDING_STATUSES.map((st) => (
                 <SelectItem key={st} value={st}>
                   {tFn(statusMeta("finding", st).label)}
@@ -904,10 +904,10 @@ export default function FindingsPage() {
 
           <Select value={vulnclass} onValueChange={setVulnclass}>
             <SelectTrigger size="sm" className="w-40">
-              <SelectValue placeholder={tFn("漏洞类型")} />
+              <SelectValue placeholder={tFn("Vulnerability type")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{tFn("全部类型")}</SelectItem>
+              <SelectItem value="all">{tFn("All types")}</SelectItem>
               {stats.vulnclasses.map((vc) => (
                 <SelectItem key={vc} value={vc}>
                   {vc}
@@ -918,14 +918,14 @@ export default function FindingsPage() {
 
           <Select value={task} onValueChange={setTask}>
             <SelectTrigger size="sm" className="w-48">
-              <SelectValue placeholder={tFn("任务")} />
+              <SelectValue placeholder={tFn("Tasks")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{tFn("全部任务")}</SelectItem>
-              <SelectItem value={UNASSIGNED_TASK}>{tFn("未关联 / 任务已删除")}</SelectItem>
+              <SelectItem value="all">{tFn("All tasks")}</SelectItem>
+              <SelectItem value={UNASSIGNED_TASK}>{tFn("Unassigned / task deleted")}</SelectItem>
               {(stats.tasks ?? []).map((t) => {
                 const id = String(t.id);
-                const label = tFn(t.name || t.description) || tFn("任务 #{id}（已删除）", { id });
+                const label = tFn(t.name || t.description) || tFn("Task #{id} (deleted)", { id });
                 return (
                   <SelectItem key={id} value={id}>
                     <span className="flex w-full items-center gap-2">
@@ -948,19 +948,19 @@ export default function FindingsPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="severity">{tFn("按严重度")}</SelectItem>
-              <SelectItem value="time">{tFn("按时间")}</SelectItem>
+              <SelectItem value="severity">{tFn("By severity")}</SelectItem>
+              <SelectItem value="time">{tFn("By time")}</SelectItem>
             </SelectContent>
           </Select>
 
           <div className="ml-auto flex items-center gap-3">
             {selectedIds.size > 0 && (
               <span className="text-xs text-muted-foreground tabular-nums">
-                {tFn("已选 {n} 条", { n: selectedIds.size })}
+                {tFn("{n} selected", { n: selectedIds.size })}
               </span>
             )}
             <Button size="sm" variant="outline" onClick={openExport}>
-              <DownloadIcon /> {tFn("导出")}
+              <DownloadIcon /> {tFn("Export")}
             </Button>
           </div>
         </div>
@@ -996,7 +996,7 @@ export default function FindingsPage() {
                   className={cn("hover:text-foreground", assetScope === null && "font-medium text-foreground")}
                   onClick={() => setAssetScope(null)}
                 >
-                  {tFn("全部资产")}
+                  {tFn("All assets")}
                 </button>
                 {assetPath.map((node) => (
                   <React.Fragment key={node.key}>
@@ -1014,7 +1014,7 @@ export default function FindingsPage() {
                     </button>
                   </React.Fragment>
                 ))}
-                <span className="ml-auto shrink-0 text-xs tabular-nums">{tFn("共 {n} 条", { n: flat.total })}</span>
+                <span className="ml-auto shrink-0 text-xs tabular-nums">{tFn("{n} items", { n: flat.total })}</span>
               </div>
               {flatListCard}
             </div>
@@ -1053,13 +1053,13 @@ export default function FindingsPage() {
                         <div className="flex min-w-0 flex-col gap-1">
                           <CardTitle className="truncate text-sm">
                             {group.task_id === null
-                              ? tFn("未关联 / 任务已删除")
+                              ? tFn("Unassigned / task deleted")
                               : group.task_name
-                                ? tFn("{name}（任务 #{id}）", { name: tFn(group.task_name), id: group.task_id })
-                                : tFn("任务 #{id}", { id: group.task_id })}
+                                ? tFn("{name} (Task #{id})", { name: tFn(group.task_name), id: group.task_id })
+                                : tFn("Task #{id}", { id: group.task_id })}
                           </CardTitle>
                           <CardDescription className="truncate" title={tFn(group.task_description)}>
-                            {tFn(group.task_description || "来源任务不可用")}
+                            {tFn(group.task_description || "Source task unavailable")}
                           </CardDescription>
                         </div>
                       </button>
@@ -1082,7 +1082,7 @@ export default function FindingsPage() {
                           <Button size="icon-sm" variant="ghost" asChild>
                             <Link
                               href={`/function/tasks/detail?id=${group.task_id}`}
-                              aria-label={tFn("查看任务 #{id}", { id: group.task_id })}
+                              aria-label={tFn("View task #{id}", { id: group.task_id })}
                             >
                               <ArrowUpRightIcon />
                             </Link>
@@ -1121,8 +1121,8 @@ export default function FindingsPage() {
             {groups.length === 0 && (
               <BrandEmpty
                 className="py-12"
-                title={tFn("没有匹配的发现。")}
-                description={tFn("调整筛选条件，或启动一个任务开始探测目标。")}
+                title={tFn("No matching findings.")}
+                description={tFn("Adjust the filters, or start a task to begin probing the target.")}
               />
             )}
             <TablePagination
@@ -1171,9 +1171,9 @@ export default function FindingsPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tFn("深入利用漏洞")}</DialogTitle>
+            <DialogTitle>{tFn("Deepen exploitation")}</DialogTitle>
             <DialogDescription className="break-words">
-              {tFn("将在原任务 #{id} 中创建优先级 10 的 Worker 意图，基于当前漏洞开展二次验证：", {
+              {tFn("A priority-10 Worker intent will be created in the original task #{id} for second-pass verification of the current finding: ", {
                 id: deepenFinding?.task_id ?? "",
               })}
               {tFn(deepenFinding?.name || deepenFinding?.vulnclass || deepenFinding?.summary || "")}
@@ -1181,17 +1181,17 @@ export default function FindingsPage() {
           </DialogHeader>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="finding-deepen-description">{tFn("利用描述")}</FieldLabel>
+              <FieldLabel htmlFor="finding-deepen-description">{tFn("Exploitation description")}</FieldLabel>
               <Textarea
                 id="finding-deepen-description"
                 value={deepenDescription}
                 onChange={(event) => setDeepenDescription(event.target.value)}
                 maxLength={4000}
-                placeholder={tFn("描述需要验证的利用路径、边界条件、目标或期望证据")}
+                placeholder={tFn("Describe the exploit path, boundary conditions, target, or expected evidence to verify")}
                 disabled={deepening}
               />
               <FieldDescription className="flex justify-between gap-3">
-                <span>{tFn("新意图会继承该漏洞的资产锚点。")}</span>
+                <span>{tFn("The new intent inherits this finding's asset anchors.")}</span>
                 <span className="shrink-0 tabular-nums">{deepenDescription.length} / 4000</span>
               </FieldDescription>
             </Field>
@@ -1205,11 +1205,11 @@ export default function FindingsPage() {
               }}
               disabled={deepening}
             >
-              {tFn("取消")}
+              {tFn("Cancel")}
             </Button>
             <Button onClick={submitDeepen} disabled={deepening || !deepenDescription.trim()}>
               {deepening && <Spinner data-icon="inline-start" />}
-              {tFn("创建深入意图")}
+              {tFn("Create deepen intent")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1218,46 +1218,46 @@ export default function FindingsPage() {
       <Dialog open={exportOpen} onOpenChange={setExportOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{tFn("导出发现")}</DialogTitle>
-            <DialogDescription>{tFn("选择导出范围与格式,生成后浏览器会自动下载。")}</DialogDescription>
+            <DialogTitle>{tFn("Export findings")}</DialogTitle>
+            <DialogDescription>{tFn("Choose the export scope and format; the browser downloads the file when it is ready.")}</DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-5 py-1">
             <div className="flex flex-col gap-2">
-              <span className="text-xs text-muted-foreground">{tFn("导出范围")}</span>
+              <span className="text-xs text-muted-foreground">{tFn("Export scope")}</span>
               <RadioGroup value={exportScope} onValueChange={(v) => setExportScope(v as typeof exportScope)}>
                 <label htmlFor="export-scope-filtered" className="flex items-center gap-2 text-sm">
                   <RadioGroupItem id="export-scope-filtered" value="filtered" />
-                  {tFn("导出当前筛选结果（共 {n} 条）", { n: filteredTotal })}
+                  {tFn("Export current filtered results ({n} items)", { n: filteredTotal })}
                 </label>
                 <label htmlFor="export-scope-all" className="flex items-center gap-2 text-sm">
                   <RadioGroupItem id="export-scope-all" value="all" />
-                  {tFn("导出全部")}
+                  {tFn("Export all")}
                 </label>
                 <label
                   htmlFor="export-scope-selected"
                   className={cn("flex items-center gap-2 text-sm", selectedIds.size === 0 && "text-muted-foreground")}
                 >
                   <RadioGroupItem id="export-scope-selected" value="selected" disabled={selectedIds.size === 0} />
-                  {tFn("导出勾选的 {n} 条", { n: selectedIds.size })}
+                  {tFn("Export the {n} checked", { n: selectedIds.size })}
                 </label>
               </RadioGroup>
             </div>
 
             <div className="flex flex-col gap-2">
-              <span className="text-xs text-muted-foreground">{tFn("导出格式")}</span>
+              <span className="text-xs text-muted-foreground">{tFn("Export format")}</span>
               <RadioGroup value={exportFormat} onValueChange={(v) => setExportFormat(v as typeof exportFormat)}>
                 <label htmlFor="export-format-md-single" className="flex items-center gap-2 text-sm">
                   <RadioGroupItem id="export-format-md-single" value="md-single" />
-                  {tFn("Markdown 汇总报告（单个 .md 文件）")}
+                  {tFn("Markdown consolidated report (single .md file)")}
                 </label>
                 <label htmlFor="export-format-md-zip" className="flex items-center gap-2 text-sm">
                   <RadioGroupItem id="export-format-md-zip" value="md-zip" />
-                  {tFn("Markdown 分文件（一漏洞一 .md,打包 .zip）")}
+                  {tFn("Markdown per-finding files (one .md each, packed into a .zip)")}
                 </label>
                 <label htmlFor="export-format-csv" className="flex items-center gap-2 text-sm">
                   <RadioGroupItem id="export-format-csv" value="csv" />
-                  {tFn("CSV 表格（.csv）")}
+                  {tFn("CSV table (.csv)")}
                 </label>
                 <label htmlFor="export-format-json" className="flex items-center gap-2 text-sm">
                   <RadioGroupItem id="export-format-json" value="json" />
@@ -1269,10 +1269,10 @@ export default function FindingsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setExportOpen(false)} disabled={exporting}>
-              {tFn("取消")}
+              {tFn("Cancel")}
             </Button>
             <Button onClick={doExport} disabled={exporting || (exportScope === "selected" && selectedIds.size === 0)}>
-              <DownloadIcon /> {exporting ? tFn("导出中…") : tFn("导出")}
+              <DownloadIcon /> {exporting ? tFn("Exporting…") : tFn("Export")}
             </Button>
           </DialogFooter>
         </DialogContent>

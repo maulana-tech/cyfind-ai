@@ -87,10 +87,10 @@ function FindingDetailInner() {
       try {
         const updated = await api.setFindingSeverity(id, next);
         setFinding(updated);
-        toast.success(t("严重等级已改为「{label}」", { label: t(statusMeta("severity", next).label) }));
+        toast.success(t("Severity changed to “{label}”", { label: t(statusMeta("severity", next).label) }));
       } catch (e) {
         setFinding((cur) => (cur ? { ...cur, severity: prev } : cur));
-        toast.error(t("更新失败：{message}", { message: (e as Error).message }));
+        toast.error(t("Update failed: {message}", { message: (e as Error).message }));
       }
     },
     [finding, id, t],
@@ -104,10 +104,10 @@ function FindingDetailInner() {
       try {
         const updated = await api.setFindingStatus(id, next);
         setFinding(updated);
-        toast.success(t("处理状态已改为「{label}」", { label: t(statusMeta("finding", next).label) }));
+        toast.success(t("Processing status changed to “{label}”", { label: t(statusMeta("finding", next).label) }));
       } catch (e) {
         setFinding((cur) => (cur ? { ...cur, status: prev } : cur));
-        toast.error(t("更新失败：{message}", { message: (e as Error).message }));
+        toast.error(t("Update failed: {message}", { message: (e as Error).message }));
       }
     },
     [finding, id, t],
@@ -116,11 +116,11 @@ function FindingDetailInner() {
   if (!finding) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 p-10 text-center">
-        <p className="text-muted-foreground">{loaded ? t("未找到发现 {id}", { id }) : t("加载中…")}</p>
+        <p className="text-muted-foreground">{loaded ? t("Finding {id} not found", { id }) : t("Loading…")}</p>
         {loaded && (
           <Button asChild variant="outline">
             <Link href="/function/findings">
-              <ArrowLeftIcon /> {t("返回发现列表")}
+              <ArrowLeftIcon /> {t("Back to findings list")}
             </Link>
           </Button>
         )}
@@ -150,12 +150,12 @@ function FindingDetailInner() {
           <StatusBadge domain="severity" value={finding.severity} dot />
           <StatusBadge domain="finding" value={finding.status} dot />
           {finding.inherited && finding.source_task_id && (
-            <Badge variant="outline">{t("来源任务 #{id} · 只读", { id: finding.source_task_id })}</Badge>
+            <Badge variant="outline">{t("Source task #{id} · read-only", { id: finding.source_task_id })}</Badge>
           )}
         </div>
         <TabsList>
-          <TabsTrigger value="overview">{t("概览")}</TabsTrigger>
-          <TabsTrigger value="lineage">{t("链路图")}</TabsTrigger>
+          <TabsTrigger value="overview">{t("Overview")}</TabsTrigger>
+          <TabsTrigger value="lineage">{t("Chain view")}</TabsTrigger>
         </TabsList>
       </header>
 
@@ -168,7 +168,7 @@ function FindingDetailInner() {
             <div className="flex flex-col gap-4 lg:col-span-2">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">{t("摘要")}</CardTitle>
+                  <CardTitle className="text-sm">{t("Summary")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -179,7 +179,7 @@ function FindingDetailInner() {
               <FindingRetestPanel key={id} findingId={id} readOnly={finding.inherited} onCompleted={load} />
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm">{t("证据 / PoC")}</CardTitle>
+                  <CardTitle className="text-sm">{t("Evidence / PoC")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {finding.evidence ? (
@@ -187,7 +187,7 @@ function FindingDetailInner() {
                       {finding.evidence}
                     </pre>
                   ) : (
-                    <p className="text-sm text-muted-foreground">{t("（无证据）")}</p>
+                    <p className="text-sm text-muted-foreground">{t("(no evidence)")}</p>
                   )}
                 </CardContent>
               </Card>
@@ -201,19 +201,19 @@ function FindingDetailInner() {
               {/* Below evidence: detailed report (Markdown rendered) */}
               <Card>
                 <CardHeader className="flex-row items-center justify-between">
-                  <CardTitle className="text-sm">{t("详细报告")}</CardTitle>
-                  {finding.report && <CopyButton text={finding.report} successMessage={t("已复制详细报告")} />}
+                  <CardTitle className="text-sm">{t("Detailed report")}</CardTitle>
+                  {finding.report && <CopyButton text={finding.report} successMessage={t("Detailed report copied")} />}
                 </CardHeader>
                 <CardContent>
                   {finding.report_stale ? (
                     <Alert>
-                      <AlertDescription>{t("流量证据已变更，详细报告待更新。")}</AlertDescription>
+                      <AlertDescription>{t("Traffic evidence has changed; the detailed report is out of date.")}</AlertDescription>
                     </Alert>
                   ) : null}
                   {finding.report ? (
                     <Markdown text={finding.report} />
                   ) : (
-                    <p className="text-sm text-muted-foreground">{t("暂无详细报告。")}</p>
+                    <p className="text-sm text-muted-foreground">{t("No detailed report yet.")}</p>
                   )}
                 </CardContent>
               </Card>
@@ -222,18 +222,18 @@ function FindingDetailInner() {
             {/* Right column: status area */}
             <Card className="h-fit lg:sticky lg:top-24">
               <CardHeader>
-                <CardTitle className="text-sm">{t("状态")}</CardTitle>
+                <CardTitle className="text-sm">{t("Status")}</CardTitle>
               </CardHeader>
               <CardContent className="divide-y">
                 {/* Finding ID */}
-                <FieldRow label={t("漏洞 ID")}>
+                <FieldRow label={t("Finding ID")}>
                   <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
                     #{finding.id}
                   </code>
                 </FieldRow>
 
                 {/* Severity */}
-                <FieldRow label={t("严重等级")}>
+                <FieldRow label={t("Severity")}>
                   {finding.inherited ? (
                     <StatusBadge domain="severity" value={finding.severity} dot />
                   ) : (
@@ -255,7 +255,7 @@ function FindingDetailInner() {
                 </FieldRow>
 
                 {/* Handling status */}
-                <FieldRow label={t("处理状态")}>
+                <FieldRow label={t("Processing status")}>
                   {finding.inherited ? (
                     <StatusBadge domain="finding" value={finding.status} dot />
                   ) : (
@@ -277,7 +277,7 @@ function FindingDetailInner() {
                 </FieldRow>
 
                 {/* Finding type */}
-                <FieldRow label={t("漏洞类型")}>
+                <FieldRow label={t("Vulnerability type")}>
                   {finding.vulnclass ? (
                     <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">{finding.vulnclass}</code>
                   ) : (
@@ -286,7 +286,7 @@ function FindingDetailInner() {
                 </FieldRow>
 
                 {/* Involved assets */}
-                <FieldRow label={t("涉及资产")}>
+                <FieldRow label={t("Assets involved")}>
                   {finding.assets && finding.assets.length > 0 ? (
                     <div className="flex flex-wrap justify-end gap-1">
                       {finding.assets.map((a) => (
@@ -305,7 +305,7 @@ function FindingDetailInner() {
                 </FieldRow>
 
                 {/* Owning task */}
-                <FieldRow label={t("所属任务")}>
+                <FieldRow label={t("Owning task")}>
                   {finding.task_id ? (
                     <Link
                       href={`/function/tasks/detail?id=${finding.task_id}`}
@@ -318,12 +318,12 @@ function FindingDetailInner() {
                       <ArrowUpRightIcon className="size-3 shrink-0" />
                     </Link>
                   ) : (
-                    <span className="text-muted-foreground">{t("—（任务已删除）")}</span>
+                    <span className="text-muted-foreground">{t("— (task deleted)")}</span>
                   )}
                 </FieldRow>
 
                 {/* Discovery time */}
-                <FieldRow label={t("发现时间")}>
+                <FieldRow label={t("Discovered at")}>
                   <span className="tabular-nums">{fmtTime(finding.ts)}</span>
                 </FieldRow>
               </CardContent>

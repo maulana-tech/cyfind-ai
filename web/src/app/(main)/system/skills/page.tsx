@@ -42,7 +42,7 @@ import type { Agent, MCPServer, MissingSkill, SkillCall, SkillItem } from "@/lib
 import { cn } from "@/lib/utils";
 
 function fmtTime(ts?: string) {
-  if (!ts) return t("从未调用");
+  if (!ts) return t("Never called");
   return new Date(ts).toLocaleString("zh-CN", {
     month: "2-digit",
     day: "2-digit",
@@ -172,32 +172,32 @@ function SkillsOverview({
   if (skills.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-sm text-muted-foreground">{t("暂无 Skill，点击左侧「新建」或「上传压缩包」开始")}</p>
+        <p className="text-sm text-muted-foreground">{t("No Skills yet — click “New Skill” or “Upload ZIP” on the left to start")}</p>
       </div>
     );
   }
 
   const stats: { label: string; value: React.ReactNode; hint?: string }[] = [
-    { label: t("Skill 总数"), value: skills.length, hint: t("{n} 个被调用过", { n: agg.usedCount }) },
-    { label: t("累计调用"), value: agg.totalCalls },
+    { label: t("Total Skills"), value: skills.length, hint: t("{n} have been called", { n: agg.usedCount }) },
+    { label: t("Total calls"), value: agg.totalCalls },
     {
-      label: t("未使用"),
+      label: t("Unused"),
       value: agg.neverUsed.length,
-      hint: agg.neverUsed.length > 0 ? t("从未被任何 agent 加载") : t("全部用过"),
+      hint: agg.neverUsed.length > 0 ? t("Never loaded by any agent") : t("All have been used"),
     },
     {
-      label: t("未命中调用"),
+      label: t("Missed calls"),
       value: agg.missingCalls,
-      hint: missing.length > 0 ? t("{n} 个不存在的 skill", { n: missing.length }) : t("无"),
+      hint: missing.length > 0 ? t("{n} skills that don't exist", { n: missing.length }) : t("None"),
     },
   ];
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
       <div>
-        <h2 className="text-base font-semibold">{t("技能库总览")}</h2>
+        <h2 className="text-base font-semibold">{t("Skill Library Overview")}</h2>
         <p className="text-muted-foreground text-sm">
-          {t("选择左侧的 Skill 查看详情与调用记录，或从这里快速了解整体使用情况。")}
+          {t("Select a Skill on the left to see its details and call history, or get a quick overview of usage here.")}
         </p>
       </div>
 
@@ -214,10 +214,10 @@ function SkillsOverview({
 
       {/* Call ranking */}
       <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">{t("调用排行")}</Label>
+        <Label className="text-xs text-muted-foreground">{t("Top calls")}</Label>
         {agg.ranked.length === 0 ? (
           <p className="text-muted-foreground rounded-lg border border-dashed p-4 text-center text-xs">
-            {t("还没有任何 Skill 调用记录。")}
+            {t("No Skill calls recorded yet.")}
           </p>
         ) : (
           <div className="space-y-1.5">
@@ -238,7 +238,7 @@ function SkillsOverview({
                   />
                 </span>
                 <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-                  {t("{n} 次", { n: s.calls })}
+                  {t("{n} calls", { n: s.calls })}
                 </span>
               </button>
             ))}
@@ -249,9 +249,9 @@ function SkillsOverview({
       <div className="grid gap-6 sm:grid-cols-2">
         {/* Recent calls */}
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">{t("最近调用")}</Label>
+          <Label className="text-xs text-muted-foreground">{t("Recent calls")}</Label>
           {agg.recent.length === 0 ? (
-            <p className="text-muted-foreground text-xs">{t("暂无记录。")}</p>
+            <p className="text-muted-foreground text-xs">{t("No records yet.")}</p>
           ) : (
             <div className="space-y-1">
               {agg.recent.map((s) => (
@@ -276,13 +276,13 @@ function SkillsOverview({
         {/* Unused (can clean up / need exposure) */}
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">
-            {t("未使用的 Skill")}
+            {t("Unused Skills")}
             {agg.neverUsed.length > 0 && (
               <span className="ml-1 font-normal">{t("（{n}）", { n: agg.neverUsed.length })}</span>
             )}
           </Label>
           {agg.neverUsed.length === 0 ? (
-            <p className="text-muted-foreground text-xs">{t("所有 Skill 都被调用过。")}</p>
+            <p className="text-muted-foreground text-xs">{t("Every Skill has been called.")}</p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
               {agg.neverUsed.map((s) => (
@@ -389,18 +389,18 @@ export default function SkillsPage() {
     setUploading(true);
     try {
       const r = await api.uploadSkill(file, overwrite);
-      toast.success(t("已安装 Skill：{name}（{files} 个文件）", { name: r.name, files: r.files }));
+      toast.success(t("Skill installed: {name} ({files} files)", { name: r.name, files: r.files }));
       load();
     } catch (e) {
       const msg = (e as Error).message;
       // offer overwrite when the skill already exists
       if (!overwrite && msg.includes("already exists")) {
-        if (window.confirm(`${msg}\n\n${t("是否覆盖同名 Skill？")}`)) {
+        if (window.confirm(`${msg}\n\n${t("Overwrite the existing Skill with the same name?")}`)) {
           await uploadZip(file, true);
           return;
         }
       } else {
-        toast.error(t("上传失败：{message}", { message: msg }));
+        toast.error(t("Upload failed: {message}", { message: msg }));
       }
     } finally {
       setUploading(false);
@@ -454,7 +454,7 @@ export default function SkillsPage() {
         setFileContent(c);
         setDirty(false);
       })
-      .catch(() => toast.error(t("读取文件失败")))
+      .catch(() => toast.error(t("Failed to read the file")))
       .finally(() => setFileLoading(false));
   }, [selected]);
 
@@ -516,17 +516,17 @@ export default function SkillsPage() {
     try {
       if (c.kind === "dir") {
         await api.createSkillDir(c.skill, fullPath);
-        toast.success(t("已创建文件夹：{path}", { path: fullPath }));
+        toast.success(t("Folder created: {path}", { path: fullPath }));
         ensureExpanded(c.skill, fullPath);
       } else {
         await api.writeSkillFile(c.skill, fullPath, "");
-        toast.success(t("已创建文件：{path}", { path: fullPath }));
+        toast.success(t("File created: {path}", { path: fullPath }));
         setSelected({ skill: c.skill, path: fullPath });
         ensureExpanded(c.skill, c.inDir);
       }
       load();
     } catch (e) {
-      toast.error(t("创建失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Creation failed: {message}", { message: (e as Error).message }));
     }
   }
 
@@ -539,22 +539,22 @@ export default function SkillsPage() {
   async function deletePath(skill: string, path: string) {
     try {
       await api.deleteSkillPath(skill, path);
-      toast.success(t("已删除：{path}", { path }));
+      toast.success(t("Deleted: {path}", { path }));
       if (selected?.skill === skill && selected.path === path) setSelected(null);
       load();
     } catch (e) {
-      toast.error(t("删除失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Delete failed: {message}", { message: (e as Error).message }));
     }
   }
 
   async function deleteSkill(name: string) {
     try {
       await api.deleteSkill(name);
-      toast.success(t("已删除 Skill：{name}", { name }));
+      toast.success(t("Skill deleted: {name}", { name }));
       if (selected?.skill === name) setSelected(null);
       load();
     } catch (e) {
-      toast.error(t("删除失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Delete failed: {message}", { message: (e as Error).message }));
     }
   }
 
@@ -576,10 +576,10 @@ export default function SkillsPage() {
     setSaving(true);
     try {
       await api.writeSkillFile(selected.skill, selected.path, fileContent);
-      toast.success(t("已保存"));
+      toast.success(t("Saved"));
       setDirty(false);
     } catch (e) {
-      toast.error(t("保存失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Save failed: {message}", { message: (e as Error).message }));
     } finally {
       setSaving(false);
     }
@@ -590,12 +590,12 @@ export default function SkillsPage() {
     setDetailMcps(next);
     try {
       await api.updateSkillMeta(skillName, { mcps: next });
-      toast.success(t(mcpOn ? "关联「{name}」" : "取消关联「{name}」", { name: mcpName }));
+      toast.success(t(mcpOn ? "Linked “{name}”" : "Unlinked “{name}”", { name: mcpName }));
       load();
     } catch (e) {
       // roll back on error
       setDetailMcps(detailMcps);
-      toast.error(t("操作失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Operation failed: {message}", { message: (e as Error).message }));
     }
   }
 
@@ -603,21 +603,21 @@ export default function SkillsPage() {
     const on = (visibility[skillName] ?? []).includes(agentId);
     try {
       await api.toggleSkillVisibility(agentId, skillName, !on);
-      toast.success(t(on ? "取消「{name}」可见" : "授予「{name}」可见", { name: agentName }));
+      toast.success(t(on ? "Revoked “{name}” visibility" : "Granted “{name}” visibility", { name: agentName }));
       const ids = await api.skillVisibility(skillName);
       setVisibility((v) => ({ ...v, [skillName]: ids }));
     } catch (e) {
-      toast.error(t("操作失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Operation failed: {message}", { message: (e as Error).message }));
     }
   }
 
   async function createNewSkill() {
     if (!newName.trim()) {
-      toast.error(t("请填写 name"));
+      toast.error(t("Please enter name"));
       return;
     }
     if (!newDesc.trim()) {
-      toast.error(t("description 为必填项"));
+      toast.error(t("description is required"));
       return;
     }
     setCreatingSkill(true);
@@ -633,7 +633,7 @@ export default function SkillsPage() {
       });
       // apply initial visibility (fire-and-forget per agent; best-effort)
       await Promise.all(newVisibility.map((id) => api.toggleSkillVisibility(id, name, true)));
-      toast.success(t("已创建 Skill"));
+      toast.success(t("Skill created"));
       setNewOpen(false);
       setNewName("");
       setNewDesc("");
@@ -644,7 +644,7 @@ export default function SkillsPage() {
       setNewVisibility([]);
       load();
     } catch (e) {
-      toast.error(t("创建失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Creation failed: {message}", { message: (e as Error).message }));
     } finally {
       setCreatingSkill(false);
     }
@@ -712,7 +712,7 @@ export default function SkillsPage() {
                   size="icon"
                   variant="ghost"
                   className="size-5"
-                  title={t("新建文件")}
+                  title={t("New file")}
                   onClick={(e) => {
                     e.stopPropagation();
                     startCreate(skill, node.path, "file");
@@ -724,7 +724,7 @@ export default function SkillsPage() {
                   size="icon"
                   variant="ghost"
                   className="size-5"
-                  title={t("新建文件夹")}
+                  title={t("New folder")}
                   onClick={(e) => {
                     e.stopPropagation();
                     startCreate(skill, node.path, "dir");
@@ -736,7 +736,7 @@ export default function SkillsPage() {
                   size="icon"
                   variant="ghost"
                   className="size-5"
-                  title={t("删除文件夹")}
+                  title={t("Delete folder")}
                   onClick={(e) => {
                     e.stopPropagation();
                     setPendingDelete({ kind: "dir", skill, path: node.path });
@@ -782,7 +782,7 @@ export default function SkillsPage() {
               size="icon"
               variant="ghost"
               className="size-5"
-              title={t("删除文件")}
+              title={t("Delete file")}
               onClick={(e) => {
                 e.stopPropagation();
                 setPendingDelete({ kind: "file", skill, path: node.path });
@@ -806,7 +806,7 @@ export default function SkillsPage() {
       <div className="flex items-center gap-3 border-b px-4 py-2.5 lg:px-6">
         <div className="flex flex-col gap-0.5">
           <h1 className="text-sm font-semibold leading-tight">Skill</h1>
-          <p className="text-muted-foreground text-xs">{t("技能库 · agentskills.io 规范 · 按 Agent 授权可见")}</p>
+          <p className="text-muted-foreground text-xs">{t("Skill library · agentskills.io spec · visibility granted per Agent")}</p>
         </div>
         {/* Gap list: skills the agent named but that are not in the store — directly the basis for what to add. */}
         {missing.length > 0 && (
@@ -814,12 +814,12 @@ export default function SkillsPage() {
             <PopoverTrigger asChild>
               <Button size="sm" variant="outline" className="ml-auto">
                 <AlertTriangleIcon className="size-3.5 text-amber-500" />
-                {t("{n} 个未命中调用", { n: missing.length })}
+                {t("{n} missed calls", { n: missing.length })}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-80">
               <p className="mb-2 text-xs text-muted-foreground">
-                {t("Agent 点名调用、但技能库里不存在的 skill。按被点名次数排序。")}
+                {t("Skills an Agent explicitly requested but that aren't in the library. Sorted by request count.")}
               </p>
               <div className="space-y-1">
                 {missing.map((m) => (
@@ -828,7 +828,7 @@ export default function SkillsPage() {
                       {m.skill}
                     </code>
                     <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                      {t("{n} 次", { n: m.calls })}
+                      {t("{n} calls", { n: m.calls })}
                     </span>
                     <span className="shrink-0 text-xs text-muted-foreground">{fmtTime(m.last_used)}</span>
                   </div>
@@ -844,7 +844,7 @@ export default function SkillsPage() {
           <div className="flex flex-col gap-2 border-b p-2">
             <Button size="sm" variant="outline" className="w-full" onClick={() => setNewOpen(true)}>
               <PlusIcon className="size-3.5" />
-              {t("新建 Skill")}
+              {t("New Skill")}
             </Button>
             <input
               ref={uploadRef}
@@ -859,10 +859,10 @@ export default function SkillsPage() {
               className="w-full"
               disabled={uploading}
               onClick={() => uploadRef.current?.click()}
-              title={t("上传包含 SKILL.md 的 .zip 压缩包")}
+              title={t("Upload a .zip archive containing SKILL.md")}
             >
               <UploadIcon className="size-3.5" />
-              {uploading ? t("上传中…") : t("上传压缩包")}
+              {uploading ? t("Uploading…") : t("Upload ZIP")}
             </Button>
           </div>
           {/* Radix viewport wraps children in a display:table div that grows with
@@ -901,7 +901,7 @@ export default function SkillsPage() {
                       {s.calls > 0 && (
                         <span
                           className="shrink-0 rounded bg-muted px-1 text-[10px] tabular-nums text-muted-foreground"
-                          title={t("被调用 {n} 次 · 最近 {time}", { n: s.calls, time: fmtTime(s.last_used) })}
+                          title={t("Called {n} times · last {time}", { n: s.calls, time: fmtTime(s.last_used) })}
                         >
                           {s.calls}
                         </span>
@@ -916,7 +916,7 @@ export default function SkillsPage() {
                           size="icon"
                           variant="ghost"
                           className="size-5"
-                          title={t("新建文件")}
+                          title={t("New file")}
                           onClick={(e) => {
                             e.stopPropagation();
                             startCreate(s.name, "", "file");
@@ -928,7 +928,7 @@ export default function SkillsPage() {
                           size="icon"
                           variant="ghost"
                           className="size-5"
-                          title={t("新建文件夹")}
+                          title={t("New folder")}
                           onClick={(e) => {
                             e.stopPropagation();
                             startCreate(s.name, "", "dir");
@@ -940,7 +940,7 @@ export default function SkillsPage() {
                           size="icon"
                           variant="ghost"
                           className="size-5"
-                          title={t("删除 Skill")}
+                          title={t("Delete Skill")}
                           onClick={(e) => {
                             e.stopPropagation();
                             setPendingDelete({ kind: "skill", skill: s.name });
@@ -963,7 +963,7 @@ export default function SkillsPage() {
               })}
 
               {skills.length === 0 && (
-                <p className="p-3 text-xs text-muted-foreground">{t("暂无 Skill，点击「新建」开始")}</p>
+                <p className="p-3 text-xs text-muted-foreground">{t("No Skills yet — click “New Skill” to start")}</p>
               )}
             </div>
           </ScrollArea>
@@ -1008,26 +1008,26 @@ export default function SkillsPage() {
               <div className="flex flex-col gap-6 lg:flex-row-reverse lg:items-start">
                 {/* ── Right: call stats ── */}
                 <div className="space-y-2 lg:w-80 lg:shrink-0">
-                  <Label className="text-xs text-muted-foreground">{t("调用统计")}</Label>
+                  <Label className="text-xs text-muted-foreground">{t("Call stats")}</Label>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="rounded-md border p-2">
                       <p className="text-lg font-semibold tabular-nums">{selectedSkill.calls}</p>
-                      <p className="text-xs text-muted-foreground">{t("总调用次数")}</p>
+                      <p className="text-xs text-muted-foreground">{t("Total calls")}</p>
                     </div>
                     <div className="rounded-md border p-2">
                       <p className="text-lg font-semibold tabular-nums">{selectedSkill.tasks}</p>
-                      <p className="text-xs text-muted-foreground">{t("覆盖任务数")}</p>
+                      <p className="text-xs text-muted-foreground">{t("Tasks covered")}</p>
                     </div>
                     <div className="rounded-md border p-2">
                       <p className="truncate text-sm font-medium" title={fmtTime(selectedSkill.last_used)}>
                         {fmtTime(selectedSkill.last_used)}
                       </p>
-                      <p className="text-xs text-muted-foreground">{t("最近调用")}</p>
+                      <p className="text-xs text-muted-foreground">{t("Recent calls")}</p>
                     </div>
                   </div>
                   {selectedSkill.usage_agents.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1">
-                      <span className="text-xs text-muted-foreground">{t("调用方：")}</span>
+                      <span className="text-xs text-muted-foreground">{t("Called by: ")}</span>
                       {selectedSkill.usage_agents.map((k) => (
                         <Badge key={k} variant="secondary" className="text-xs font-normal">
                           {k}
@@ -1036,11 +1036,11 @@ export default function SkillsPage() {
                     </div>
                   )}
                   {usageLoading ? (
-                    <p className="text-xs text-muted-foreground">{t("加载调用明细…")}</p>
+                    <p className="text-xs text-muted-foreground">{t("Loading call details…")}</p>
                   ) : usageCalls.length > 0 ? (
                     <div className="rounded-md border">
                       <div className="border-b px-2 py-1 text-xs text-muted-foreground">
-                        {t("最近 {n} 次调用", { n: usageCalls.length })}
+                        {t("Last {n} calls", { n: usageCalls.length })}
                       </div>
                       <div className="max-h-56 overflow-y-auto">
                         {usageCalls.map((c, i) => (
@@ -1053,14 +1053,14 @@ export default function SkillsPage() {
                               {c.agent_key || "—"}
                             </Badge>
                             <span className="ml-auto text-muted-foreground">
-                              {c.task_id > 0 ? t("任务 #{id}", { id: c.task_id }) : c.session_id ? t("对话会话") : "—"}
+                              {c.task_id > 0 ? t("Task #{id}", { id: c.task_id }) : c.session_id ? t("Conversation session") : "—"}
                             </span>
                           </div>
                         ))}
                       </div>
                     </div>
                   ) : (
-                    <p className="text-xs text-muted-foreground">{t("还没有调用记录。")}</p>
+                    <p className="text-xs text-muted-foreground">{t("No calls recorded yet.")}</p>
                   )}
                 </div>
 
@@ -1068,11 +1068,11 @@ export default function SkillsPage() {
                 <div className="space-y-5 lg:min-w-0 lg:flex-1">
                   <div className="space-y-2">
                     <Label className="text-xs text-muted-foreground">
-                      {t("关联 MCP")}
-                      <span className="ml-1 font-normal">{t("（加载 Skill 时才披露/解锁其工具）")}</span>
+                      {t("Linked MCP")}
+                      <span className="ml-1 font-normal">{t("(tools are only disclosed/unlocked when the Skill loads)")}</span>
                     </Label>
                     {mcpOptions.length === 0 ? (
-                      <p className="text-xs text-muted-foreground">{t("暂无 MCP，可在「MCP」页添加。")}</p>
+                      <p className="text-xs text-muted-foreground">{t("No MCP yet — add one on the “MCP” page.")}</p>
                     ) : (
                       <div className="flex flex-wrap gap-x-4 gap-y-2">
                         {mcpOptions.map((m) => (
@@ -1089,7 +1089,7 @@ export default function SkillsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-xs text-muted-foreground">{t("可见性（按 Agent 授权）")}</Label>
+                    <Label className="text-xs text-muted-foreground">{t("Visibility (granted per Agent)")}</Label>
                     <div className="space-y-2">
                       {agents.map((a) => (
                         <label key={a.key} className="flex cursor-pointer items-center gap-2 text-sm">
@@ -1101,7 +1101,7 @@ export default function SkillsPage() {
                         </label>
                       ))}
                       {agents.length === 0 && (
-                        <span className="text-xs text-muted-foreground">{t("（暂无 Agent）")}</span>
+                        <span className="text-xs text-muted-foreground">{t("(no Agents yet)")}</span>
                       )}
                     </div>
                   </div>
@@ -1126,12 +1126,12 @@ export default function SkillsPage() {
                   </span>
                 )}
                 <Button size="sm" className="ml-auto" onClick={saveFile} disabled={!dirty || saving}>
-                  {saving ? t("保存中…") : t("保存")}
+                  {saving ? t("Saving…") : t("Save")}
                 </Button>
               </div>
               {fileLoading ? (
                 <div className="flex flex-1 items-center justify-center text-muted-foreground text-sm">
-                  {t("加载中…")}
+                  {t("Loading…")}
                 </div>
               ) : (
                 <textarea
@@ -1158,20 +1158,20 @@ export default function SkillsPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {pendingDelete?.kind === "skill" && t("删除 Skill「{name}」？", { name: pendingDelete.skill })}
-              {pendingDelete?.kind === "dir" && t("删除文件夹「{path}」？", { path: pendingDelete.path })}
-              {pendingDelete?.kind === "file" && t("删除文件「{path}」？", { path: pendingDelete.path })}
+              {pendingDelete?.kind === "skill" && t("Delete Skill “{name}”?", { name: pendingDelete.skill })}
+              {pendingDelete?.kind === "dir" && t("Delete folder “{path}”?", { path: pendingDelete.path })}
+              {pendingDelete?.kind === "file" && t("Delete file “{path}”?", { path: pendingDelete.path })}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {pendingDelete?.kind === "skill"
-                ? t("将删除该 Skill 的全部文件、MCP 关联与可见性配置。此操作不可撤销。")
+                ? t("This deletes all files of the Skill, its MCP links, and its visibility settings. This action cannot be undone.")
                 : pendingDelete?.kind === "dir"
-                  ? t("将一并删除该文件夹下的所有文件。此操作不可撤销。")
-                  : t("此操作不可撤销。")}
+                  ? t("All files under this folder will also be deleted. This action cannot be undone.")
+                  : t("This action cannot be undone.")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>{t("取消")}</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleting}>{t("Cancel")}</AlertDialogCancel>
             <AlertDialogAction
               disabled={deleting}
               onClick={(e) => {
@@ -1179,7 +1179,7 @@ export default function SkillsPage() {
                 void runPendingDelete();
               }}
             >
-              {deleting ? t("删除中…") : t("删除")}
+              {deleting ? t("Deleting…") : t("Delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1189,13 +1189,13 @@ export default function SkillsPage() {
       <Sheet open={newOpen} onOpenChange={setNewOpen}>
         <SheetContent side="right" className="flex w-full flex-col gap-0 data-[side=right]:sm:max-w-xl">
           <SheetHeader className="px-4 pt-4">
-            <SheetTitle>{t("新建 Skill")}</SheetTitle>
+            <SheetTitle>{t("New Skill")}</SheetTitle>
           </SheetHeader>
           <Tabs defaultValue="basic" className="flex min-h-0 flex-1 flex-col">
             <TabsList className="mx-4 mt-3 shrink-0 justify-start">
-              <TabsTrigger value="basic">{t("基本信息")}</TabsTrigger>
+              <TabsTrigger value="basic">{t("Basics")}</TabsTrigger>
               <TabsTrigger value="mcp">
-                {t("关联 MCP")}
+                {t("Linked MCP")}
                 {newMcps.length > 0 && (
                   <span className="ml-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] leading-none text-primary-foreground">
                     {newMcps.length}
@@ -1203,7 +1203,7 @@ export default function SkillsPage() {
                 )}
               </TabsTrigger>
               <TabsTrigger value="visibility">
-                {t("可见性")}
+                {t("Visibility")}
                 {newVisibility.length > 0 && (
                   <span className="ml-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] leading-none text-primary-foreground">
                     {newVisibility.length}
@@ -1219,7 +1219,7 @@ export default function SkillsPage() {
             >
               <div className="grid gap-1.5">
                 <Label htmlFor="sk-name">
-                  {t("名称")} <span className="text-destructive">*</span>
+                  {t("Name")} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="sk-name"
@@ -1227,17 +1227,17 @@ export default function SkillsPage() {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                 />
-                <p className="text-muted-foreground text-xs">{t("小写字母 / 数字 / 连字符，1–64 字符")}</p>
+                <p className="text-muted-foreground text-xs">{t("Lowercase letters / digits / hyphens, 1–64 characters")}</p>
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor="sk-desc">
-                  {t("描述")} <span className="text-destructive">*</span>
+                  {t("Description")} <span className="text-destructive">*</span>
                 </Label>
                 <Textarea
                   id="sk-desc"
                   rows={2}
                   className="resize-none"
-                  placeholder={t("这个 skill 做什么、何时使用。")}
+                  placeholder={t("What this skill does and when to use it.")}
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                 />
@@ -1254,7 +1254,7 @@ export default function SkillsPage() {
                 <div className="grid gap-1.5">
                   <Label className="text-muted-foreground text-xs">compatibility</Label>
                   <Input
-                    placeholder={t("需要 sqlmap、python3")}
+                    placeholder={t("requires sqlmap, python3")}
                     value={newCompat}
                     onChange={(e) => setNewCompat(e.target.value)}
                   />
@@ -1262,13 +1262,13 @@ export default function SkillsPage() {
               </div>
               <div className="flex min-h-0 flex-1 flex-col gap-1.5">
                 <Label htmlFor="sk-inst">
-                  {t("正文")}{" "}
-                  <span className="text-muted-foreground text-xs font-normal">{t("（留空自动生成骨架）")}</span>
+                  {t("Body")}{" "}
+                  <span className="text-muted-foreground text-xs font-normal">{t("(leave empty to auto-generate a skeleton)")}</span>
                 </Label>
                 <Textarea
                   id="sk-inst"
                   className="min-h-40 flex-1 resize-none font-mono text-sm leading-relaxed"
-                  placeholder={t("## 执行方法\n\n1. 先探测错误\n2. 区分盲注类型\n\n脚本放 scripts/ 目录。")}
+                  placeholder={t("## Approach\n\n1. Probe for errors first\n2. Distinguish the blind injection type\n\nPut scripts in the scripts/ directory.")}
                   value={newInst}
                   onChange={(e) => setNewInst(e.target.value)}
                 />
@@ -1277,9 +1277,9 @@ export default function SkillsPage() {
 
             {/* Linked MCP */}
             <TabsContent value="mcp" className="overflow-y-auto px-4 pb-4 pt-4 data-[state=inactive]:hidden">
-              <p className="mb-3 text-xs text-muted-foreground">{t("加载 Skill 时才披露并解锁所选 MCP 的工具。")}</p>
+              <p className="mb-3 text-xs text-muted-foreground">{t("The selected MCP tools are only disclosed and unlocked when the Skill loads.")}</p>
               {mcpOptions.length === 0 ? (
-                <p className="text-xs text-muted-foreground">{t("暂无 MCP，可在「MCP」页添加。")}</p>
+                <p className="text-xs text-muted-foreground">{t("No MCP yet — add one on the “MCP” page.")}</p>
               ) : (
                 <div className="flex flex-col gap-2">
                   {mcpOptions.map((m) => (
@@ -1299,9 +1299,9 @@ export default function SkillsPage() {
 
             {/* Visibility */}
             <TabsContent value="visibility" className="overflow-y-auto px-4 pb-4 pt-4 data-[state=inactive]:hidden">
-              <p className="mb-3 text-xs text-muted-foreground">{t("选中的 Agent 创建后即可见此 Skill。")}</p>
+              <p className="mb-3 text-xs text-muted-foreground">{t("The selected Agents will see this Skill once it is created.")}</p>
               {agents.length === 0 ? (
-                <p className="text-xs text-muted-foreground">{t("（暂无 Agent）")}</p>
+                <p className="text-xs text-muted-foreground">{t("(no Agents yet)")}</p>
               ) : (
                 <div className="flex flex-col gap-2">
                   {agents.map((a) => (
@@ -1322,10 +1322,10 @@ export default function SkillsPage() {
 
           <SheetFooter className="flex-row justify-end gap-2 border-t px-4 py-3">
             <Button variant="outline" onClick={() => setNewOpen(false)}>
-              {t("取消")}
+              {t("Cancel")}
             </Button>
             <Button onClick={createNewSkill} disabled={creatingSkill}>
-              {creatingSkill ? t("创建中…") : t("创建")}
+              {creatingSkill ? t("Creating…") : t("Create")}
             </Button>
           </SheetFooter>
         </SheetContent>

@@ -47,7 +47,7 @@ export function HeaderBreadcrumb() {
       {isDetail ? (
         <>
           <span className="text-muted-foreground/40">/</span>
-          <span className="font-medium">{t("详情")}</span>
+          <span className="font-medium">{t("Details")}</span>
         </>
       ) : null}
     </nav>

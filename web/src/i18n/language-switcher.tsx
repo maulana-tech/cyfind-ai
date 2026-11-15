@@ -36,8 +36,8 @@ export function LanguageSwitcher() {
       size="sm"
       variant="ghost"
       onClick={cycleLanguage}
-      aria-label={t("切换语言")}
-      title={t("切换语言")}
+      aria-label={t("Switch language")}
+      title={t("Switch language")}
       className="gap-1.5 px-2"
     >
       <Languages className="size-4" />

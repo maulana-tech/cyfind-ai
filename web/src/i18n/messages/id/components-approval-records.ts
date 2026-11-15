@@ -4,241 +4,160 @@
  */
 
 const messages = {
-  // Origin / status / match cell
-  "对话 #{id}": "Chat #{id}",
-  "任务 {id}": "Tugas {id}",
-  "定位审批 #{id} 的来源：{label}": "Lokasi sumber approval #{id}: {label}",
-  无法定位对应执行: "Tidak dapat menemukan eksekusi terkait",
-
-  待审批: "Menunggu approval",
-
-  已允许: "Diizinkan",
-
-  已拒绝: "Ditolak",
-
-  已超时: "Waktu habis",
-
-  模型判定: "Keputusan model",
-
-  规则判定: "Keputusan aturan",
-
-  规则未记录或已删除: "Aturan tidak tercatat atau sudah dihapus",
-
-  未记录理由: "Alasan tidak tercatat",
-
-  // CodeBlock
-  已复制: "Disalin",
-
-  "复制失败，请手动选择内容复制": "Gagal menyalin; silakan pilih teks dan salin manual",
-  "复制{label}": "Salin {label}",
-  未记录: "Tidak tercatat",
-
-  "内容已截断，以上为保存的片段。": "Konten dipotong; kutipan tersimpan ditampilkan di atas.",
-
-  // Model review context
-  模型审查上下文: "Konteks Review Model",
-
-  "以下为本次实际发送给审查模型的输入快照。背景仅用于理解当前动作，裁决依据为审查策略。":
+  "Chat #{id}": "Chat #{id}",
+  "Task {id}": "Tugas {id}",
+  "Locate the source of approval #{id}: {label}": "Lokasi sumber approval #{id}: {label}",
+  "Could not locate the corresponding execution": "Tidak dapat menemukan eksekusi terkait",
+  "Pending approval": "Menunggu approval",
+  Allowed: "Diizinkan",
+  Denied: "Ditolak",
+  "Timed Out": "Waktu habis",
+  "Model decision": "Keputusan model",
+  "Rule decision": "Keputusan aturan",
+  "Rule not recorded or deleted": "Aturan tidak tercatat atau sudah dihapus",
+  "No reason recorded": "Alasan tidak tercatat",
+  Copied: "Disalin",
+  "Copy failed; please select and copy manually": "Gagal menyalin; silakan pilih teks dan salin manual",
+  "Copy {label}": "Salin {label}",
+  "Not recorded": "Tidak tercatat",
+  "Content truncated; the saved excerpt is shown above.": "Konten dipotong; kutipan tersimpan ditampilkan di atas.",
+  "Model Review Context": "Konteks Review Model",
+  "Below is a snapshot of the input actually sent to the review model this time. Background is only for understanding the action; the review policy is the basis for the verdict.":
     "Berikut cuplikan input yang benar-benar dikirim ke model review kali ini. Latar belakang hanya untuk memahami aksi; kebijakan review menjadi dasar keputusan.",
-  "此记录使用旧版输入，保留当时实际发送的内容。":
+  "This record uses the legacy input format and keeps what was actually sent at the time.":
     "Rekaman ini memakai format input lama dan menyimpan apa yang benar-benar dikirim saat itu.",
-  当前待审查调用: "Panggilan yang Sedang Direview",
-
-  "背景 · 用户消息": "Latar · Pesan Pengguna",
-  "背景 · Worker 意图摘要（旧版）": "Latar · Ringkasan Intent Worker (lama)",
-  "取自当前用户消息。": "Diambil dari pesan pengguna saat ini.",
-  "这是旧版发送的 Worker 意图摘要；新版 Worker 审查不再发送此内容。":
+  "Current Call Under Review": "Panggilan yang Sedang Direview",
+  "Background · User Message": "Latar · Pesan Pengguna",
+  "Background · Worker Intent Summary (legacy)": "Latar · Ringkasan Intent Worker (lama)",
+  "Taken from the current user message.": "Diambil dari pesan pengguna saat ini.",
+  "This is the legacy Worker intent summary; new Worker reviews no longer send it.":
     "Ini ringkasan intent Worker versi lama; review Worker versi baru tidak lagi mengirimkannya.",
-  "本次审查未附带背景消息。": "Review kali ini tidak menyertakan pesan latar belakang.",
-  "当前轮输入（旧版）": "Input Putaran Saat Ini (lama)",
-  "任务描述（旧版）": "Deskripsi Tugas (lama)",
-  "任务目标（旧版）": "Target Tugas (lama)",
-  "任务操作约束（旧版）": "Kendala Aksi Tugas (lama)",
-  "Worker 意图（旧版）": "Intent Worker (lama)",
-  工作目录: "Direktori Kerja",
-
-  "本次审查未发送历史调用或执行结果。": "Review kali ini tidak mengirim riwayat panggilan atau hasil eksekusi.",
-  "当时提供给模型的历史调用（旧版）": "Riwayat Panggilan yang Diberikan ke Model Saat Itu (lama)",
-  成功: "Berhasil",
-
-  "失败（可能有部分副作用）": "Gagal (mungkin ada efek samping sebagian)",
-  历史调用参数: "Argumen Panggilan Historis",
-
-  历史执行结果: "Hasil Eksekusi Historis",
-
-  "本次未提供可配对的历史工具执行记录。": "Tidak ada catatan eksekusi tool historis yang dapat dipasangkan.",
-  "历史为有限窗口，部分内容已截断。": "Riwayat berupa jendela terbatas; sebagian konten dipotong.",
-  "查看完整模型审查输入 JSON": "Lihat JSON Lengkap Input Review Model",
-  模型审查输入: "Input Review Model",
-
-  // Decision actions
-  允许: "Izinkan",
-
-  拒绝: "Tolak",
-
-  转人工审批: "Eskalasi ke approval manual",
-
-  // Detail panel
-  详情加载失败: "Gagal memuat detail",
-
-  "详情加载失败：{error}": "Gagal memuat detail: {error}",
-  " · 工具请求": " · Permintaan Tool",
-  查看命令内容: "Lihat Isi Perintah",
-
-  命令内容: "Isi Perintah",
-
-  "执行结果：": "Hasil eksekusi: ",
-  "加载中…": "Memuat…",
-  审查状态: "Status Review",
-
-  审批裁决: "Keputusan Approval",
-
-  未记录审批理由: "Alasan approval tidak tercatat",
-
-  "最终动作：": "Aksi akhir: ",
-  来源: "Sumber",
-
-  申请时间: "Diajukan pada",
-
-  决定时间: "Diputuskan pada",
-
-  规则快照: "Cuplikan Aturan",
-
-  审批模型配置: "Profil Model Approval",
-
-  重试详情: "Coba Lagi Detail",
-
-  "此记录未保存审批详情快照，无法还原当时的上下文、模型初判和执行输出。":
+  "This review did not include a background message.": "Review kali ini tidak menyertakan pesan latar belakang.",
+  "Current Turn Input (legacy)": "Input Putaran Saat Ini (lama)",
+  "Task Description (legacy)": "Deskripsi Tugas (lama)",
+  "Task Goal (legacy)": "Target Tugas (lama)",
+  "Task Action Constraints (legacy)": "Kendala Aksi Tugas (lama)",
+  "Worker Intent (legacy)": "Intent Worker (lama)",
+  "Working Directory": "Direktori Kerja",
+  "This review did not send historical calls or execution results.":
+    "Review kali ini tidak mengirim riwayat panggilan atau hasil eksekusi.",
+  "Historical Calls Provided to the Model at the Time (legacy)":
+    "Riwayat Panggilan yang Diberikan ke Model Saat Itu (lama)",
+  Succeeded: "Berhasil",
+  "Failed (may have partial side effects)": "Gagal (mungkin ada efek samping sebagian)",
+  "Historical Call Arguments": "Argumen Panggilan Historis",
+  "Historical Execution Result": "Hasil Eksekusi Historis",
+  "No pairable historical tool execution records were provided.":
+    "Tidak ada catatan eksekusi tool historis yang dapat dipasangkan.",
+  "History is a limited window; some content has been truncated.":
+    "Riwayat berupa jendela terbatas; sebagian konten dipotong.",
+  "View Full Model Review Input JSON": "Lihat JSON Lengkap Input Review Model",
+  "Model Review Input": "Input Review Model",
+  Allow: "Izinkan",
+  Deny: "Tolak",
+  "Send to human approval": "Eskalasi ke approval manual",
+  "Failed to load details": "Gagal memuat detail",
+  "Failed to load details: {error}": "Gagal memuat detail: {error}",
+  " · Tool Call": " · Permintaan Tool",
+  "View Command Content": "Lihat Isi Perintah",
+  "Command Content": "Isi Perintah",
+  "Execution result: ": "Hasil eksekusi: ",
+  "Loading…": "Memuat…",
+  "Review Status": "Status Review",
+  "Approval Decision": "Keputusan Approval",
+  "No approval reason recorded": "Alasan approval tidak tercatat",
+  "Final action: ": "Aksi akhir: ",
+  Source: "Sumber",
+  "Requested at": "Diajukan pada",
+  "Decided at": "Diputuskan pada",
+  "Rule Snapshot": "Cuplikan Aturan",
+  "Approval Model Profile": "Profil Model Approval",
+  "Retry Details": "Coba Lagi Detail",
+  "This record has no saved approval detail snapshot; the context, model verdict and execution output from that time cannot be reconstructed.":
     "Rekaman ini tidak menyimpan cuplikan detail approval; konteks, keputusan model, dan hasil eksekusi saat itu tidak dapat dipulihkan.",
-  收起上下文: "Tutup Konteks",
-
-  查看上下文与执行结果: "Lihat Konteks & Hasil Eksekusi",
-
-  "此历史记录仅保存审查输入指纹，未保存输入原文，无法还原当时发给模型的上下文。这不代表审查时没有上下文；新产生的模型裁决会保留输入快照。":
+  "Collapse Context": "Tutup Konteks",
+  "View Context & Execution Result": "Lihat Konteks & Hasil Eksekusi",
+  "This historical record only stores a fingerprint of the review input, not the original text, so the context sent to the model cannot be reconstructed. This does not mean there was no context at review time; new model verdicts keep an input snapshot.":
     "Rekaman historis ini hanya menyimpan sidik jari input review, bukan teks aslinya, sehingga konteks yang dikirim ke model tidak dapat dipulihkan. Ini tidak berarti tidak ada konteks saat review; keputusan model baru tetap menyimpan cuplikan input.",
-  "此记录没有保存模型审查输入，可能由规则直接裁决、模型调用前发生异常或产生于旧版本。":
+  "This record has no saved model review input; it may have been decided directly by a rule, failed before the model call, or originated from an old version.":
     "Rekaman ini tidak menyimpan input review model; bisa jadi diputuskan langsung oleh aturan, terjadi kesalahan sebelum pemanggilan model, atau berasal dari versi lama.",
-  查看会话审计片段: "Lihat Kutipan Audit Sesi",
-
-  "查看会话审计片段（未发送模型）": "Lihat Kutipan Audit Sesi (tidak dikirim ke model)",
-  "会话当前轮输入（审计片段）": "Input Putaran Saat Ini (kutipan audit)",
-  可见会话上下文: "Konteks Sesi yang Terlihat",
-
-  "保存于 {time} 的会话记录片段。模型实际使用的内容以“模型审查输入”为准。":
+  "View Conversation Audit Excerpt": "Lihat Kutipan Audit Sesi",
+  "View Conversation Audit Excerpt (not sent to the model)": "Lihat Kutipan Audit Sesi (tidak dikirim ke model)",
+  "Current Turn Input (audit excerpt)": "Input Putaran Saat Ini (kutipan audit)",
+  "Visible Conversation Context": "Konteks Sesi yang Terlihat",
+  'An excerpt of the conversation captured at {time}. The content actually used by the model is defined by "Model Review Input".':
     'Kutipan rekaman sesi yang disimpan pada {time}. Konten yang benar-benar dipakai model mengacu ke "Input Review Model".',
-  "仅保存最近的上下文，部分内容已截断。": "Hanya konteks terbaru yang disimpan; sebagian konten dipotong.",
-  " · 异常": " · Galat",
-  未记录可关联的上下文: "Konteks yang dapat dikorelasikan tidak tercatat",
-
-  模型初判: "Keputusan Awal Model",
-
-  规则初判: "Keputusan Awal Aturan",
-
-  模型异常回退: "Fallback Model (galat)",
-
-  执行输出: "Output Eksekusi",
-
-  "工具未执行。": "Tool tidak dieksekusi.",
-  尚无执行输出: "Belum ada output eksekusi",
-
-  "存在相同参数的并发调用，无法唯一关联工具调用；本记录不展示推测的执行结果。":
+  "Only the most recent context is stored; some content has been truncated.":
+    "Hanya konteks terbaru yang disimpan; sebagian konten dipotong.",
+  " · Error": " · Galat",
+  "No correlatable context recorded": "Konteks yang dapat dikorelasikan tidak tercatat",
+  "Initial Model Verdict": "Keputusan Awal Model",
+  "Initial Rule Verdict": "Keputusan Awal Aturan",
+  "Model Fallback (error)": "Fallback Model (galat)",
+  "Execution Output": "Output Eksekusi",
+  "The tool was not executed.": "Tool tidak dieksekusi.",
+  "No execution output yet": "Belum ada output eksekusi",
+  "Concurrent calls with identical arguments exist, so the tool call cannot be uniquely correlated; no guessed execution result is shown.":
     "Ada panggilan konkuren dengan argumen identik sehingga panggilan tool tidak dapat dikorelasikan secara unik; rekaman ini tidak menampilkan hasil eksekusi yang bersifat dugaan.",
-  "未记录可唯一关联的工具调用 ID。": "ID panggilan tool yang dapat dikorelasikan secara unik tidak tercatat.",
-  "工具调用 ID：": "ID panggilan tool: ",
-  "参数摘要 SHA-256：": "Ringkasan argumen SHA-256: ",
-  "审查配置指纹 SHA-256：": "Sidik jari konfigurasi review SHA-256: ",
-  "模型审查输入 SHA-256：": "Input review model SHA-256: ",
-  "结果记录时间：": "Hasil direkam pada: ",
-
-  // Context labels (data map values translated at render)
-  用户消息: "Pesan Pengguna",
-
-  "Agent 消息": "Pesan Agent",
-  工具请求: "Permintaan Tool",
-
-  工具输出: "Output Tool",
-
-  // Execution status labels (data map values translated at render)
-  尚未执行: "Belum dieksekusi",
-
-  未执行: "Tidak dieksekusi",
-
-  "已允许，等待执行结果": "Diizinkan; menunggu hasil eksekusi",
-  执行成功: "Eksekusi berhasil",
-
-  执行失败: "Eksekusi gagal",
-
-  执行结果未知: "Hasil eksekusi tidak diketahui",
-
-  未关联执行结果: "Tidak ada hasil eksekusi terkait",
-
-  // Table
-  展开详情: "Perluas detail",
-
-  工具: "Tool",
-
-  匹配规则: "Aturan yang Cocok",
-
-  参数: "Argumen",
-
-  状态: "Status",
-
-  "收起审批 #{id}": "Tutup approval #{id}",
-  "展开审批 #{id}": "Perluas approval #{id}",
-  "审批详情 #{id}": "Detail approval #{id}",
-
-  // Page shell
-  加载失败: "Gagal memuat",
-
-  已允许执行: "Eksekusi diizinkan",
-
-  已拒绝执行: "Eksekusi ditolak",
-
-  "规则 #{id}": "Aturan #{id}",
-  拦截审批: "Approval Intercept",
-
-  审批记录: "Approval Records",
-
-  "{n} 待审批": "{n} menunggu",
-  刷新: "Muat Ulang",
-
-  "展开记录查看工具请求和审批裁决，以及当时的上下文与执行结果。":
+  "No tool call ID that can be uniquely correlated was recorded.":
+    "ID panggilan tool yang dapat dikorelasikan secara unik tidak tercatat.",
+  "Tool call ID: ": "ID panggilan tool: ",
+  "Arguments digest SHA-256: ": "Ringkasan argumen SHA-256: ",
+  "Review config fingerprint SHA-256: ": "Sidik jari konfigurasi review SHA-256: ",
+  "Model review input SHA-256: ": "Input review model SHA-256: ",
+  "Result recorded at: ": "Hasil direkam pada: ",
+  "User Message": "Pesan Pengguna",
+  "Agent Message": "Pesan Agent",
+  "Tool Request": "Permintaan Tool",
+  "Tool Output": "Output Tool",
+  "Not executed yet": "Belum dieksekusi",
+  "Not executed": "Tidak dieksekusi",
+  "Allowed; awaiting execution result": "Diizinkan; menunggu hasil eksekusi",
+  "Executed successfully": "Eksekusi berhasil",
+  "Execution failed": "Eksekusi gagal",
+  "Execution result unknown": "Hasil eksekusi tidak diketahui",
+  "No correlated execution result": "Tidak ada hasil eksekusi terkait",
+  "Expand details": "Perluas detail",
+  Tools: "Tool",
+  "Matched Rule": "Aturan yang Cocok",
+  Parameters: "Argumen",
+  Status: "Status",
+  "Collapse approval #{id}": "Tutup approval #{id}",
+  "Expand approval #{id}": "Perluas approval #{id}",
+  "Approval details #{id}": "Detail approval #{id}",
+  "Load failed": "Gagal memuat",
+  "Execution allowed": "Eksekusi diizinkan",
+  "Execution denied": "Eksekusi ditolak",
+  "Rule #{id}": "Aturan #{id}",
+  "Intercept Approvals": "Approval Intercept",
+  "Approval Records": "Approval Records",
+  "{n} pending": "{n} menunggu",
+  Refresh: "Muat Ulang",
+  "Expand a record to view the tool call, the approval decision, and the context and execution result from that time.":
     "Perluas rekaman untuk melihat permintaan tool, keputusan approval, serta konteks dan hasil eksekusi saat itu.",
-  审批记录筛选: "Filter approval records",
-
-  审批状态: "Status Approval",
-
-  全部状态: "Semua status",
-
-  全部来源: "Semua sumber",
-
-  判定来源: "Sumber Keputusan",
-
-  来源未知: "Sumber tidak diketahui",
-
-  清除筛选: "Hapus Filter",
-
-  "记录加载失败：{error}。请点击刷新重试。": "Gagal memuat rekaman: {error}. Klik Muat Ulang untuk mencoba lagi.",
-  "待审批加载失败：{error}。请点击刷新重试。":
+  "Approval records filter": "Filter approval records",
+  "Approval Status": "Status Approval",
+  "All statuses": "Semua status",
+  "All sources": "Semua sumber",
+  "Decision Source": "Sumber Keputusan",
+  "Unknown source": "Sumber tidak diketahui",
+  "Clear Filters": "Hapus Filter",
+  "Failed to load records: {error}. Click Refresh to retry.":
+    "Gagal memuat rekaman: {error}. Klik Muat Ulang untuk mencoba lagi.",
+  "Failed to load pending approvals: {error}. Click Refresh to retry.":
     "Gagal memuat antrean approval: {error}. Klik Muat Ulang untuk mencoba lagi.",
-  "待处理（{n}）": "Belum diproses ({n})",
-  展开后允许或拒绝: "perluas untuk mengizinkan atau menolak",
-
-  待处理审批: "Approval belum diproses",
-
-  筛选结果: "Hasil filter",
-
-  全部记录: "Semua rekaman",
-
-  没有符合筛选条件的审批记录: "Tidak ada approval record yang cocok dengan filter",
-
-  暂无审批记录: "Belum ada approval record",
-
-  "请调整审批状态或判定来源，或清除筛选查看全部记录。":
+  "Pending ({n})": "Belum diproses ({n})",
+  "expand to allow or deny": "perluas untuk mengizinkan atau menolak",
+  "Pending approvals": "Approval belum diproses",
+  "Filtered results": "Hasil filter",
+  "All records": "Semua rekaman",
+  "No approval records match the filters": "Tidak ada approval record yang cocok dengan filter",
+  "No approval records yet": "Belum ada approval record",
+  "Adjust the approval status or decision source, or clear the filters to see all records.":
     "Sesuaikan status approval atau sumber keputusan, atau hapus filter untuk melihat semua rekaman.",
-  "规则或模型作出审批决定后，记录将显示在这里。":
+  "Records appear here once a rule or the model makes an approval decision.":
     "Rekaman akan muncul di sini setelah aturan atau model membuat keputusan approval.",
-  审批记录列表: "Daftar approval records",
+  "Approval records list": "Daftar approval records",
 } satisfies Record<string, string>;
 
 export default messages;

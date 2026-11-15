@@ -4,15 +4,13 @@
  */
 
 const messages = {
-  未授权: "Tidak terautentikasi",
-
-  "上传失败: {status}": "Unggahan gagal: {status}",
-  "上传失败: {status} {body}": "Unggahan gagal: {status} {body}",
-  "上传失败({status})": "Unggahan gagal ({status})",
-  "下载失败: {status}": "Unduhan gagal: {status}",
-  下载失败: "Unduhan gagal",
-
-  "（demo）{path} 的下载内容示例。": "(demo) Contoh konten unduhan untuk {path}.",
+  Unauthorized: "Tidak terautentikasi",
+  "Upload failed: {status}": "Unggahan gagal: {status}",
+  "Upload failed: {status} {body}": "Unggahan gagal: {status} {body}",
+  "Upload failed ({status})": "Unggahan gagal ({status})",
+  "Download failed: {status}": "Unduhan gagal: {status}",
+  "Download failed": "Unduhan gagal",
+  "(demo) Sample download content for {path}.": "(demo) Contoh konten unduhan untuk {path}.",
 } satisfies Record<string, string>;
 
 export default messages;

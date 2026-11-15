@@ -4,15 +4,13 @@
  */
 
 const messages = {
-  未授权: "Unauthorized",
-
-  "上传失败: {status}": "Upload failed: {status}",
-  "上传失败: {status} {body}": "Upload failed: {status} {body}",
-  "上传失败({status})": "Upload failed ({status})",
-  "下载失败: {status}": "Download failed: {status}",
-  下载失败: "Download failed",
-
-  "（demo）{path} 的下载内容示例。": "(demo) Sample download content for {path}.",
+  Unauthorized: "Unauthorized",
+  "Upload failed: {status}": "Upload failed: {status}",
+  "Upload failed: {status} {body}": "Upload failed: {status} {body}",
+  "Upload failed ({status})": "Upload failed ({status})",
+  "Download failed: {status}": "Download failed: {status}",
+  "Download failed": "Download failed",
+  "(demo) Sample download content for {path}.": "(demo) Sample download content for {path}.",
 } satisfies Record<string, string>;
 
 export default messages;

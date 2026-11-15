@@ -70,7 +70,7 @@ export function MainContent({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-2">
             {version && (
               <span className="font-medium text-muted-foreground text-xs tabular-nums">
-                {t("版本")} · {version}
+                {t("Version")} · {version}
               </span>
             )}
             <UpdateBadge />

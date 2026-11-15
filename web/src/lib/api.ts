@@ -133,7 +133,7 @@ export async function http<T>(path: string, init?: RequestInit): Promise<T> {
       document.cookie = "cyfind_token=; path=/; max-age=0";
       window.location.href = "/login";
     }
-    throw new Error(t("未授权"));
+    throw new Error(t("Unauthorized"));
   }
   if (!r.ok) {
     const fallback = `${init?.method ?? "GET"} ${path}: ${r.status}`;
@@ -455,19 +455,19 @@ export const api = {
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: fd,
     });
-    if (!r.ok) throw new Error(t("上传失败: {status}", { status: r.status }));
+    if (!r.ok) throw new Error(t("Upload failed: {status}", { status: r.status }));
     return r.json() as Promise<{ uploaded: number }>;
   },
   workspaceDownload: async (path: string) => {
     let blob: Blob;
     if (MOCK) {
-      blob = new Blob([t("（demo）{path} 的下载内容示例。", { path })], { type: "text/plain" });
+      blob = new Blob([t("(demo) Sample download content for {path}.", { path })], { type: "text/plain" });
     } else {
       const token = getToken();
       const r = await fetch(`/api/workspace/download?path=${encodeURIComponent(path)}`, {
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });
-      if (!r.ok) throw new Error(t("下载失败: {status}", { status: r.status }));
+      if (!r.ok) throw new Error(t("Download failed: {status}", { status: r.status }));
       blob = await r.blob();
     }
     const objUrl = URL.createObjectURL(blob);
@@ -656,8 +656,8 @@ export const api = {
       { headers: token ? { Authorization: `Bearer ${token}` } : {} },
     );
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: t("下载失败") }));
-      throw new Error(error.error ?? t("下载失败"));
+      const error = await response.json().catch(() => ({ error: t("Download failed") }));
+      throw new Error(error.error ?? t("Download failed"));
     }
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
@@ -905,7 +905,7 @@ export const api = {
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: fd,
     });
-    if (!r.ok) throw new Error(t("上传失败: {status} {body}", { status: r.status, body: await r.text() }));
+    if (!r.ok) throw new Error(t("Upload failed: {status} {body}", { status: r.status, body: await r.text() }));
     return r.json() as Promise<{ attachments: ChatAttachment[] }>;
   },
   stopChat: (taskId: string) => post<{ status: string }>(`/tasks/${taskId}/chat/stop`, {}),
@@ -1166,7 +1166,7 @@ export const api = {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     const body = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(body?.error || t("上传失败({status})", { status: r.status }));
+    if (!r.ok) throw new Error(body?.error || t("Upload failed ({status})", { status: r.status }));
     return body;
   },
   deleteSkill: (name: string) => del<{ deleted: string }>(`/skills/${name}`),

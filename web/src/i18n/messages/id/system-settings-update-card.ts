@@ -7,83 +7,66 @@
  */
 
 const messages = {
-  "检查更新失败：{message}": "Gagal memeriksa pembaruan: {message}",
-  "发现新版本 {version}": "Versi baru {version} ditemukan",
-  当前已是最新版本: "Sudah versi terbaru",
-
-  "已更新到 {version}，正在重新加载页面": "Diperbarui ke {version}, memuat ulang halaman",
-  "等待服务重启超时。请检查后端日志，或确认 cyfind 是通过 start.sh / start.bat 启动的。":
+  "Failed to check for updates: {message}": "Gagal memeriksa pembaruan: {message}",
+  "New version {version} found": "Versi baru {version} ditemukan",
+  "Already the latest version": "Sudah versi terbaru",
+  "Updated to {version}, reloading the page": "Diperbarui ke {version}, memuat ulang halaman",
+  "Timed out waiting for the service to restart. Check the backend log, or confirm cyfind was started via start.sh / start.bat.":
     "Waktu tunggu restart layanan habis. Periksa log backend, atau pastikan cyfind dijalankan lewat start.sh / start.bat.",
-  "更新失败：{message}": "Pembaruan gagal: {message}",
-  更新失败: "Pembaruan gagal",
-
-  "确定更新到 {version}？": "Perbarui ke {version}?",
-  "更新会重启程序，正在运行的任务会被中断。\n": "Pembaruan me-restart program; tugas yang berjalan akan terputus.\n",
-  "\n注意：容器内更新只替换程序本身，不会更新镜像里的 playwright / nmap 等工具链；":
+  "Update failed: {message}": "Pembaruan gagal: {message}",
+  "Update failed": "Pembaruan gagal",
+  "Update to {version}?": "Perbarui ke {version}?",
+  "Updating restarts the program; running tasks will be interrupted.\n":
+    "Pembaruan me-restart program; tugas yang berjalan akan terputus.\n",
+  "\nNote: an in-container update only replaces the program itself, not the playwright / nmap toolchain in the image; ":
     "\nCatatan: update di dalam container hanya mengganti program itu sendiri — tidak memperbarui toolchain seperti playwright / nmap di image; ",
-  "若新版本依赖新工具，请改用 docker compose pull。":
+  "if the new version needs new tools, use docker compose pull instead.":
     "jika versi baru membutuhkan tool baru, gunakan docker compose pull.",
-  "回滚到上一版本？\n\n程序会重启，正在运行的任务会被中断。\n注意：数据库结构不会回退，旧版本可能无法识别新版写入的数据。":
+  "Roll back to the previous version?\n\nThe program will restart and running tasks will be interrupted.\nNote: the database schema is not rolled back, and the old version may not recognize data written by the new one.":
     "Rollback ke versi sebelumnya?\n\nProgram akan di-restart dan tugas yang berjalan akan terputus.\nCatatan: skema database tidak ikut di-rollback; versi lama mungkin tidak mengenali data yang ditulis versi baru.",
-  "已切换到上一版本，正在重启…": "Beralih ke versi sebelumnya, restart…",
-
-  "回滚失败：{message}": "Rollback gagal: {message}",
-  已有一个更新正在进行中: "Pembaruan sudah berjalan",
-
-  "更新正在进行中，无法回滚": "Pembaruan sedang berjalan; rollback tidak memungkinkan",
-
-  "启动更新失败：{message}": "Gagal memulai pembaruan: {message}",
-  版本与更新: "Versi & pembaruan",
-
-  "从 GitHub 检查并安装新版本。更新会重启程序，正在运行的任务会被中断。":
+  "Switched to the previous version, restarting…": "Beralih ke versi sebelumnya, restart…",
+  "Rollback failed: {message}": "Rollback gagal: {message}",
+  "An update is already in progress": "Pembaruan sudah berjalan",
+  "An update is in progress; rollback is not possible": "Pembaruan sedang berjalan; rollback tidak memungkinkan",
+  "Failed to start the update: {message}": "Gagal memulai pembaruan: {message}",
+  "Version & updates": "Versi & pembaruan",
+  "Check for and install a new version from GitHub. Updating restarts the program; running tasks will be interrupted.":
     "Periksa versi baru di GitHub dan pasang. Pembaruan me-restart program; tugas yang berjalan akan terputus.",
-  当前版本: "Versi saat ini",
-
-  独立程序: "Program standalone",
-
-  最新版本: "Versi terbaru",
-
-  更新日志: "Catatan rilis",
-
-  // static backend update-progress messages (server/update.go, selfupdate/stage.go)
-  "准备中…": "Mempersiapkan…",
-  "获取校验和清单…": "Mengambil daftar checksum…",
-  "校验 SHA256…": "Memverifikasi SHA256…",
-  "解压并冒烟测试…": "Mengekstrak dan smoke test…",
-
-  "警告：写入升级标记失败，本次升级将没有自动回滚保护":
+  "Current version": "Versi saat ini",
+  Standalone: "Program standalone",
+  "Latest version": "Versi terbaru",
+  "Release notes": "Catatan rilis",
+  "Preparing…": "Mempersiapkan…",
+  "Fetching the checksum manifest…": "Mengambil daftar checksum…",
+  "Verifying SHA256…": "Memverifikasi SHA256…",
+  "Extracting and smoke-testing…": "Mengekstrak dan smoke test…",
+  "Warning: failed to write the upgrade marker; this upgrade will have no automatic rollback protection":
     "Peringatan: gagal menulis tanda upgrade — pembaruan ini tanpa perlindungan rollback otomatis",
-  "新版本已就绪，正在重启…": "Versi baru siap, restart…",
-  "无法连接 GitHub：": "Tidak dapat terhubung ke GitHub:",
-
-  "可在上方配置全局代理后重试。": "Atur proxy global di atas, lalu coba lagi.",
-
-  "{latest} 没有提供 {os}/{arch} 的发布包（缺少 {asset}），无法自动更新。":
+  "The new version is ready, restarting…": "Versi baru siap, restart…",
+  "Cannot connect to GitHub: ": "Tidak dapat terhubung ke GitHub:",
+  "Configure the global proxy above and try again.": "Atur proxy global di atas, lalu coba lagi.",
+  "{latest} does not provide a release package for {os}/{arch} (missing {asset}), so automatic update is not possible.":
     "{latest} tidak menyediakan paket rilis untuk {os}/{arch} ({asset} tidak ada) — pembaruan otomatis tidak tersedia.",
-  "将下载 ": "Unduh ",
+  "Will download ": "Unduh ",
   "（{size}）": " ({size})",
-  "，校验 SHA256 并冒烟测试后才会替换，失败自动保留当前版本。":
+  ", and it is replaced only after SHA256 verification and a smoke test; on failure the current version is kept automatically.":
     ", baru diganti setelah verifikasi SHA256 dan smoke test; jika gagal, versi saat ini dipertahankan.",
-  "当前已是最新版本。": "Sudah versi terbaru.",
-  "Docker 下的更新只替换程序本身，不更新镜像里的 playwright / nmap 等工具链，且":
+  "Already on the latest version.": "Sudah versi terbaru.",
+  "An update under Docker only replaces the program itself, not the playwright / nmap toolchain in the image, and":
     "Update di Docker hanya mengganti program itu sendiri — toolchain seperti playwright / nmap di image tidak diperbarui, dan setelah",
-  "重建容器后会退回镜像自带的版本。需要连镜像一起升级请执行":
+  "after rebuilding the container it reverts to the image-bundled version. To upgrade the image too, run":
     "container dibuat ulang, kembali ke versi bawaan image. Untuk meng-upgrade image sekaligus, jalankan",
   "。": ".",
-
-  "正在重启并应用新版本，请稍候（页面会自动刷新）…":
+  "Restarting and applying the new version, please wait (the page will refresh automatically)…":
     "Restart dan menerapkan versi baru, tunggu sebentar (halaman akan dimuat ulang otomatis)…",
-  检查更新: "Periksa pembaruan",
-
-  "更新到 {version}": "Perbarui ke {version}",
-  立即更新: "Perbarui sekarang",
-
-  回滚到上一版本: "Rollback ke versi sebelumnya",
-
-  "一键更新依赖守护脚本重启程序。请通过 ":
+  "Check for updates": "Periksa pembaruan",
+  "Update to {version}": "Perbarui ke {version}",
+  "Update now": "Perbarui sekarang",
+  "Roll back to the previous version": "Rollback ke versi sebelumnya",
+  "One-click update relies on the watchdog script to restart the program. Please use ":
     "Pembaruan sekali klik bergantung pada skrip watchdog untuk me-restart program. Silakan pakai ",
-  "（Windows 为": " (di Windows:",
-  "）启动 CYFIND；直接运行 cyfind 本体时，程序退出后不会被自动拉起。":
+  " (on Windows: ": " (di Windows:",
+  ") to start CYFIND; when running the cyfind binary directly, it is not relaunched automatically after it exits.":
     ") untuk memulai CYFIND; jika menjalankan cyfind secara langsung, program tidak akan di-restart otomatis setelah keluar.",
 } satisfies Record<string, string>;
 

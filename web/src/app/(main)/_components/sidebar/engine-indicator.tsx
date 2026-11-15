@@ -50,7 +50,7 @@ export function EngineIndicator() {
         />
       </span>
       <span className="truncate text-sidebar-foreground/80 tabular-nums group-data-[collapsible=icon]:hidden">
-        {active ? `${t("引擎运行中")} · ${running}` : t("引擎空闲")}
+        {active ? `${t("Engine running")} · ${running}` : t("Engine idle")}
       </span>
     </div>
   );

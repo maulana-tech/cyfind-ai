@@ -79,49 +79,49 @@ export default function SetupPage() {
         <div className="w-full max-w-md space-y-10 py-24 lg:py-32">
           <div className="space-y-4 text-center">
             <h2 className="font-medium text-2xl tracking-tight">
-              {unavailable ? t("无法确认初始化状态") : t("初始化密码")}
+              {unavailable ? t("Unable to confirm the initialization status") : t("Initialize password")}
             </h2>
             <p className="mx-auto max-w-xl text-muted-foreground">
               {unavailable
-                ? t("后端或数据库暂时不可用。为避免覆盖实例上已有的密码，初始化入口已临时关闭——请恢复服务后重试。")
-                : t("首次使用 CYFIND，请为账户设置一个登录密码（至少 8 位）")}
+                ? t("The backend or database is temporarily unavailable. To avoid overwriting the existing password on this instance, the setup entry has been temporarily disabled — please restore the service and try again.")
+                : t("First time using CYFIND? Set a sign-in password for your account (at least 8 characters).")}
             </p>
           </div>
           {unavailable ? (
             <div className="flex flex-col gap-4">
               {error && <p className="text-center text-destructive text-sm">{t(error)}</p>}
               <Button type="button" className="w-full" onClick={() => window.location.reload()}>
-                {t("重试")}
+                {t("Retry")}
               </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="password">{t("新密码")}</Label>
+                <Label htmlFor="password">{t("New password")}</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={t("至少 8 位")}
+                  placeholder={t("At least 8 characters")}
                   autoFocus
                   autoComplete="new-password"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="confirm">{t("确认密码")}</Label>
+                <Label htmlFor="confirm">{t("Confirm password")}</Label>
                 <Input
                   id="confirm"
                   type="password"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
-                  placeholder={t("再次输入密码")}
+                  placeholder={t("Re-enter your password")}
                   autoComplete="new-password"
                 />
               </div>
               {error && <p className="text-destructive text-sm">{t(error)}</p>}
               <Button type="submit" className="w-full" disabled={loading || !password || !confirm}>
-                {loading ? t("保存中...") : t("设置密码并登录")}
+                {loading ? t("Saving…") : t("Set password and sign in")}
               </Button>
             </form>
           )}

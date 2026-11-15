@@ -16,7 +16,7 @@ export function StatTile({ label, value, hint, tone }: { label: string; value: s
 // formatBacklog renders the backlog milliseconds into a human-readable magnitude.
 export function formatBacklog(ms: number): string {
   if (!ms) return "—";
-  if (ms < 60_000) return `${Math.round(ms / 1000)} ${t("秒")}`;
-  if (ms < 3_600_000) return `${Math.round(ms / 60_000)} ${t("分钟")}`;
-  return `${(ms / 3_600_000).toFixed(1)} ${t("小时")}`;
+  if (ms < 60_000) return `${Math.round(ms / 1000)} ${t("seconds")}`;
+  if (ms < 3_600_000) return `${Math.round(ms / 60_000)} ${t("min")}`;
+  return `${(ms / 3_600_000).toFixed(1)} ${t("h")}`;
 }

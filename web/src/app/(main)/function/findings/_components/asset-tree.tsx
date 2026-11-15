@@ -235,9 +235,9 @@ export function AssetTree({
     [isExpanded],
   );
 
-  let emptyHint = t("当前筛选下没有关联到资产的发现。");
-  if (loading) emptyHint = t("加载中…");
-  else if (searching) emptyHint = t("没有匹配的资产。");
+  let emptyHint = t("No findings associated with an asset under the current filter.");
+  if (loading) emptyHint = t("Loading…");
+  else if (searching) emptyHint = t("No matching assets.");
 
   const rows: React.ReactNode[] = [];
   const pushRows = (list: TreeNode[]) => {
@@ -266,8 +266,8 @@ export function AssetTree({
             type="search"
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
-            placeholder={t("过滤资产")}
-            aria-label={t("过滤资产")}
+            placeholder={t("Filter assets")}
+            aria-label={t("Filter assets")}
           />
           <InputGroupAddon>
             <SearchIcon aria-hidden="true" />
@@ -280,8 +280,8 @@ export function AssetTree({
             className="size-8 shrink-0 text-muted-foreground"
             onClick={onRefresh}
             disabled={loading}
-            aria-label={t("刷新资产树")}
-            title={t("刷新资产树")}
+            aria-label={t("Refresh the asset tree")}
+            title={t("Refresh the asset tree")}
           >
             <RefreshCwIcon className={cn("size-4", loading && "animate-spin")} />
           </Button>
@@ -296,7 +296,7 @@ export function AssetTree({
           selected === null ? "bg-accent font-medium" : "hover:bg-accent/50",
         )}
       >
-        <span>{t("全部资产")}</span>
+        <span>{t("All assets")}</span>
         <span className="text-xs tabular-nums text-muted-foreground">{findingTotal}</span>
       </button>
 
@@ -309,9 +309,9 @@ export function AssetTree({
 
       {truncated && (
         <p className="px-1 text-xs text-muted-foreground">
-          {t("资产过多，已隐藏")}
+          {t("Too many assets, hidden")}
           {(droppedKinds ?? []).map((k) => t(KIND_LABEL[k as FindingAssetKind] ?? k)).join(" / ")}
-          {t("层级（计数仍已计入上层）。用筛选或过滤框收窄可看到完整层级。")}
+          {t("levels (the count is still included in the upper level). Narrow with a filter or the filter box to see the full hierarchy.")}
         </p>
       )}
     </div>
@@ -347,7 +347,7 @@ function AssetTreeRow({
           type="button"
           onClick={onToggle}
           className="flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:text-foreground"
-          aria-label={open ? t("折叠") : t("展开")}
+          aria-label={open ? t("Collapse") : t("Expand")}
           aria-expanded={open}
         >
           <ChevronRightIcon className={cn("size-3.5 transition-transform", open && "rotate-90")} />
@@ -366,16 +366,16 @@ function AssetTreeRow({
       </button>
       <span className="flex shrink-0 items-center gap-1 text-xs tabular-nums">
         {node.critical > 0 && (
-          <span className="text-rose-600" title={t("严重 {n}", { n: node.critical })}>
+          <span className="text-rose-600" title={t("Critical {n}", { n: node.critical })}>
             {node.critical}
           </span>
         )}
         {node.high > 0 && (
-          <span className="text-red-500" title={t("高危 {n}", { n: node.high })}>
+          <span className="text-red-500" title={t("High {n}", { n: node.high })}>
             {node.high}
           </span>
         )}
-        <span className="text-muted-foreground" title={t("共 {n} 条发现", { n: node.total })}>
+        <span className="text-muted-foreground" title={t("{n} findings", { n: node.total })}>
           {node.total}
         </span>
       </span>

@@ -104,7 +104,7 @@ export default function AssetInterceptPage() {
     try {
       setRules(await api.assetInterceptRules());
     } catch {
-      toast.error(t("加载资产拦截规则失败"));
+      toast.error(t("Failed to load asset intercept rules"));
     } finally {
       setLoading(false);
     }
@@ -141,10 +141,10 @@ export default function AssetInterceptPage() {
     try {
       if (editing) {
         await api.updateAssetInterceptRule(editing.id, payload);
-        toast.success(t("规则已更新"));
+        toast.success(t("Rule updated"));
       } else {
         await api.createAssetInterceptRule(payload);
-        toast.success(t("规则已创建"));
+        toast.success(t("Rule created"));
       }
       setOpen(false);
       load();
@@ -156,10 +156,10 @@ export default function AssetInterceptPage() {
   }
 
   async function handleDelete(rule: AssetInterceptRule) {
-    if (!window.confirm(t("确定删除资产拦截规则「{pattern}」？", { pattern: rule.pattern }))) return;
+    if (!window.confirm(t("Delete asset intercept rule “{pattern}”?", { pattern: rule.pattern }))) return;
     try {
       await api.deleteAssetInterceptRule(rule.id);
-      toast.success(t("规则已删除"));
+      toast.success(t("Rule deleted"));
       load();
     } catch (e) {
       toast.error(t((e as Error).message));
@@ -183,9 +183,9 @@ export default function AssetInterceptPage() {
       <div className="flex items-center gap-2.5">
         <BanIcon className="h-5 w-5 shrink-0" />
         <div>
-          <h1 className="text-lg font-semibold leading-tight">{t("资产拦截")}</h1>
+          <h1 className="text-lg font-semibold leading-tight">{t("Asset Intercept")}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {t("全局资产黑名单：命中的域名 / IP / URL / 网段将被拦截，不对其执行任何操作")}
+            {t("Global asset blocklist: matching domains / IPs / URLs / ranges are intercepted and no action is taken against them")}
           </p>
         </div>
       </div>
@@ -193,36 +193,36 @@ export default function AssetInterceptPage() {
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs text-muted-foreground">
           {t(
-            "支持全等与模糊匹配的域名 / IP / URL，以及 CIDR 网段；默认内置模糊拦截政府（.gov / .gov.cn）与教育（.edu / .edu.cn）网站",
+            "Supports exact and fuzzy matching for domains / IPs / URLs, plus CIDR ranges; built-in fuzzy blocking of government (.gov / .gov.cn) and education (.edu / .edu.cn) sites is on by default",
           )}
         </p>
         <Button onClick={openNew} size="sm" className="shrink-0">
           <PlusIcon className="h-4 w-4" />
-          {t("新建规则")}
+          {t("New rule")}
         </Button>
       </div>
 
       <Card>
         <CardContent className="p-0">
           {loading ? (
-            <p className="p-6 text-sm text-muted-foreground">{t("加载中…")}</p>
+            <p className="p-6 text-sm text-muted-foreground">{t("Loading…")}</p>
           ) : rules.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
               <BanIcon className="h-8 w-8 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">{t("暂无资产拦截规则")}</p>
+              <p className="text-sm text-muted-foreground">{t("No asset intercept rules yet")}</p>
               <Button size="sm" variant="outline" onClick={openNew}>
                 <PlusIcon className="h-4 w-4" />
-                {t("新建第一条规则")}
+                {t("Create the first rule")}
               </Button>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[130px]">{t("类型")}</TableHead>
-                  <TableHead>{t("匹配内容")}</TableHead>
-                  <TableHead>{t("备注")}</TableHead>
-                  <TableHead className="w-[64px] text-center">{t("启用")}</TableHead>
+                  <TableHead className="w-[130px]">{t("Type")}</TableHead>
+                  <TableHead>{t("Match content")}</TableHead>
+                  <TableHead>{t("Note")}</TableHead>
+                  <TableHead className="w-[64px] text-center">{t("Enabled")}</TableHead>
                   <TableHead className="w-[80px]" />
                 </TableRow>
               </TableHeader>
@@ -241,7 +241,7 @@ export default function AssetInterceptPage() {
                       <div className="flex items-center gap-1.5">
                         {rule.builtin && (
                           <Badge variant="secondary" className="shrink-0 px-1 py-0 text-[10px]">
-                            {t("内置")}
+                            {t("Built-in")}
                           </Badge>
                         )}
                         <span className="truncate">{t(rule.note)}</span>
@@ -277,12 +277,12 @@ export default function AssetInterceptPage() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right" className="flex flex-col gap-0 p-0 sm:max-w-md">
           <SheetHeader className="border-b px-6 py-4">
-            <SheetTitle>{editing ? t("编辑资产拦截规则") : t("新建资产拦截规则")}</SheetTitle>
-            <SheetDescription className="text-xs">{t("命中此规则的目标资产会被全局拦截")}</SheetDescription>
+            <SheetTitle>{editing ? t("Edit asset intercept rule") : t("New asset intercept rule")}</SheetTitle>
+            <SheetDescription className="text-xs">{t("Target assets matching this rule are intercepted globally")}</SheetDescription>
           </SheetHeader>
 
           <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-5">
-            <Field label={t("匹配类型")}>
+            <Field label={t("Match type")}>
               <Select value={form.kind} onValueChange={(v) => set({ kind: v as AssetInterceptKind })}>
                 <SelectTrigger>
                   <SelectValue />
@@ -305,13 +305,13 @@ export default function AssetInterceptPage() {
             </Field>
 
             <Field
-              label={t("匹配内容")}
+              label={t("Match content")}
               hint={
                 form.kind === "cidr"
-                  ? t("CIDR 网段，形如 192.168.0.0/16")
+                  ? t("CIDR range, e.g. 192.168.0.0/16")
                   : form.kind.startsWith("fuzzy_")
-                    ? t("模糊匹配：目标包含此内容即命中")
-                    : t("全等匹配：目标需与此内容完全一致")
+                    ? t("Fuzzy match: hits when the target contains this content")
+                    : t("Exact match: the target must equal this content exactly")
               }
             >
               <Input
@@ -321,9 +321,9 @@ export default function AssetInterceptPage() {
               />
             </Field>
 
-            <Field label={t("备注（可选）")}>
+            <Field label={t("Note (optional)")}>
               <Textarea
-                placeholder={t("说明这条规则的用途")}
+                placeholder={t("Describe what this rule is for")}
                 value={form.note}
                 onChange={(e) => set({ note: e.target.value })}
                 rows={2}
@@ -336,17 +336,17 @@ export default function AssetInterceptPage() {
             <div className="flex items-center gap-3">
               <Switch id="asset-rule-enabled" checked={form.enabled} onCheckedChange={(v) => set({ enabled: v })} />
               <Label htmlFor="asset-rule-enabled" className="cursor-pointer">
-                {t("启用此规则")}
+                {t("Enable this rule")}
               </Label>
             </div>
           </div>
 
           <SheetFooter className="border-t px-6 py-4 flex-row justify-end gap-2">
             <Button variant="outline" onClick={() => setOpen(false)}>
-              {t("取消")}
+              {t("Cancel")}
             </Button>
             <Button onClick={handleSave} disabled={saving}>
-              {saving ? t("保存中…") : t("保存")}
+              {saving ? t("Saving…") : t("Save")}
             </Button>
           </SheetFooter>
         </SheetContent>

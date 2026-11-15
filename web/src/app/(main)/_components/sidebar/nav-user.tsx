@@ -81,12 +81,12 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setPwOpen(true)}>
               <KeyRound />
-              {t("修改密码")}
+              {t("Change Password")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
               <LogOut />
-              {t("退出登录")}
+              {t("Sign Out")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

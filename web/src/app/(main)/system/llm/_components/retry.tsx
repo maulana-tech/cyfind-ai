@@ -190,13 +190,13 @@ export function RetryRuleFields({
         </div>
         {/* Which errors reach this layer, down to the status code — setting the knobs without any effect usually means the error does not land in this layer at all. */}
         <p className="text-muted-foreground text-xs">
-          <span className="font-medium text-foreground">{t("触发")}</span>
+          <span className="font-medium text-foreground">{t("Triggers")}</span>
           {t("：")}
           {t(meta.trigger)}
         </p>
         {!compact && meta.skips && (
           <p className="text-muted-foreground text-xs">
-            <span className="font-medium text-foreground">{t("不走这层")}</span>
+            <span className="font-medium text-foreground">{t("Not this layer")}</span>
             {t("：")}
             {t(meta.skips)}
           </p>
@@ -212,28 +212,28 @@ export function RetryRuleFields({
             id={`${idPrefix}-${layer}-n`}
             min={-1}
             value={value.attempts}
-            placeholder={t("默认 {n}", { n: meta.defAttempts })}
+            placeholder={t("default {n}", { n: meta.defAttempts })}
             onChange={(n) => onChange({ ...value, attempts: n })}
           />
         </div>
         <div className="flex items-center gap-2">
           <Label htmlFor={`${idPrefix}-${layer}-ms`} className="text-muted-foreground text-xs">
-            {t("间隔 ms")}
+            {t("Interval ms")}
           </Label>
           <NumField
             id={`${idPrefix}-${layer}-ms`}
             min={0}
             value={value.interval_ms}
-            placeholder={t("默认退避")}
+            placeholder={t("default backoff")}
             onChange={(n) => onChange({ ...value, interval_ms: n })}
           />
           <span className="text-muted-foreground text-xs">
-            {human ? t("固定 {ms}", { ms: human }) : t(meta.defInterval)}
+            {human ? t("fixed {ms}", { ms: human }) : t(meta.defInterval)}
           </span>
         </div>
       </div>
       {!compact && (
-        <p className="text-muted-foreground text-xs">{t("留空 = 用默认；{hint}。", { hint: t(meta.offHint) })}</p>
+        <p className="text-muted-foreground text-xs">{t("Leave empty to use the default; {hint}.", { hint: t(meta.offHint) })}</p>
       )}
     </div>
   );
@@ -251,10 +251,10 @@ export function ProfileRetryFields({
   return (
     <div className="grid gap-3 rounded-lg border p-3">
       <div className="grid gap-0.5">
-        <Label className="text-sm">{t("重试覆盖")}</Label>
+        <Label className="text-sm">{t("Retry overrides")}</Label>
         <p className="text-muted-foreground text-xs">
           {t(
-            "只对这个配置生效，覆盖「重试与退避」里的全局默认。每格留空 = 跟随全局；次数填 -1 = 关掉这层重试； 间隔填了就用固定间隔取代指数退避。熔断与意图重跑是进程级的，只能在全局那页调。",
+            "Applies only to this profile, overriding the global defaults in \"Retry & backoff\". Leave a field empty to follow the global value; attempts = -1 turns this layer off; an interval replaces exponential backoff with a fixed one. The breaker and intent rerun are process-wide and can only be changed on the global page.",
           )}
         </p>
       </div>
@@ -286,7 +286,7 @@ export function RetryPolicyPanel() {
       const p = await api.llmRetryPolicy();
       setPolicy({ ...ZERO_POLICY, ...p });
     } catch (e) {
-      toast.error(t("读取重试策略失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Failed to load the retry policy: {message}", { message: (e as Error).message }));
     } finally {
       setLoading(false);
     }
@@ -303,9 +303,9 @@ export function RetryPolicyPanel() {
       // The backend clamps out-of-range values back into range and returns them; refresh with the returned values directly, so what you see is what is stored.
       const saved = await api.saveLLMRetryPolicy(policy);
       setPolicy({ ...ZERO_POLICY, ...saved });
-      toast.success(t("已保存，即时生效（正在跑的这一轮调用仍用旧参数）"));
+      toast.success(t("Saved — takes effect immediately (the in-flight round of calls still uses the old settings)"));
     } catch (e) {
-      toast.error(t("保存失败：{message}", { message: (e as Error).message }));
+      toast.error(t("Save failed: {message}", { message: (e as Error).message }));
     } finally {
       setSaving(false);
     }
@@ -316,7 +316,7 @@ export function RetryPolicyPanel() {
   if (loading) {
     return (
       <div className="flex items-center gap-2 rounded-lg border border-dashed p-10 text-muted-foreground text-sm">
-        <Loader2Icon className="size-4 animate-spin" /> {t("读取重试策略…")}
+        <Loader2Icon className="size-4 animate-spin" /> {t("Loading retry policy…")}
       </div>
     );
   }
@@ -324,12 +324,12 @@ export function RetryPolicyPanel() {
   return (
     <div className="grid gap-4">
       <div className="rounded-lg border bg-muted/30 p-3 text-muted-foreground text-xs leading-relaxed">
-        {t("一次模型调用的失败会依次经过五层重试，由内到外：")}
-        <span className="text-foreground">{t(" 建连 → 空响应 → 同 provider 安全窗口 → 轮询熔断 → 意图重跑")}</span>
-        {t("。内层用尽才轮到外层，所以次数是")}
-        <span className="text-foreground">{t("相乘")}</span>
+        {t("A failed model call passes through five retry layers, inner to outer:")}
+        <span className="text-foreground">{t(" connection → empty response → same-provider safety window → pool breaker → intent rerun")}</span>
+        {t(". An outer layer only runs once the inner ones are exhausted, so the attempt counts are ")}
+        <span className="text-foreground">{t("multiplicative")}</span>
         {t(
-          "的——把每层都拉满，一次抖动能烧掉几十次请求。 全部留空即当前默认值，与没有这页时的行为完全一致。前三层可以在每个模型配置里单独覆盖。",
+          " — max out every layer and a single blip can burn dozens of requests. Leave everything empty to keep the current defaults, identical to the behavior without this page. The first three layers can be overridden per model profile.",
         )}
       </div>
 
@@ -342,10 +342,10 @@ export function RetryPolicyPanel() {
       <div className="flex gap-2">
         <Button onClick={save} disabled={saving}>
           {saving ? <Loader2Icon className="animate-spin" /> : <SaveIcon />}
-          {t("保存")}
+          {t("Save")}
         </Button>
         <Button variant="outline" onClick={() => setPolicy(ZERO_POLICY)} disabled={saving}>
-          {t("全部恢复默认")}
+          {t("Reset all to defaults")}
         </Button>
       </div>
     </div>
