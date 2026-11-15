@@ -2,7 +2,17 @@ import type { ReactNode } from "react";
 
 import Link from "next/link";
 
-import { ArrowRight, GitBranch, Layers, Lock, Network, ShieldCheck, Terminal, Workflow } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronDown,
+  GitBranch,
+  Layers,
+  Lock,
+  Network,
+  ShieldCheck,
+  Terminal,
+  Workflow,
+} from "lucide-react";
 import type { Metadata } from "next";
 
 import { FeatureBento } from "./_components/feature-bento";
@@ -32,6 +42,7 @@ export default function LandingPage() {
         <Flow />
         <Safety />
         <WhyStack />
+        <Faq />
         <CTA />
       </main>
       <Footer />
@@ -362,6 +373,81 @@ function WhyStack() {
         />
         <div className="mt-10">
           <StackCards />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------- FAQ */
+
+const FAQ_ITEMS: { q: string; a: string }[] = [
+  {
+    q: "What can I point Cyfind AI at?",
+    a: "Isolated lab targets you own and are authorized to test. Cyfind AI is built and licensed (AGPL-3.0) for lab environments only — never real-world or third-party systems.",
+  },
+  {
+    q: "How is this different from a scanner?",
+    a: "A scanner matches signatures and stops. Cyfind AI reasons: a planner reads a live dual-graph, emits intents, and concurrent worker agents execute real tools, exploit, and write findings back — exploration compounds across rounds instead of resetting.",
+  },
+  {
+    q: "Which LLM providers are supported?",
+    a: "Anthropic, OpenAI and AWS Bedrock, behind one failover pool with health tracking and per-task profiles. You can also point it at any OpenAI-compatible endpoint.",
+  },
+  {
+    q: "Is it safe to run autonomously?",
+    a: "Every tool call passes a guard and user-configured intercept rules (allow / deny / ask) before it runs, with a full audit log. Anything that needs a human simply waits for one.",
+  },
+  {
+    q: "How do I deploy it?",
+    a: "A single self-hosted Go binary with the console embedded, or docker compose for the full stack. Your keys, your infrastructure, your data.",
+  },
+  {
+    q: "Can I extend it?",
+    a: "Yes — drop in runtime-loaded skill packs (API recon, Playwright, code audit, patch-diff and more) and connect MCP servers for new tools, without rebuilding.",
+  },
+  {
+    q: "What does a run produce?",
+    a: "Confirmed findings with reproducible PoCs and a per-asset coverage map — every result traceable through anchors back to the concrete asset it came from.",
+  },
+];
+
+function Faq() {
+  return (
+    <section id="faq" className="scroll-mt-20 border-[var(--cf-border)] border-t px-5 py-24 sm:px-6">
+      <div className="mx-auto grid max-w-[1200px] gap-10 lg:grid-cols-[360px_1fr] lg:gap-16">
+        <div>
+          <Eyebrow>FAQ</Eyebrow>
+          <h2 className="mt-4 text-balance font-medium text-[32px] text-[var(--cf-text)] leading-[1.1] tracking-[-0.022em] sm:text-[40px]">
+            Questions, answered
+          </h2>
+          <p className="mt-4 max-w-[320px] text-[15px] text-[var(--cf-muted)] leading-[1.6]">
+            Can&apos;t find what you need? The source and issues are on GitHub.
+          </p>
+          <a
+            href="https://github.com/maulana-tech/cyfind-ai/issues"
+            target="_blank"
+            rel="noreferrer"
+            className="group mt-5 inline-flex items-center gap-1.5 text-[14px] text-[var(--cf-text)] transition-colors hover:text-white"
+          >
+            Open an issue
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+          </a>
+        </div>
+
+        <div>
+          {FAQ_ITEMS.map((item) => (
+            <details
+              key={item.q}
+              className="group border-[var(--cf-border)] border-b [&_summary::-webkit-details-marker]:hidden"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5">
+                <span className="font-medium text-[17px] text-[var(--cf-text)] tracking-[-0.011em]">{item.q}</span>
+                <ChevronDown className="size-5 shrink-0 text-[var(--cf-muted)] transition-transform duration-200 group-open:rotate-180" />
+              </summary>
+              <p className="max-w-[680px] pb-5 text-[15px] text-[var(--cf-muted)] leading-[1.65]">{item.a}</p>
+            </details>
+          ))}
         </div>
       </div>
     </section>
