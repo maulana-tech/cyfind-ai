@@ -799,7 +799,10 @@ export default function SkillsPage() {
   const selectedSkill = selected ? (skills.find((s) => s.name === selected.skill) ?? null) : null;
 
   return (
-    <div data-content-padding="false" className="flex flex-1 flex-col overflow-hidden">
+    <div
+      data-content-padding="false"
+      className="flex h-[calc(100svh-3rem)] flex-col overflow-hidden md:h-[calc(100svh-4rem)]"
+    >
       <div className="flex items-center gap-3 border-b px-4 py-2.5 lg:px-6">
         <div className="flex flex-col gap-0.5">
           <h1 className="text-sm font-semibold leading-tight">Skill</h1>
@@ -966,18 +969,20 @@ export default function SkillsPage() {
           </ScrollArea>
         </div>
 
-        {/* ── Right panel ── */}
-        <div className="flex min-h-0 flex-1 flex-col overflow-auto p-4">
+        {/* ── Right panel ── (overflow-hidden so the flex-1 editor can fill; each view scrolls internally) */}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4">
           {!selected && (
-            <SkillsOverview
-              skills={skills}
-              missing={missing}
-              onSelect={(name) => setSelected({ skill: name, path: null })}
-            />
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <SkillsOverview
+                skills={skills}
+                missing={missing}
+                onSelect={(name) => setSelected({ skill: name, path: null })}
+              />
+            </div>
           )}
 
           {selected && selected.path === null && selectedSkill && (
-            <div className="max-w-5xl space-y-5">
+            <div className="min-h-0 w-full max-w-5xl flex-1 space-y-5 overflow-y-auto">
               <div>
                 <h2 className="font-mono text-base font-semibold">{selectedSkill.name}</h2>
                 {selectedSkill.description && (
@@ -1129,8 +1134,8 @@ export default function SkillsPage() {
                   {t("加载中…")}
                 </div>
               ) : (
-                <Textarea
-                  className="min-h-0 flex-1 resize-none rounded-lg font-mono text-xs leading-relaxed"
+                <textarea
+                  className="h-[calc(100svh-13rem)] w-full resize-none rounded-lg border border-input bg-transparent px-3 py-2.5 font-mono text-xs leading-relaxed outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                   value={fileContent}
                   onChange={(e) => {
                     setFileContent(e.target.value);
