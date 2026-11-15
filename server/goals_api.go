@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/db"
 )
 
 // Manual CRUD interface for the overview's "goal management". It writes the same batch of goal nodes as the agent-side set_goals tool,

@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/mcphttp"
+	"github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/mcphttp"
 	"github.com/Autumn-27/norma/mcp"
 	actool "github.com/Autumn-27/norma/tool"
 )

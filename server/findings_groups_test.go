@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/db"
 )
 
 func TestFindingPaginationParam(t *testing.T) {

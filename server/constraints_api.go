@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/db"
 )
 
 // Manual CRUD interface for the overview's "constraint management" + resolution of the injection-scope switches. Operation constraints (allow/deny) write the same

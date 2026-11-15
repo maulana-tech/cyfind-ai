@@ -1,15 +1,15 @@
 <div align="center">
 
-# CYFIND
+# Cyfind AI
 
-AI autonomous penetration testing system. Multi-agent LLM, Go backend, Next.js frontend.
+Autonomous AI penetration-testing system. Multi-agent LLM, Go backend, Next.js frontend.
 
-[![Release](https://img.shields.io/github/v/release/trhhubsd/CYFIND)](https://github.com/trhhubsd/CYFIND/releases)
-[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/maulana-tech/cyfind-ai)](https://github.com/maulana-tech/cyfind-ai/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 </div>
 
-CYFIND is a multi-agent system for autonomous penetration testing in an isolated lab: a planner and workers share an asset graph and an exploration graph, with human-in-the-loop approval and full traffic recording. It ships as one binary or a Docker Compose stack.
+Cyfind AI is a multi-agent system for autonomous penetration testing in an isolated lab: a planner and workers share an asset graph and an exploration graph, with human-in-the-loop approval and full traffic recording. It ships as one binary or a Docker Compose stack.
 
 ---
 
@@ -49,7 +49,7 @@ CYFIND is a multi-agent system for autonomous penetration testing in an isolated
 ## Approval record details
 
 The global "Approval records", the in-task "Interception approval", and the approval cards in chat all support expanding to view details. The display structure is modeled on
-[AegisHook's approval-detail component](https://github.com/RuoJi6/AegisHook/blob/main/web/src/components/CallDetail.vue), reusing CYFIND's own components and theme:
+[AegisHook's approval-detail component](https://github.com/RuoJi6/AegisHook/blob/main/web/src/components/CallDetail.vue), reusing Cyfind AI's own components and theme:
 
 
 ## Asset sync (ScopeSentry)
@@ -58,7 +58,7 @@ Assets can be synced directly from [ScopeSentry](https://github.com/Autumn-27/Sc
 
 - On the "**Asset sync**" page, enter the ScopeSentry address and API key to connect the data source;
 - Select the targets and asset types to sync by **project** or **task** dimension (domain / subdomain / IP / port / site / endpoint…);
-- Import with one click and merge by company asset scope, going straight into CYFIND's asset graph for agents to explore.
+- Import with one click and merge by company asset scope, going straight into Cyfind AI's asset graph for agents to explore.
 
 ---
 
@@ -69,8 +69,8 @@ Assets can be synced directly from [ScopeSentry](https://github.com/Autumn-27/Sc
 ### Option 1: one-click install script (recommended)
 
 ```bash
-git clone https://github.com/trhhubsd/CYFIND
-cd CYFIND
+git clone https://github.com/maulana-tech/cyfind-ai
+cd cyfind-ai
 ./install.sh
 ```
 
@@ -84,8 +84,8 @@ Once installed, open **http://localhost:8787** (first visit goes to `/setup` to 
 ### Option 2: Docker Compose (recommended)
 
 ```bash
-git clone https://github.com/trhhubsd/CYFIND
-cd CYFIND
+git clone https://github.com/maulana-tech/cyfind-ai
+cd cyfind-ai
 cp .env.example .env          # fill in POSTGRES_PASSWORD, optionally ANTHROPIC_API_KEY
 docker compose up -d          # pull the tomicdd/cyfind image + postgres
 # → http://localhost:8787
@@ -148,7 +148,7 @@ After clicking "Update": download the release package for the current platform �
 ### Option 2: one-click update script
 
 ```bash
-cd CYFIND
+cd cyfind-ai
 ./update.sh
 ```
 
@@ -160,7 +160,7 @@ The script first optionally runs `git pull` to fetch the latest code, then lets 
 ### Option 3: Docker Compose (manual)
 
 ```bash
-cd CYFIND
+cd cyfind-ai
 git pull                       # update compose / scripts (optional)
 # Pin a version: set CYFIND_TAG=v0.2.0 in .env; otherwise latest is used
 docker compose pull cyfind
@@ -170,7 +170,7 @@ docker image prune -f          # clean up old images (optional)
 
 ### Option 4: prebuilt binaries (Releases)
 
-Download the new-version zip from [Releases](https://github.com/trhhubsd/CYFIND/releases), stop the old process, overwrite `cyfind` and `skills/` (keeping your `config.json` and `data/`), and restart:
+Download the new-version zip from [Releases](https://github.com/maulana-tech/cyfind-ai/releases), stop the old process, overwrite `cyfind` and `skills/` (keeping your `config.json` and `data/`), and restart:
 
 ```bash
 cp -r <extracted dir>/skills ./ && cp <extracted dir>/cyfind ./
@@ -270,7 +270,7 @@ In this version, history is viewed through the finding detail and sessions. It i
 
 ## System technical architecture
 
-CYFIND is an **LLM multi-agent-driven autonomous penetration system**: a Go monolith backend (with the Next.js frontend embedded) + PostgreSQL, where agent capabilities are provided by the [`norma`](https://github.com/Autumn-27/norma) SDK (`agentcore` / `tool` / `permission` / `harness` / `memory` / `transcript`). At its core is the **dual-graph architecture**, and the two autonomy mechanisms built around it: **process-level information exchange between workers** and the **planner's cross-round shared todolist for a stable attack chain**.
+Cyfind AI is an **LLM multi-agent-driven autonomous penetration system**: a Go monolith backend (with the Next.js frontend embedded) + PostgreSQL, where agent capabilities are provided by the [`norma`](https://github.com/Autumn-27/norma) SDK (`agentcore` / `tool` / `permission` / `harness` / `memory` / `transcript`). At its core is the **dual-graph architecture**, and the two autonomy mechanisms built around it: **process-level information exchange between workers** and the **planner's cross-round shared todolist for a stable attack chain**.
 
 ### Overall layering
 
@@ -434,7 +434,7 @@ flowchart TB
   R3["round 3 (② produced a fact)  dispatch intent ③"] --> T3
 ```
 
-So the attack chain still **advances stably, without duplication and without misordering** in an "event-driven + stateless session" environment — this is the key to CYFIND being able to autonomously walk through a multi-step exploitation chain.
+So the attack chain still **advances stably, without duplication and without misordering** in an "event-driven + stateless session" environment — this is the key to Cyfind AI being able to autonomously walk through a multi-step exploitation chain.
 
 ---
 
@@ -449,7 +449,6 @@ Scan to follow the WeChat official account **SecSentry**, and send a private mes
 </div>
 
 ---
-This repository continues to maintain [Autumn-27/CYFIND](https://github.com/Autumn-27/CYFIND) (AGPL-3.0). To keep up with later versions, fork [trhhubsd/CYFIND](https://github.com/trhhubsd/CYFIND).
 
 ## References
 
@@ -460,13 +459,13 @@ https://github.com/oritera/Cairn
 
 ### Open-source license
 
-This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**; the full terms are in the [LICENSE](LICENSE) file at the repository root.
+This project is licensed under the **MIT License**; the full terms are in the [LICENSE](LICENSE) file at the repository root.
 
-This means anyone is free to use, modify, and distribute this project, but **derivative works must likewise be open-sourced under AGPL-3.0**; in particular, **if you modify this project and provide it to users over a network (e.g. deployed as an online service), you must also make the corresponding complete source code available to those users**.
+Anyone is free to use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the software, provided the copyright notice and permission notice are included. The software is provided "as is", without warranty of any kind.
 
-> ⚠️ **Important note**: the open-source license itself does not restrict how the software is used. The "usage restrictions" and "disclaimer" below are an additional agreement and solemn statement by the author to users; please be sure to abide by them.
+> ⚠️ **Important note**: the open-source license does not restrict how the software is used. The "usage restrictions" and "disclaimer" below are an additional agreement and solemn statement by the author to users; please be sure to abide by them.
 
-**CYFIND is intended only for personal study, code research, and local technical validation, and must not be used to launch actual testing against any online system or website.**
+**Cyfind AI is intended only for personal study, code research, and local technical validation, and must not be used to launch actual testing against any online system or website.**
 
 ### Permitted scope of use
 

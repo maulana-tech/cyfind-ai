@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/traffic"
+	"github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/traffic"
 )
 
 func evidenceFixture(t *testing.T) (*Store, db.RecordFindingInput, string) {

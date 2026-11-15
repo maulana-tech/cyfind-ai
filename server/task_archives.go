@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/cyfind/agent"
-	pgdb "github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/traffic"
+	"github.com/maulana-tech/cyfind-ai/agent"
+	pgdb "github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/traffic"
 )
 
 const taskArchivePollInterval = 2 * time.Second

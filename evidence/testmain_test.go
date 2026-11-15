@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/db"
 )
 
 // Initialize an explicitly configured fresh database before taking the same

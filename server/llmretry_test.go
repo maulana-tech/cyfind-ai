@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/cyfind/agent"
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/agent"
+	"github.com/maulana-tech/cyfind-ai/db"
 )
 
 // With no config at all, the resolution must be all zeros — i.e. the SDK's and task_llm's own built-in defaults,

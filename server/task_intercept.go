@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/db"
 )
 
 // CRUD for task-level asset intercept/allow rules. Rules belong to a task_id and apply only to that task:

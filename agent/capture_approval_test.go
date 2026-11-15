@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/guard"
-	"github.com/Autumn-27/cyfind/intercept"
+	"github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/guard"
+	"github.com/maulana-tech/cyfind-ai/intercept"
 	"github.com/Autumn-27/norma/agentcore"
 	"github.com/Autumn-27/norma/llm"
 	"github.com/Autumn-27/norma/permission"

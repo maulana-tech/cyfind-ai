@@ -17,10 +17,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Autumn-27/cyfind/agent"
-	"github.com/Autumn-27/cyfind/config"
-	"github.com/Autumn-27/cyfind/selfupdate"
-	"github.com/Autumn-27/cyfind/server"
+	"github.com/maulana-tech/cyfind-ai/agent"
+	"github.com/maulana-tech/cyfind-ai/config"
+	"github.com/maulana-tech/cyfind-ai/selfupdate"
+	"github.com/maulana-tech/cyfind-ai/server"
 )
 
 // version is the build version, injected at release time via

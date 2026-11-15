@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/traffic"
+	"github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/traffic"
 )
 
 type Store struct {

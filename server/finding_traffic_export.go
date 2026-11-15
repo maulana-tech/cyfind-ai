@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/evidence"
-	"github.com/Autumn-27/cyfind/report"
+	"github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/evidence"
+	"github.com/maulana-tech/cyfind-ai/report"
 )
 
 func writeFindingsEvidenceZip(out io.Writer, findings []*db.DBFinding, stage string, now time.Time) error {

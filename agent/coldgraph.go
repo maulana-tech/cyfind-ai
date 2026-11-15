@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/db"
 )
 
 // cgNode is the minimal node view the cold-graph algorithms need.

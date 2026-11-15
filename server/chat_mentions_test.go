@@ -13,8 +13,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/Autumn-27/cyfind/agent"
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/agent"
+	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/Autumn-27/norma/llm"
 )
 

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/cyfind/notify"
+	"github.com/maulana-tech/cyfind-ai/notify"
 )
 
 var (

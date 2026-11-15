@@ -29,7 +29,7 @@ const messages = {
     "Once you download, install, access, or use the Software in any way, you will be deemed to have read, understood, and agreed to be bound by this Statement in its entirety.",
   "第一条 · 定义与开源许可": "Article 1 · Definitions and Open Source License",
   "本软件（CYFIND）是一款基于 GNU Affero General Public License v3.0（AGPL-3.0）发布的开源程序。您可依据该协议自由使用、复制、修改和分发本软件；但任何衍生作品（包括通过网络向第三方提供的在线服务）均须同样以 AGPL-3.0 协议开源并向使用者公开对应的完整源代码。AGPL-3.0 完整条款以随附的 LICENSE 文件为准。":
-    "The Software (CYFIND) is an open source program released under the GNU Affero General Public License v3.0 (AGPL-3.0). You may freely use, copy, modify, and distribute the Software in accordance with that license; however, any derivative work (including online services provided to third parties over a network) must likewise be published as open source under the AGPL-3.0 license, and the corresponding complete source code must be made public to its users. The complete terms of the AGPL-3.0 are set out in the accompanying LICENSE file.",
+    "The Software (Cyfind AI) is open-source software released under the MIT License. You may freely use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the Software, provided the copyright notice and permission notice are included. The complete terms are set out in the accompanying LICENSE file.",
   "第二条 · 授权使用范围": "Article 2 · Scope of Permitted Use",
   "本软件仅供个人学习、代码研究、安全技术原理探讨，以及在您自行搭建的本地隔离环境中进行技术验证之用，适用于学习、学术研究、代码审阅等非攻击性、非破坏性用途。除本条明确许可的情形外，您不得将本软件用于任何其他目的。":
     "The Software is provided solely for personal learning, code research, discussion of security technology principles, and technical verification in a local isolated environment set up by you yourself; it applies to non-aggressive and non-destructive purposes such as learning, academic research, and code review. Except for the circumstances expressly permitted in this Article, you may not use the Software for any other purpose.",
@@ -46,7 +46,7 @@ const messages = {
     "You must not engage in any conduct that violates the laws, regulations, or regulatory requirements of your country or region.",
   "第四条 · 知识产权": "Article 4 · Intellectual Property",
   "本软件的著作权及相关知识产权归项目作者及贡献者所有，并在 AGPL-3.0 协议约定的范围内向您授予相应权利。除该协议明确授予的权利外，本声明未以明示或默示方式授予您任何其他权利。":
-    "The copyright and related intellectual property rights in the Software belong to the authors and contributors of the project, and the corresponding rights are granted to you within the scope provided for in the AGPL-3.0 license. Except for the rights expressly granted by that license, this Statement grants you no other rights, whether expressly or implicitly.",
+    'The copyright and related intellectual property rights in the Software belong to the authors and contributors of the project. The Software is provided "as is", without warranty of any kind; the rights granted to you are those set out in the MIT License in the accompanying LICENSE file.',
   "第五条 · 数据与隐私": "Article 5 · Data and Privacy",
   "本软件为可自行部署的开源程序，作者不运营任何集中式服务、亦不会收集或上传您的使用数据。您在使用过程中产生、处理或接触的一切数据，均由您自行掌控并负责其合法性与安全性；因数据处理不当引发的任何后果由您自行承担。":
     "The Software is an open source program that you can self-host; its authors do not operate any centralized service and will not collect or upload your usage data. All data that you generate, process, or come into contact with during use remains under your own control, and you are responsible for its legality and security; you bear any consequences arising from improper handling of data.",

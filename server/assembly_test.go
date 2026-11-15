@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	actool "github.com/Autumn-27/norma/tool"
-	"github.com/Autumn-27/cyfind/agent"
-	"github.com/Autumn-27/cyfind/db"
+	"github.com/maulana-tech/cyfind-ai/agent"
+	"github.com/maulana-tech/cyfind-ai/db"
 )
 
 // hasSkillTool reports whether the packed tool set contains the Skill meta-tool.

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Autumn-27/cyfind/selfupdate"
+	"github.com/maulana-tech/cyfind-ai/selfupdate"
 )
 
 // The HTTP face of the one-click page update. The actual download/verify/swap logic all lives in the selfupdate package;

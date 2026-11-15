@@ -14,12 +14,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Autumn-27/cyfind/agent"
-	pgdb "github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/enrich"
-	"github.com/Autumn-27/cyfind/guard"
-	"github.com/Autumn-27/cyfind/intercept"
-	"github.com/Autumn-27/cyfind/traffic"
+	"github.com/maulana-tech/cyfind-ai/agent"
+	pgdb "github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/enrich"
+	"github.com/maulana-tech/cyfind-ai/guard"
+	"github.com/maulana-tech/cyfind-ai/intercept"
+	"github.com/maulana-tech/cyfind-ai/traffic"
 	actool "github.com/Autumn-27/norma/tool"
 )
 

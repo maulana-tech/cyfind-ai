@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/cyfind/agent"
-	"github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/intercept"
+	"github.com/maulana-tech/cyfind-ai/agent"
+	"github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/intercept"
 	"github.com/Autumn-27/norma/llm"
 	actool "github.com/Autumn-27/norma/tool"
 )

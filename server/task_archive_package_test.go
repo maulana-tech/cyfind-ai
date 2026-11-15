@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	pgdb "github.com/Autumn-27/cyfind/db"
+	pgdb "github.com/maulana-tech/cyfind-ai/db"
 	"github.com/klauspost/compress/zstd"
 )
 

@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Autumn-27/cyfind/db"
-	"github.com/Autumn-27/cyfind/notify"
-	"github.com/Autumn-27/cyfind/watch"
+	"github.com/maulana-tech/cyfind-ai/db"
+	"github.com/maulana-tech/cyfind-ai/notify"
+	"github.com/maulana-tech/cyfind-ai/watch"
 )
 
 // watchAlerter forwards a watch Detection to the notify pipeline, reusing the

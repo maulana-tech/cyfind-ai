@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/cyfind/notify"
+	"github.com/maulana-tech/cyfind-ai/notify"
 )
 
 // This file is the channel-configuration and event layer of IM push. For claiming delivery jobs and their state transitions, see

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/cyfind/agent"
+	"github.com/maulana-tech/cyfind-ai/agent"
 )
 
 func TestPauseCancelsWithNamedCause(t *testing.T) {

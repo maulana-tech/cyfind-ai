@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Autumn-27/cyfind/sidequestion"
+	"github.com/maulana-tech/cyfind-ai/sidequestion"
 	"github.com/google/uuid"
 )
 

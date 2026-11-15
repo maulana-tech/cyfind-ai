@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Autumn-27/cyfind/llmrec"
+	"github.com/maulana-tech/cyfind-ai/llmrec"
 )
 
 // The transport is the only layer that still sees the wire bodies: norma builds

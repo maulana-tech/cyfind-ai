@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/Autumn-27/cyfind/agent"
+	"github.com/maulana-tech/cyfind-ai/agent"
 )
 
 func TestShutdownContextPreservesNamedCause(t *testing.T) {

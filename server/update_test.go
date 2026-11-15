@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/cyfind/selfupdate"
+	"github.com/maulana-tech/cyfind-ai/selfupdate"
 )
 
 // releaseCache is the layer protecting the GitHub quota: the unauthenticated API allows only 60/hour/IP,

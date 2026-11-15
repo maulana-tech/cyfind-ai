@@ -113,7 +113,7 @@ function Hero() {
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Lock className="size-4 text-[var(--cf-accent)]" />
-                AGPL-3.0
+                MIT License
               </span>
             </div>
           </Reveal>
@@ -384,7 +384,7 @@ function WhyStack() {
 const FAQ_ITEMS: { q: string; a: string }[] = [
   {
     q: "What can I point Cyfind AI at?",
-    a: "Isolated lab targets you own and are authorized to test. Cyfind AI is built and licensed (AGPL-3.0) for lab environments only — never real-world or third-party systems.",
+    a: "Isolated lab targets you own and are authorized to test. Cyfind AI is built and licensed (MIT) for lab environments only — never real-world or third-party systems.",
   },
   {
     q: "How is this different from a scanner?",
@@ -520,7 +520,7 @@ const FOOTER_COLS: { title: string; links: [string, string][] }[] = [
     links: [
       ["GitHub", "https://github.com/maulana-tech/cyfind-ai"],
       ["Issues", "https://github.com/maulana-tech/cyfind-ai/issues"],
-      ["AGPL-3.0", "https://github.com/maulana-tech/cyfind-ai"],
+      ["MIT License", "https://github.com/maulana-tech/cyfind-ai/blob/main/LICENSE"],
     ],
   },
 ];
@@ -556,7 +556,7 @@ function Footer() {
         ))}
       </div>
       <div className="mx-auto flex max-w-[1200px] flex-col gap-2 border-[var(--cf-border)] border-t px-5 py-6 text-[12px] text-[var(--cf-faint)] sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <span>© {new Date().getFullYear()} Cyfind AI · AGPL-3.0</span>
+        <span>© {new Date().getFullYear()} Cyfind AI · MIT License</span>
         <span>Built for authorized, isolated-lab testing only.</span>
       </div>
     </footer>

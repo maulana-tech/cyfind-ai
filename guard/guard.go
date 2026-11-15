@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Autumn-27/cyfind/intercept"
+	"github.com/maulana-tech/cyfind-ai/intercept"
 	"github.com/Autumn-27/norma/hook"
 )
 

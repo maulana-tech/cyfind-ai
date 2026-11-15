@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/cyfind/notify"
+	"github.com/maulana-tech/cyfind-ai/notify"
 )
 
 // Every test in this file really connects to PostgreSQL (skipped when there is no DB). These SQL statements use
