@@ -2,7 +2,10 @@
 
 import * as React from "react";
 
+import Link from "next/link";
+
 import {
+  ArrowRightIcon,
   ArrowUpIcon,
   Bot,
   ChevronDownIcon,
@@ -16,6 +19,7 @@ import {
   PinOffIcon,
   PlusIcon,
   Square,
+  TargetIcon,
   Trash2Icon,
   XIcon,
   ZapIcon,
@@ -26,7 +30,7 @@ import { ApprovalExecutionFocus, useApprovalFocus, useApprovalHistory } from "@/
 import { MentionTextarea } from "@/components/mention-textarea";
 import { SideQuestionButton, SideQuestionWorkspace } from "@/components/side-question-workspace";
 import { TodoPopover } from "@/components/todo-popover";
-import { Transcript, DetailPanelProvider, DetailPanelView } from "@/components/transcript";
+import { DetailPanelProvider, DetailPanelView, Transcript } from "@/components/transcript";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +62,7 @@ import { mergeActivities } from "@/lib/activity-merge";
 import { api } from "@/lib/api";
 import { shouldSubmitOnKey, useChatSendMode } from "@/lib/chat-send-mode";
 import { getLocalStorageValue, setLocalStorageValue } from "@/lib/local-storage.client";
+import { detectPentest, type PentestDetection } from "@/lib/pentest-detect";
 import { isBtwCommand } from "@/lib/side-questions";
 import type { Activity, Agent, ChatAttachment, Conversation, LLMProfile } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -379,7 +384,10 @@ function DraftChat({
 }: {
   agents: Agent[];
   profiles: LLMProfile[];
-  onStarted: (c: Conversation, pending?: { input?: string; attachments?: ChatAttachment[] }) => void;
+  onStarted: (
+    c: Conversation,
+    pending?: { input?: string; attachments?: ChatAttachment[]; pentest?: PentestDetection },
+  ) => void;
 }) {
   const t = useT();
   const [agentKey, setAgentKey] = React.useState("");
@@ -402,7 +410,8 @@ function DraftChat({
     try {
       const c = await api.createConversation(agentKey, "", llmProfileId);
       await api.sendConversationMessage(c.id, msg);
-      onStarted(c);
+      const det = detectPentest(msg);
+      onStarted(c, det.isPentest ? { pentest: det } : undefined);
     } catch (e) {
       toast.error(t("发送失败：{message}", { message: (e as Error).message }));
       setSending(false);
@@ -483,6 +492,115 @@ function DraftChat({
   );
 }
 
+// PentestTaskCard is the Chat→Task bridge: when a message looks like a pentest
+// request, it offers to launch it as a real task (user edits the goal and clicks),
+// creates the task with the goal seeded as the first intent (workers run right
+// away), then surfaces a "View task →" link into the Tasks engine.
+function PentestTaskCard({
+  detection,
+  llmProfileId,
+  onDismiss,
+}: {
+  detection: PentestDetection;
+  llmProfileId: number | null;
+  onDismiss: () => void;
+}) {
+  const [goal, setGoal] = React.useState(detection.goal);
+  const [creating, setCreating] = React.useState(false);
+  const [taskId, setTaskId] = React.useState<string | null>(null);
+
+  async function launch() {
+    const text = goal.trim();
+    if (!text || creating) return;
+    setCreating(true);
+    try {
+      const task = await api.createTask({
+        name: `Pentest · ${detection.targets[0] ?? "target"}`.slice(0, 80),
+        description: text,
+        goal: text,
+        seedFirstIntent: true,
+        llmProfileIds: llmProfileId ? [llmProfileId] : undefined,
+      });
+      setTaskId(String(task.id));
+      toast.success("Task launched");
+    } catch (e) {
+      toast.error(`Failed to launch task: ${(e as Error).message}`);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  return (
+    <div className="mx-4 mb-2 rounded-xl border border-primary/30 bg-primary/5 p-3">
+      {taskId ? (
+        <div className="flex items-center gap-3">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+            <TargetIcon className="size-4" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-medium text-sm">Task launched — workers are running.</p>
+            <p className="truncate text-muted-foreground text-xs">
+              Agents will recon and test {detection.targets.join(", ")}.
+            </p>
+          </div>
+          <Link
+            href={`/function/tasks/detail?id=${taskId}`}
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-primary px-3 py-1.5 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90"
+          >
+            View task <ArrowRightIcon className="size-3.5" />
+          </Link>
+          <button
+            type="button"
+            onClick={onDismiss}
+            aria-label="Dismiss"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <XIcon className="size-4" />
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <ZapIcon className="size-4 shrink-0 text-primary" />
+            <span className="font-medium text-sm">This looks like a pentest request</span>
+            {detection.targets.map((tg) => (
+              <span key={tg} className="rounded-md bg-primary/10 px-1.5 py-0.5 font-mono text-[11px] text-primary">
+                {tg}
+              </span>
+            ))}
+            <button
+              type="button"
+              onClick={onDismiss}
+              aria-label="Dismiss"
+              className="ml-auto text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <XIcon className="size-4" />
+            </button>
+          </div>
+          <textarea
+            className="h-16 w-full resize-none rounded-lg border border-input bg-background px-2.5 py-2 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
+            placeholder="Task goal…"
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            <Button size="sm" onClick={launch} disabled={creating || !goal.trim()}>
+              {creating ? <Loader2Icon className="size-4 animate-spin" /> : <TargetIcon className="size-4" />}
+              Launch as task
+            </Button>
+            <Button size="sm" variant="ghost" onClick={onDismiss}>
+              Not now
+            </Button>
+            <span className="ml-auto text-[11px] text-muted-foreground">
+              Runs the goal as a task with live workers.
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ChatView is the right pane for one conversation — mirrors the task detail's
 // main-agent console: header with agent + live badge + token/duration meta, a
 // scroll-stick transcript (chat mode), and the composer.
@@ -499,7 +617,7 @@ function ChatView({
   profiles: LLMProfile[];
   // pending text + already-uploaded attachments handed off from a draft that
   // created this conversation via the paperclip (consumed once, on mount).
-  initial?: { input?: string; attachments?: ChatAttachment[] };
+  initial?: { input?: string; attachments?: ChatAttachment[]; pentest?: PentestDetection };
   onTitleMaybeChanged: () => void;
   onConvUpdated: () => void;
 }) {
@@ -510,6 +628,10 @@ function ChatView({
   const [input, setInput] = React.useState(initial?.input ?? "");
   const [sending, setSending] = React.useState(false);
   const [stopping, setStopping] = React.useState(false);
+  // Chat→Task bridge: when a sent message reads like a pentest request, offer to
+  // launch it as a real task. Seeded from the draft hand-off (first message) and
+  // otherwise set on send; ChatView is keyed by conv.id so it resets per conversation.
+  const [pentestSuggestion, setPentestSuggestion] = React.useState<PentestDetection | null>(initial?.pentest ?? null);
   // Method 1 file upload: uploaded attachments (saved to sessions/conv-<id>/uploads/) are sent with the next message.
   const [attachments, setAttachments] = React.useState<ChatAttachment[]>(initial?.attachments ?? []);
   const [uploading, setUploading] = React.useState(false);
@@ -749,6 +871,9 @@ function ChatView({
     setSending(true);
     setInput("");
     setAttachments([]);
+    // Offer a Chat→Task bridge when the message reads like a pentest request.
+    const det = detectPentest(msg);
+    if (det.isPentest) setPentestSuggestion(det);
     try {
       await api.sendConversationMessage(conv.id, msg, atts.length ? atts : undefined);
       // The live loop pulls the persisted human turn immediately. Sharing that
@@ -780,90 +905,98 @@ function ChatView({
 
   return (
     <DetailPanelProvider>
-    <SideQuestionWorkspace side={side} label={agent?.name ?? conv.agent_key} composerLayout="inline">
-      {/* header: which agent + live + token meta */}
-      <div className="flex min-w-0 flex-wrap items-center gap-2 border-b px-4 py-2.5">
-        <Bot className="text-muted-foreground size-4 shrink-0" />
-        <span className="min-w-0 max-w-48 truncate text-sm font-medium">{agent?.name ?? conv.agent_key}</span>
-        <span className="text-muted-foreground hidden shrink-0 font-mono text-xs sm:inline">{conv.agent_key}</span>
-        {agent && !agent.builtin && (
-          <Badge variant="outline" className="shrink-0 px-1.5 py-0 text-[10px]">
-            {t("自定义")}
-          </Badge>
-        )}
-        {agent?.description && (
-          <span className="text-muted-foreground min-w-0 truncate text-xs">{agent.description}</span>
-        )}
-        {running && <LiveBadge />}
-        <SideQuestionButton side={side} />
-        <div className="text-muted-foreground ml-auto flex min-w-0 max-w-full items-center justify-end gap-x-3 gap-y-1 text-xs max-sm:w-full max-sm:flex-wrap">
-          {tokenTotal.turns > 0 && (
-            <span title={t("agent 循环轮次（模型调用次数）")} className="tabular-nums">
-              {t("{n} 轮", { n: tokenTotal.turns })}
-            </span>
+      <SideQuestionWorkspace side={side} label={agent?.name ?? conv.agent_key} composerLayout="inline">
+        {/* header: which agent + live + token meta */}
+        <div className="flex min-w-0 flex-wrap items-center gap-2 border-b px-4 py-2.5">
+          <Bot className="text-muted-foreground size-4 shrink-0" />
+          <span className="min-w-0 max-w-48 truncate text-sm font-medium">{agent?.name ?? conv.agent_key}</span>
+          <span className="text-muted-foreground hidden shrink-0 font-mono text-xs sm:inline">{conv.agent_key}</span>
+          {agent && !agent.builtin && (
+            <Badge variant="outline" className="shrink-0 px-1.5 py-0 text-[10px]">
+              {t("自定义")}
+            </Badge>
           )}
-          {tokenTotal.any && (
-            <span title="input / cache(read) / output tokens" className="min-w-0 truncate tabular-nums">
-              input {fmtTokens(tokenTotal.i)} · cache {fmtTokens(tokenTotal.cr)} · output {fmtTokens(tokenTotal.o)}
-            </span>
+          {agent?.description && (
+            <span className="text-muted-foreground min-w-0 truncate text-xs">{agent.description}</span>
           )}
-        </div>
-      </div>
-
-      <ApprovalExecutionFocus focus={approvalFocus} history={focusHistory} />
-
-      {/* messages + inline detail panel */}
-      <div className="flex min-h-0 flex-1">
-        <ScrollArea type="auto" className="min-h-0 min-w-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
-          <div className="min-w-0 max-w-full px-4 py-3" ref={contentRef}>
-            {messages.length === 0 && !running ? (
-              <div className="text-muted-foreground py-10 text-center text-sm">
-                {t("开始和「{name}」对话", { name: agent?.name ?? conv.agent_key })}
-              </div>
-            ) : (
-              <>
-                {hasMore && (
-                  <div className="text-muted-foreground/70 pb-2 text-center text-[11px]">
-                    {t("向上滚动加载更早的消息…")}
-                  </div>
-                )}
-                <Transcript
-                  activity={messages}
-                  live={running}
-                  chat
-                  fetchDetail={fetchDetail}
-                  focusedSeq={focusHistory.ready ? approvalFocus.state?.source?.seq : undefined}
-                />
-              </>
+          {running && <LiveBadge />}
+          <SideQuestionButton side={side} />
+          <div className="text-muted-foreground ml-auto flex min-w-0 max-w-full items-center justify-end gap-x-3 gap-y-1 text-xs max-sm:w-full max-sm:flex-wrap">
+            {tokenTotal.turns > 0 && (
+              <span title={t("agent 循环轮次（模型调用次数）")} className="tabular-nums">
+                {t("{n} 轮", { n: tokenTotal.turns })}
+              </span>
+            )}
+            {tokenTotal.any && (
+              <span title="input / cache(read) / output tokens" className="min-w-0 truncate tabular-nums">
+                input {fmtTokens(tokenTotal.i)} · cache {fmtTokens(tokenTotal.cr)} · output {fmtTokens(tokenTotal.o)}
+              </span>
             )}
           </div>
-        </ScrollArea>
-        <DetailPanelView />
-      </div>
+        </div>
 
-      <Composer
-        value={input}
-        onChange={setInput}
-        onSend={send}
-        disabled={running || sending}
-        allowBtw
-        placeholder={running ? t("Agent 正在回复，可输入 /btw 提问…") : t("输入消息，@ 引用记录，Enter 发送")}
-        running={running}
-        onStop={stop}
-        stopDisabled={stopping}
-        attachments={attachments}
-        onPickFiles={pickFiles}
-        onRemoveAttachment={(path) => setAttachments((p) => p.filter((x) => x.path !== path))}
-        uploading={uploading}
-      />
-      <LLMProfileRow
-        profiles={profiles}
-        selected={currentProfileId}
-        onChange={changeProfile}
-        disabled={running || sending}
-        rightSlot={<TodoPopover seq={latestTodoSeq} fetchDetail={fetchDetail} />}
-      />
-    </SideQuestionWorkspace>
+        <ApprovalExecutionFocus focus={approvalFocus} history={focusHistory} />
+
+        {/* messages + inline detail panel */}
+        <div className="flex min-h-0 flex-1">
+          <ScrollArea type="auto" className="min-h-0 min-w-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
+            <div className="min-w-0 max-w-full px-4 py-3" ref={contentRef}>
+              {messages.length === 0 && !running ? (
+                <div className="text-muted-foreground py-10 text-center text-sm">
+                  {t("开始和「{name}」对话", { name: agent?.name ?? conv.agent_key })}
+                </div>
+              ) : (
+                <>
+                  {hasMore && (
+                    <div className="text-muted-foreground/70 pb-2 text-center text-[11px]">
+                      {t("向上滚动加载更早的消息…")}
+                    </div>
+                  )}
+                  <Transcript
+                    activity={messages}
+                    live={running}
+                    chat
+                    fetchDetail={fetchDetail}
+                    focusedSeq={focusHistory.ready ? approvalFocus.state?.source?.seq : undefined}
+                  />
+                </>
+              )}
+            </div>
+          </ScrollArea>
+          <DetailPanelView />
+        </div>
+
+        {pentestSuggestion && (
+          <PentestTaskCard
+            detection={pentestSuggestion}
+            llmProfileId={currentProfileId}
+            onDismiss={() => setPentestSuggestion(null)}
+          />
+        )}
+
+        <Composer
+          value={input}
+          onChange={setInput}
+          onSend={send}
+          disabled={running || sending}
+          allowBtw
+          placeholder={running ? t("Agent 正在回复，可输入 /btw 提问…") : t("输入消息，@ 引用记录，Enter 发送")}
+          running={running}
+          onStop={stop}
+          stopDisabled={stopping}
+          attachments={attachments}
+          onPickFiles={pickFiles}
+          onRemoveAttachment={(path) => setAttachments((p) => p.filter((x) => x.path !== path))}
+          uploading={uploading}
+        />
+        <LLMProfileRow
+          profiles={profiles}
+          selected={currentProfileId}
+          onChange={changeProfile}
+          disabled={running || sending}
+          rightSlot={<TodoPopover seq={latestTodoSeq} fetchDetail={fetchDetail} />}
+        />
+      </SideQuestionWorkspace>
     </DetailPanelProvider>
   );
 }
