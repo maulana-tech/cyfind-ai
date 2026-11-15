@@ -41,6 +41,16 @@ export function MentionTextarea({ value, onValueChange, onKeyDown, className, in
     pageError?: string;
   } | null>(null);
   const request = React.useRef<{ key: string; controller: AbortController; loadingMore: boolean } | null>(null);
+  // Cross-browser auto-grow. Chrome has CSS field-sizing:content, but Safari and
+  // Firefox don't, so the textarea wouldn't grow and long text would overflow/clip.
+  // Measure and set the height on every value change; the max-h-* class caps it (then
+  // it scrolls). On Chrome field-sizing already matches this, so it stays consistent.
+  React.useLayoutEffect(() => {
+    const el = textarea.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [value]);
   const listId = React.useId();
   const active = cursor === null ? null : activeMention(value, cursor);
   const search = mentionSearch(active?.query ?? "");
