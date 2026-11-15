@@ -28,7 +28,7 @@ export function LandingNav() {
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled
-          ? "border-[var(--cf-border)] border-b bg-[color-mix(in_oklch,var(--cf-bg),transparent_18%)] backdrop-blur-md"
+          ? "border-[var(--cf-border)] border-b bg-[rgba(6,71,179,0.88)] backdrop-blur-md"
           : "border-transparent border-b"
       }`}
     >
@@ -41,7 +41,7 @@ export function LandingNav() {
 
         {/* centered floating pill */}
         <div className="-translate-x-1/2 absolute left-1/2 hidden md:block">
-          <div className="flex items-center gap-0.5 rounded-full border border-[var(--cf-border)] bg-[color-mix(in_oklch,var(--cf-card),transparent_10%)] p-1 shadow-[var(--cf-shadow)] backdrop-blur-md">
+          <div className="flex items-center gap-0.5 rounded-full border border-[var(--cf-border)] bg-[rgba(255,255,255,0.1)] p-1 shadow-[var(--cf-shadow)] backdrop-blur-md">
             {LINKS.map((l) => (
               <a
                 key={l.href}
