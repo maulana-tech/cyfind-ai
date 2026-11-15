@@ -15,7 +15,7 @@ import (
 
 	"github.com/maulana-tech/cyfind-ai/agent"
 	"github.com/maulana-tech/cyfind-ai/db"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 )
 
 func TestChatMentionParsing(t *testing.T) {

@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 	"github.com/aws/smithy-go/eventstream"
 )
 

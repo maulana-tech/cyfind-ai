@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/maulana-tech/cyfind-ai/intercept"
-	"github.com/Autumn-27/norma/hook"
+	"github.com/maulana-tech/aera/hook"
 )
 
 // AuditEntry records one gated tool call.

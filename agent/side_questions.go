@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/maulana-tech/cyfind-ai/sidequestion"
-	"github.com/Autumn-27/norma/agentcore"
+	"github.com/maulana-tech/aera/agentcore"
 )
 
 func attachSideCapture(ctx context.Context, opts *agentcore.Options) context.Context {

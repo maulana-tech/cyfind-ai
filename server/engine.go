@@ -14,8 +14,8 @@ import (
 	"github.com/maulana-tech/cyfind-ai/agent"
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/intercept"
-	"github.com/Autumn-27/norma/harness"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/harness"
+	"github.com/maulana-tech/aera/llm"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 

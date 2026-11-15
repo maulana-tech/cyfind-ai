@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/maulana-tech/cyfind-ai/llmrec"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 )
 
 // End-to-end through a real norma provider: the Capture rides the context into

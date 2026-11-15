@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/maulana-tech/cyfind-ai/sidequestion"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 )
 
 func sideFixture(t *testing.T) (*DB, sidequestion.Snapshot) {

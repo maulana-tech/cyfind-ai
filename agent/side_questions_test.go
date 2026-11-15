@@ -12,8 +12,8 @@ import (
 
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/sidequestion"
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/transcript"
+	"github.com/maulana-tech/aera/llm"
+	"github.com/maulana-tech/aera/transcript"
 )
 
 type sideAgentProvider struct {

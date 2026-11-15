@@ -7,7 +7,7 @@ import (
 	"github.com/maulana-tech/cyfind-ai/agent"
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/llmpool"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 )
 
 // Server-side wiring for LLM round-robin (failover). Design: see docs/LLM-round-robin-design.md:

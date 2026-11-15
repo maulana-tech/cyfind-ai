@@ -15,7 +15,7 @@ import (
 	"github.com/maulana-tech/cyfind-ai/guard"
 	"github.com/maulana-tech/cyfind-ai/intercept"
 	"github.com/maulana-tech/cyfind-ai/llmrec"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 )
 
 // judgeWorkerLane is the usage-ledger "worker" label for intercept fallback-judge

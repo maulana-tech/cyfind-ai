@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/norma/compaction"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/compaction"
+	"github.com/maulana-tech/aera/llm"
 )
 
 type Exchange struct {

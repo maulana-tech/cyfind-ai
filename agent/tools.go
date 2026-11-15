@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	acperm "github.com/Autumn-27/norma/permission"
-	actool "github.com/Autumn-27/norma/tool"
+	acperm "github.com/maulana-tech/aera/permission"
+	actool "github.com/maulana-tech/aera/tool"
 )
 
 // compactIntents distills intents to {id, summary, state, asset_ids, parents,

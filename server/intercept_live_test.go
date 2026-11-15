@@ -11,7 +11,7 @@ import (
 	"github.com/maulana-tech/cyfind-ai/agent"
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/intercept"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 )
 
 // Opt-in model regression: sends synthetic review inputs only, never executes

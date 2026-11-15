@@ -3,7 +3,7 @@ package agent
 import (
 	"strings"
 
-	"github.com/Autumn-27/norma/harness"
+	"github.com/maulana-tech/aera/harness"
 )
 
 // Wrap-up / settlement prompt: when an agent is terminated by [running out of steps (MaxTurns)] or

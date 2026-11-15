@@ -25,8 +25,8 @@ import (
 
 	"github.com/maulana-tech/cyfind-ai/agent"
 	"github.com/maulana-tech/cyfind-ai/db"
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/skill"
+	"github.com/maulana-tech/aera/llm"
+	"github.com/maulana-tech/aera/skill"
 )
 
 // validSkillName checks the agentskills.io name constraints, widened so a skill can

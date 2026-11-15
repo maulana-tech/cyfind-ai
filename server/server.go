@@ -27,9 +27,9 @@ import (
 	"github.com/maulana-tech/cyfind-ai/report"
 	"github.com/maulana-tech/cyfind-ai/traffic"
 	"github.com/maulana-tech/cyfind-ai/watch"
-	"github.com/Autumn-27/norma/llm"
-	actool "github.com/Autumn-27/norma/tool"
-	"github.com/Autumn-27/norma/transcript"
+	"github.com/maulana-tech/aera/llm"
+	actool "github.com/maulana-tech/aera/tool"
+	"github.com/maulana-tech/aera/transcript"
 )
 
 // BuildVersion is the backend application version, injected from cmd/cyfind at

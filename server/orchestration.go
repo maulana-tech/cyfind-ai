@@ -11,8 +11,8 @@ import (
 
 	"github.com/maulana-tech/cyfind-ai/agent"
 	"github.com/maulana-tech/cyfind-ai/db"
-	"github.com/Autumn-27/norma/permission"
-	actool "github.com/Autumn-27/norma/tool"
+	"github.com/maulana-tech/aera/permission"
+	actool "github.com/maulana-tech/aera/tool"
 )
 
 // jsonResult marshals v to a JSON tool result.

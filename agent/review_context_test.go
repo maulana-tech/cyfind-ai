@@ -10,8 +10,8 @@ import (
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/guard"
 	"github.com/maulana-tech/cyfind-ai/intercept"
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/tool"
+	"github.com/maulana-tech/aera/llm"
+	"github.com/maulana-tech/aera/tool"
 )
 
 // Real PostgreSQL + SDK hooks: Worker reviews receive the current call only.

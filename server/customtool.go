@@ -18,8 +18,8 @@ import (
 	"time"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	"github.com/Autumn-27/norma/permission"
-	actool "github.com/Autumn-27/norma/tool"
+	"github.com/maulana-tech/aera/permission"
+	actool "github.com/maulana-tech/aera/tool"
 )
 
 // This file implements the custom-tool executor (docs/custom-tool-design.md). tools rows with system=false are dispatched by

@@ -31,8 +31,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	"github.com/Autumn-27/norma/permission"
-	actool "github.com/Autumn-27/norma/tool"
+	"github.com/maulana-tech/aera/permission"
+	actool "github.com/maulana-tech/aera/tool"
 	mproxy "github.com/lqqyt2423/go-mitmproxy/proxy"
 	_ "modernc.org/sqlite"
 )

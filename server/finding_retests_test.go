@@ -17,8 +17,8 @@ import (
 	"github.com/maulana-tech/cyfind-ai/agent"
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/intercept"
-	"github.com/Autumn-27/norma/llm"
-	actool "github.com/Autumn-27/norma/tool"
+	"github.com/maulana-tech/aera/llm"
+	actool "github.com/maulana-tech/aera/tool"
 )
 
 type retestProvider struct {

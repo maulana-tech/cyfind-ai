@@ -9,7 +9,7 @@ import (
 
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/intercept"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 )
 
 type reviewCaptureProvider struct{ request llm.CompletionRequest }

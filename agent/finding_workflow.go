@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	actool "github.com/Autumn-27/norma/tool"
+	actool "github.com/maulana-tech/aera/tool"
 )
 
 const findingIDGuidance = "\n\n**Finding ID convention**: finding_id is the standalone finding-record ID; finding_node_id is the exploration-node ID. The id from list_findings / list_task_findings / node_detail / get_task_node_detail stays the exploration-node ID; read the standalone number from the finding_id in the same return. get_finding_traffic / bind_finding_traffic use the standalone finding_id. The legacy update_finding_report's finding_id parameter still takes finding_node_id. Do not use the number on report_finding's first line for evidence tools, and do not guess other numbers after an ID error."

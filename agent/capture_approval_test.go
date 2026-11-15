@@ -8,10 +8,10 @@ import (
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/guard"
 	"github.com/maulana-tech/cyfind-ai/intercept"
-	"github.com/Autumn-27/norma/agentcore"
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/permission"
-	"github.com/Autumn-27/norma/tool"
+	"github.com/maulana-tech/aera/agentcore"
+	"github.com/maulana-tech/aera/llm"
+	"github.com/maulana-tech/aera/permission"
+	"github.com/maulana-tech/aera/tool"
 )
 
 // Exercise the actual SDK event -> hook -> execution -> result path. No real

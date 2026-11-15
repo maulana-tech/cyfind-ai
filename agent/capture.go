@@ -9,9 +9,9 @@ import (
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/intercept"
 	"github.com/maulana-tech/cyfind-ai/sidequestion"
-	"github.com/Autumn-27/norma/agentcore"
-	"github.com/Autumn-27/norma/harness"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/agentcore"
+	"github.com/maulana-tech/aera/harness"
+	"github.com/maulana-tech/aera/llm"
 )
 
 // captureRun drives one agent turn-to-completion over Session.Prompt and emits a

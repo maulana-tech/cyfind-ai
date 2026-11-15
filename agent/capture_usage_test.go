@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	"github.com/Autumn-27/norma/agentcore"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/agentcore"
+	"github.com/maulana-tech/aera/llm"
 )
 
 type captureUsageProvider struct {

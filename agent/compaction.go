@@ -27,8 +27,8 @@ import (
 	"time"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/transcript"
+	"github.com/maulana-tech/aera/llm"
+	"github.com/maulana-tech/aera/transcript"
 )
 
 // Compactor performs background cold-node compaction for many explorations.

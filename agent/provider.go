@@ -21,11 +21,11 @@ import (
 	"time"
 
 	"github.com/maulana-tech/cyfind-ai/llmrec"
-	"github.com/Autumn-27/norma/agentcore"
-	"github.com/Autumn-27/norma/compaction"
-	"github.com/Autumn-27/norma/llm"
-	acperm "github.com/Autumn-27/norma/permission"
-	"github.com/Autumn-27/norma/transcript"
+	"github.com/maulana-tech/aera/agentcore"
+	"github.com/maulana-tech/aera/compaction"
+	"github.com/maulana-tech/aera/llm"
+	acperm "github.com/maulana-tech/aera/permission"
+	"github.com/maulana-tech/aera/transcript"
 )
 
 // Config describes the LLM backend resolved from the environment.

@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/maulana-tech/cyfind-ai/llmpool"
-	"github.com/Autumn-27/norma/harness"
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/harness"
+	"github.com/maulana-tech/aera/llm"
 )
 
 type fakeProvider struct {

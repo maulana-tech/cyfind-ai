@@ -13,7 +13,7 @@ import (
 	"sort"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	actool "github.com/Autumn-27/norma/tool"
+	actool "github.com/maulana-tech/aera/tool"
 )
 
 // digestMemberEntry builds the compact per-member view expand_digest returns —

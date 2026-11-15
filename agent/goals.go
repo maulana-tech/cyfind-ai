@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	"github.com/Autumn-27/norma/agentcore"
-	"github.com/Autumn-27/norma/llm"
-	acperm "github.com/Autumn-27/norma/permission"
-	actool "github.com/Autumn-27/norma/tool"
-	"github.com/Autumn-27/norma/transcript"
+	"github.com/maulana-tech/aera/agentcore"
+	"github.com/maulana-tech/aera/llm"
+	acperm "github.com/maulana-tech/aera/permission"
+	actool "github.com/maulana-tech/aera/tool"
+	"github.com/maulana-tech/aera/transcript"
 )
 
 // goalsDefaultTmpl is the built-in EDITABLE body (section [A]) of the goals-decomposer

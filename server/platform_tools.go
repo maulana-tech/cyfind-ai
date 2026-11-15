@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	actool "github.com/Autumn-27/norma/tool"
+	actool "github.com/maulana-tech/aera/tool"
 )
 
 // Platform operation tools (for the built-in Auto agent): create/modify skills, custom tools, MCP. All are host tools,

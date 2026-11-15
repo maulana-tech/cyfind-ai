@@ -9,11 +9,11 @@ import (
 
 	"github.com/maulana-tech/cyfind-ai/db"
 	"github.com/maulana-tech/cyfind-ai/intercept"
-	"github.com/Autumn-27/norma/agentcore"
-	"github.com/Autumn-27/norma/llm"
-	"github.com/Autumn-27/norma/permission"
-	actool "github.com/Autumn-27/norma/tool"
-	"github.com/Autumn-27/norma/transcript"
+	"github.com/maulana-tech/aera/agentcore"
+	"github.com/maulana-tech/aera/llm"
+	"github.com/maulana-tech/aera/permission"
+	actool "github.com/maulana-tech/aera/tool"
+	"github.com/maulana-tech/aera/transcript"
 )
 
 // Planner is the event-driven LLM planner (docs §4.3): each time the asset or

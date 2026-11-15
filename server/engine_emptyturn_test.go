@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/Autumn-27/norma/llm"
+	"github.com/maulana-tech/aera/llm"
 )
 
 // Recognition and continuation of an idle turn (thinking only, no body, no tool), see steerHooks.Stop.

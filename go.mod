@@ -3,13 +3,13 @@ module github.com/maulana-tech/cyfind-ai
 go 1.26.3
 
 require (
-	github.com/Autumn-27/norma v0.4.3
 	github.com/aws/smithy-go v1.28.9
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/klauspost/compress v1.18.6
 	github.com/lqqyt2423/go-mitmproxy v1.9.2
+	github.com/maulana-tech/aera v0.4.3
 	github.com/miekg/dns v1.1.72
 	github.com/projectdiscovery/dnsx v1.2.3
 	golang.org/x/crypto v0.55.0
@@ -61,3 +61,7 @@ require (
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 )
+
+// aera is a vendored fork of the Apache-2.0 norma SDK (github.com/Autumn-27/norma),
+// relicensed in-tree under this project; see aera/LICENSE and aera/NOTICE.
+replace github.com/maulana-tech/aera => ./aera

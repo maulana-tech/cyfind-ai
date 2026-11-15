@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/maulana-tech/cyfind-ai/db"
-	actool "github.com/Autumn-27/norma/tool"
+	actool "github.com/maulana-tech/aera/tool"
 )
 
 func callReadJSON(t *testing.T, tool actool.CoreTool, input string) any {
