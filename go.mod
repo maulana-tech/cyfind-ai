@@ -62,6 +62,6 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 )
 
-// aera is a vendored fork of the Apache-2.0 norma SDK (github.com/Autumn-27/norma),
-// relicensed in-tree under this project; see aera/LICENSE and aera/NOTICE.
+// aera is a vendored fork of an Apache-2.0 agent SDK; see aera/LICENSE and
+// docs/THIRD_PARTY_NOTICES.md for license and attribution.
 replace github.com/maulana-tech/aera => ./aera

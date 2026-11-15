@@ -54,7 +54,7 @@ The global "Approval records", the in-task "Interception approval", and the appr
 
 ## Asset sync (ScopeSentry)
 
-Assets can be synced directly from [ScopeSentry](https://github.com/Autumn-27/ScopeSentry), avoiding duplicate collection:
+Assets can be synced directly from ScopeSentry, avoiding duplicate collection:
 
 - On the "**Asset sync**" page, enter the ScopeSentry address and API key to connect the data source;
 - Select the targets and asset types to sync by **project** or **task** dimension (domain / subdomain / IP / port / site / endpoint…);
