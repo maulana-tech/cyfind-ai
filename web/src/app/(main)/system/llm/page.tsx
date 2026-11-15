@@ -943,7 +943,7 @@ export default function LLMPage() {
                   }}
                   className={cn(
                     "cursor-pointer gap-0 py-4 outline-none transition-colors hover:border-foreground/30",
-                    p.is_default && "border-amber-400/50 bg-amber-400/5",
+                    p.is_default && "border-primary/40 bg-primary/5",
                   )}
                 >
                   <CardContent className="grid gap-2 px-4">
@@ -951,7 +951,7 @@ export default function LLMPage() {
                       <StarIcon
                         className={cn(
                           "mt-0.5 size-4 shrink-0",
-                          p.is_default ? "fill-amber-400 text-amber-400" : "text-muted-foreground",
+                          p.is_default ? "fill-primary text-primary" : "text-muted-foreground",
                         )}
                       />
                       <div className="min-w-0 flex-1">

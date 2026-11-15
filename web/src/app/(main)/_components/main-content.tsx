@@ -12,6 +12,7 @@ import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 import { AccountSwitcher } from "./sidebar/account-switcher";
+import { HeaderBreadcrumb } from "./header-breadcrumb";
 import { SearchDialog } from "./sidebar/search-dialog";
 import { ThemeSwitcher } from "./sidebar/theme-switcher";
 import { UpdateBadge } from "./update-badge";
@@ -64,6 +65,7 @@ export function MainContent({ children }: { children: ReactNode }) {
               className="mx-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"
             />
             <SearchDialog />
+            <HeaderBreadcrumb />
           </div>
           <div className="flex items-center gap-2">
             {version && (

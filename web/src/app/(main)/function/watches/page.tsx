@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { BrandEmpty } from "@/components/brand-empty";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -187,8 +188,12 @@ export default function WatchesPage() {
                   </TableRow>
                 ) : watches.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="py-12 text-center text-sm text-muted-foreground">
-                      No watches yet — create one to start monitoring a contract.
+                    <TableCell colSpan={8} className="p-0">
+                      <BrandEmpty
+                        className="border-0 py-12"
+                        title="No watches yet"
+                        description="Create one to start monitoring a contract."
+                      />
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -572,7 +577,7 @@ function WatchDetailSheet({ watch, onClose }: { watch: Watch | null; onClose: ()
                       <Loader2Icon className="mx-auto h-5 w-5 animate-spin text-muted-foreground" />
                     </div>
                   ) : detections.length === 0 ? (
-                    <div className="py-10 text-center text-sm text-muted-foreground">No detections recorded.</div>
+                    <BrandEmpty className="border-0 py-10" title="No detections recorded." />
                   ) : (
                     <Table>
                       <TableHeader>
@@ -623,7 +628,7 @@ function WatchDetailSheet({ watch, onClose }: { watch: Watch | null; onClose: ()
                       <Loader2Icon className="mx-auto h-5 w-5 animate-spin text-muted-foreground" />
                     </div>
                   ) : responses.length === 0 ? (
-                    <div className="py-10 text-center text-sm text-muted-foreground">No responses recorded.</div>
+                    <BrandEmpty className="border-0 py-10" title="No responses recorded." />
                   ) : (
                     <Table>
                       <TableHeader>
