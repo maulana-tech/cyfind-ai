@@ -428,7 +428,7 @@ function Faq() {
             href="https://github.com/maulana-tech/cyfind-ai/issues"
             target="_blank"
             rel="noreferrer"
-            className="group mt-5 inline-flex items-center gap-1.5 text-[14px] text-[var(--cf-text)] transition-colors hover:text-white"
+            className="group mt-5 inline-flex items-center gap-1.5 text-[14px] text-[var(--cf-text)] transition-colors hover:text-[var(--cf-accent)]"
           >
             Open an issue
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
@@ -484,7 +484,7 @@ function CTA() {
               href="https://github.com/maulana-tech/cyfind-ai"
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-white/[0.28] bg-white/[0.12] px-5 py-2.5 font-medium text-[14px] text-white transition-colors hover:bg-white/20"
+              className="rounded-full border border-[var(--cf-border)] bg-[var(--cf-card)] px-5 py-2.5 font-medium text-[14px] text-[var(--cf-text)] shadow-[var(--cf-shadow-sm)] transition-colors hover:bg-[var(--cf-surface)]"
             >
               View repository
             </a>
@@ -527,12 +527,12 @@ const FOOTER_COLS: { title: string; links: [string, string][] }[] = [
 
 function Footer() {
   return (
-    <footer className="border-white/[0.1] border-t">
+    <footer className="border-[var(--cf-border)] border-t">
       <div className="mx-auto grid max-w-[1200px] gap-10 px-5 py-14 sm:px-6 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex size-6 items-center justify-center rounded-[7px] bg-white/15">
-              <Network className="size-3.5 text-white" />
+            <span className="inline-flex size-6 items-center justify-center rounded-[7px] bg-[var(--cf-accent-soft)]">
+              <Network className="size-3.5 text-[var(--cf-accent)]" />
             </span>
             <span className="font-medium text-[15px] text-[var(--cf-text)]">Cyfind AI</span>
           </div>
@@ -555,7 +555,7 @@ function Footer() {
           </div>
         ))}
       </div>
-      <div className="mx-auto flex max-w-[1200px] flex-col gap-2 border-white/[0.1] border-t px-5 py-6 text-[12px] text-[var(--cf-faint)] sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="mx-auto flex max-w-[1200px] flex-col gap-2 border-[var(--cf-border)] border-t px-5 py-6 text-[12px] text-[var(--cf-faint)] sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <span>© {new Date().getFullYear()} Cyfind AI · AGPL-3.0</span>
         <span>Built for authorized, isolated-lab testing only.</span>
       </div>
@@ -586,7 +586,7 @@ function SectionHeading({ eyebrow, title, sub }: { eyebrow: string; title: strin
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
     <span className="cf-eyebrow">
-      <span className="size-1.5 rounded-full bg-white/60" />
+      <span className="size-1.5 rounded-full bg-[var(--cf-accent)]" />
       {children}
     </span>
   );

@@ -288,32 +288,31 @@ html {
    not depend on dashboard theme presets.
    ===================================================================== */
 .cf-root {
-  /* Blue brand canvas matching the app's `aera` sidebar (brand blue, hue 258):
-     deep blue page, frosted-white content cards, white text, white primary
-     action with blue label — the aera sidebar pattern applied full-page. */
-  --cf-bg: oklch(0.37 0.135 258);        /* brand blue canvas */
-  --cf-surface: oklch(0.33 0.12 258);    /* deeper blue band */
-  --cf-card: oklch(1 0 0 / 7%);          /* frosted-white panel */
-  --cf-text: oklch(1 0 0);               /* headings: white */
-  --cf-body: oklch(0.91 0.02 258);       /* body: near-white */
-  --cf-muted: oklch(0.80 0.035 258);     /* muted light-blue */
-  --cf-faint: oklch(0.70 0.045 258);     /* captions */
-  --cf-border: oklch(1 0 0 / 14%);       /* white hairline */
-  --cf-border-strong: oklch(1 0 0 / 26%);
-  /* accent — white action on the blue canvas, with a blue label */
-  --cf-accent: oklch(1 0 0);
-  --cf-on-accent: oklch(0.34 0.13 258);  /* blue text on the white button */
-  --cf-accent-hover: oklch(0.93 0.015 258);
-  --cf-accent-soft: oklch(1 0 0 / 12%);  /* frosted chip fill */
+  /* Light theme matching the app's `aera` content area: white page, white cards,
+     navy text, brand blue (hue 258) as the accent, soft blue-tinted shadows. */
+  --cf-bg: oklch(1 0 0);                 /* white page */
+  --cf-surface: oklch(0.975 0.008 260);  /* faint blue-grey section band */
+  --cf-card: oklch(1 0 0);               /* white card */
+  --cf-text: oklch(0.22 0.05 255);       /* headings: deep navy */
+  --cf-body: oklch(0.38 0.045 255);      /* body */
+  --cf-muted: oklch(0.52 0.035 255);     /* muted/secondary */
+  --cf-faint: oklch(0.62 0.03 255);      /* captions */
+  --cf-border: oklch(0.92 0.012 260);    /* hairline border */
+  --cf-border-strong: oklch(0.88 0.016 260);
+  /* accent — cyfind brand blue, white label on the filled button */
+  --cf-accent: oklch(0.40 0.15 258);
+  --cf-on-accent: oklch(1 0 0);
+  --cf-accent-hover: oklch(0.34 0.14 258);
+  --cf-accent-soft: oklch(0.955 0.02 260); /* light blue tint fill */
   /* supporting tag accents (product-mock chips only) */
   --cf-green: #1f9d57;
   --cf-teal: #0e8fb0;
   --cf-iris: #4f5bd5;
   --cf-lavender: #7c5cf0;
-  /* soft shadows tuned for the blue canvas */
-  --cf-shadow-sm: 0 1px 3px oklch(0.12 0.05 258 / 30%);
-  --cf-shadow: 0 8px 24px oklch(0.12 0.05 258 / 35%);
-  --cf-shadow-lg: 0 24px 60px oklch(0.10 0.05 258 / 45%);
+  /* soft brand-tinted shadows (match aera) */
+  --cf-shadow-sm: 0 1px 3px oklch(0.15 0.05 258 / 6%);
+  --cf-shadow: 0 4px 14px oklch(0.15 0.05 258 / 9%);
+  --cf-shadow-lg: 0 18px 48px oklch(0.15 0.05 258 / 16%);
 
   font-family: "Inter", "Inter Variable", var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: "cv01" on, "ss03" on, "zero" on;
@@ -324,8 +323,8 @@ html {
 /* Frosted card that sits on the blue canvas — a lighter blue with a hairline
    (mirrors the app's aera `lp-blue-card`). */
 .cf-card {
-  background: linear-gradient(180deg, oklch(1 0 0 / 10%), oklch(1 0 0 / 5%));
-  border: 1px solid oklch(1 0 0 / 14%);
+  background: var(--cf-card);
+  border: 1px solid var(--cf-border);
 }
 
 /* Pill eyebrow (mirrors aera `lp-eyebrow`). */
@@ -334,11 +333,11 @@ html {
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  border: 1px solid oklch(1 0 0 / 18%);
-  background: oklch(1 0 0 / 10%);
+  border: 1px solid var(--cf-border);
+  background: var(--cf-accent-soft);
   padding: 4px 12px;
   font-size: 12px;
-  color: var(--cf-muted);
+  color: var(--cf-accent);
 }
 
 @keyframes cf-fade-up {

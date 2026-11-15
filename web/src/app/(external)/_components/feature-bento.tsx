@@ -11,14 +11,14 @@ import { useInView } from "./motion";
  * brand; animations are CSS-only, triggered when the grid scrolls into view.
  */
 
-const ACCENT = "#8fd6ff";
-const ACCENT_SOFT = "rgba(143,214,255,0.18)";
-const BAR = "rgba(255,255,255,0.26)";
+const ACCENT = "#3b5ad9";
+const ACCENT_SOFT = "rgba(59,90,217,0.12)";
+const BAR = "rgba(23,32,64,0.14)";
 const easeBar = "cubic-bezier(0.22,1,0.36,1)";
 
 const card =
-  "group/card relative flex h-full flex-col overflow-hidden rounded-[22px] border border-white/12 bg-white/[0.06] shadow-[var(--cf-shadow)] transition-colors hover:border-white/20";
-const panel = "rounded-[14px] border border-white/10 bg-white/[0.04]";
+  "group/card relative flex h-full flex-col overflow-hidden rounded-[22px] border border-[var(--cf-border)] bg-[var(--cf-card)] shadow-[var(--cf-shadow)] transition-colors hover:border-[var(--cf-border-strong)]";
+const panel = "rounded-[14px] border border-[var(--cf-border)] bg-[var(--cf-surface)]";
 
 /* ---------------------------------------------------------------- visuals */
 
@@ -62,7 +62,7 @@ function Waterfall({ shown }: { shown: boolean }) {
               <div
                 className="absolute inset-0"
                 style={{
-                  backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px)",
+                  backgroundImage: "linear-gradient(to right, rgba(23,32,64,0.08) 1px, transparent 1px)",
                   backgroundSize: "25% 100%",
                 }}
               />
@@ -110,7 +110,7 @@ function Alerts() {
       {alerts.map((a, depth) => (
         <div
           key={a.title}
-          className="absolute inset-x-0 top-0 rounded-[14px] border border-white/10 bg-white/[0.07] p-3 shadow-[var(--cf-shadow)] transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] [transform:translateY(calc(var(--d)*14px))_scale(calc(1-var(--d)*0.06))] group-hover/card:[transform:translateY(calc(var(--d)*40px))_scale(calc(1-var(--d)*0.03))]"
+          className="absolute inset-x-0 top-0 rounded-[14px] border border-[var(--cf-border)] bg-[var(--cf-card)] p-3 shadow-[var(--cf-shadow)] transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] [transform:translateY(calc(var(--d)*14px))_scale(calc(1-var(--d)*0.06))] group-hover/card:[transform:translateY(calc(var(--d)*40px))_scale(calc(1-var(--d)*0.03))]"
           style={{
             zIndex: alerts.length - depth,
             opacity: 1 - depth * 0.2,
@@ -122,7 +122,7 @@ function Alerts() {
           >
             <span
               className="mt-1 size-2 shrink-0 rounded-full"
-              style={{ background: depth === 0 ? "#f4567b" : "rgba(255,255,255,0.3)" }}
+              style={{ background: depth === 0 ? "#f4567b" : "rgba(23,32,64,0.22)" }}
             />
             <span className="min-w-0">
               <span className="block truncate font-medium text-[12.5px] text-[var(--cf-text)]">{a.title}</span>
@@ -158,7 +158,7 @@ function Cost({ shown }: { shown: boolean }) {
             className="flex-1 origin-bottom rounded-t-[3px]"
             style={{
               height: `${(bar / max) * 100}%`,
-              background: i === highlight ? ACCENT : "rgba(255,255,255,0.22)",
+              background: i === highlight ? ACCENT : "rgba(23,32,64,0.12)",
               transform: `scaleY(${shown ? 1 : 0})`,
               transition: `transform 0.6s ${easeBar} ${0.1 + i * 0.03}s`,
             }}
@@ -173,11 +173,11 @@ function Code() {
   const lines = ["docker compose up -d", "", "# open http://localhost:3000"];
   return (
     <div className={`w-full max-w-[320px] overflow-hidden ${panel}`}>
-      <div className="flex items-center justify-between border-white/10 border-b px-3 py-2">
+      <div className="flex items-center justify-between border-[var(--cf-border)] border-b px-3 py-2">
         <span className="font-[family-name:var(--font-geist-mono)] text-[11px] text-[var(--cf-faint)]">terminal</span>
         <span className="flex gap-1">
-          <span className="size-1.5 rounded-full bg-white/20" />
-          <span className="size-1.5 rounded-full bg-white/20" />
+          <span className="size-1.5 rounded-full bg-[var(--cf-border-strong)]" />
+          <span className="size-1.5 rounded-full bg-[var(--cf-border-strong)]" />
         </span>
       </div>
       <pre className="overflow-hidden px-3 py-3 font-[family-name:var(--font-geist-mono)] text-[11px] text-[var(--cf-body)] leading-[1.7]">
@@ -216,7 +216,7 @@ function Keys() {
             {s.keys.map((key) => (
               <kbd
                 key={key}
-                className={`grid h-6 min-w-6 place-items-center rounded-[6px] border border-white/20 border-b-2 bg-white/[0.06] px-1.5 font-[family-name:var(--font-geist-mono)] text-[11px] text-[var(--cf-text)] ${i === 0 ? "group-hover/card:translate-y-px group-hover/card:border-b" : ""}`}
+                className={`grid h-6 min-w-6 place-items-center rounded-[6px] border border-[var(--cf-border-strong)] border-b-2 bg-[var(--cf-card)] px-1.5 font-[family-name:var(--font-geist-mono)] text-[11px] text-[var(--cf-text)] ${i === 0 ? "group-hover/card:translate-y-px group-hover/card:border-b" : ""}`}
               >
                 {key}
               </kbd>
@@ -259,7 +259,7 @@ function Redact() {
               <span
                 className="absolute inset-0 rounded-[4px] opacity-85"
                 style={{
-                  background: "rgba(255,255,255,0.85)",
+                  background: "rgba(23,32,64,0.88)",
                   backgroundImage: "repeating-linear-gradient(135deg, transparent 0 4px, rgba(55,91,217,0.3) 4px 5px)",
                 }}
               />

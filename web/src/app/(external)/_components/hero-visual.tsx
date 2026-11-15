@@ -11,7 +11,7 @@ import { Activity, ShieldCheck, Target } from "lucide-react";
  */
 export function HeroVisual() {
   return (
-    <div className="overflow-hidden rounded-[18px] border border-black/5 bg-white shadow-[0_24px_70px_oklch(0.1_0.06_258/0.5)]">
+    <div className="overflow-hidden rounded-[18px] border border-[var(--cf-border)] bg-white shadow-[var(--cf-shadow-lg)]">
       {/* window chrome */}
       <div className="flex items-center gap-2 border-[#e6e8ef] border-b bg-[#f7f8fb] px-4 py-3">
         <span className="size-[11px] rounded-full bg-[#d7dbe6]" />

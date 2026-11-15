@@ -17,11 +17,11 @@ type Step = {
 
 function WindowChrome({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-[18px] border border-white/12 bg-white/[0.06] shadow-[var(--cf-shadow-lg)] backdrop-blur-sm">
-      <div className="flex items-center gap-2 border-white/10 border-b bg-white/[0.04] px-4 py-3">
-        <span className="size-[10px] rounded-full bg-white/20" />
-        <span className="size-[10px] rounded-full bg-white/20" />
-        <span className="size-[10px] rounded-full bg-white/20" />
+    <div className="overflow-hidden rounded-[18px] border border-[var(--cf-border)] bg-[var(--cf-card)] shadow-[var(--cf-shadow-lg)] backdrop-blur-sm">
+      <div className="flex items-center gap-2 border-[var(--cf-border)] border-b bg-[var(--cf-surface)] px-4 py-3">
+        <span className="size-[10px] rounded-full bg-[var(--cf-border-strong)]" />
+        <span className="size-[10px] rounded-full bg-[var(--cf-border-strong)]" />
+        <span className="size-[10px] rounded-full bg-[var(--cf-border-strong)]" />
         <span className="ml-3 font-[family-name:var(--font-geist-mono)] text-[11px] text-[var(--cf-muted)]">
           {title}
         </span>
@@ -33,8 +33,8 @@ function WindowChrome({ title, children }: { title: string; children: React.Reac
 
 function Row({ k, v, tone }: { k: string; v: string; tone?: string }) {
   return (
-    <div className="flex items-center justify-between rounded-[10px] border border-white/10 bg-white/[0.04] px-3 py-2.5">
-      <span className="rounded-[6px] bg-white/10 px-2 py-0.5 text-[11px] text-[var(--cf-body)]">{k}</span>
+    <div className="flex items-center justify-between rounded-[10px] border border-[var(--cf-border)] bg-[var(--cf-surface)] px-3 py-2.5">
+      <span className="rounded-[6px] bg-[var(--cf-border)] px-2 py-0.5 text-[11px] text-[var(--cf-body)]">{k}</span>
       <span
         className="font-[family-name:var(--font-geist-mono)] text-[12.5px]"
         style={{ color: tone ?? "var(--cf-body)" }}
@@ -56,7 +56,7 @@ const STEPS: Step[] = [
           <Row k="target" v="acme-corp.com" />
           <Row k="goal" v="breach admin panel" />
           <Row k="constraint" v="no brute-force" />
-          <Row k="lab" v="isolated · authorized" tone="#8ae6b0" />
+          <Row k="lab" v="isolated · authorized" tone="#1f9d57" />
         </div>
       </WindowChrome>
     ),
@@ -68,9 +68,9 @@ const STEPS: Step[] = [
     visual: (
       <WindowChrome title="planner · round 3">
         <div className="space-y-2">
-          <Row k="intent" v="enumerate subdomains · p9" tone="#9db4ff" />
-          <Row k="intent" v="test /api/auth for SQLi · p8" tone="#9db4ff" />
-          <Row k="intent" v="probe login form · p6" tone="#9db4ff" />
+          <Row k="intent" v="enumerate subdomains · p9" tone="#4f5bd5" />
+          <Row k="intent" v="test /api/auth for SQLi · p8" tone="#4f5bd5" />
+          <Row k="intent" v="probe login form · p6" tone="#4f5bd5" />
           <div className="pt-1 text-[12px] text-[var(--cf-faint)]">3 intents → frontier</div>
         </div>
       </WindowChrome>
@@ -84,13 +84,13 @@ const STEPS: Step[] = [
       <WindowChrome title="workers · running">
         <div className="space-y-2.5">
           {[
-            ["worker#1", "curl … /api/auth?id=1' OR '1'", "#9db4ff"],
-            ["worker#2", "nmap 10.0.3.0/24", "#c3a6ff"],
-            ["worker#3", "ffuf -w wordlist …", "#7fe3ef"],
+            ["worker#1", "curl … /api/auth?id=1' OR '1'", "#4f5bd5"],
+            ["worker#2", "nmap 10.0.3.0/24", "#7c5cf0"],
+            ["worker#3", "ffuf -w wordlist …", "#0e8fb0"],
           ].map(([w, cmd, c]) => (
             <div
               key={w}
-              className="flex items-start gap-2.5 rounded-[10px] border border-white/10 bg-white/[0.04] px-3 py-2"
+              className="flex items-start gap-2.5 rounded-[10px] border border-[var(--cf-border)] bg-[var(--cf-surface)] px-3 py-2"
             >
               <span className="mt-1.5 size-1.5 shrink-0 animate-pulse rounded-full" style={{ background: c }} />
               <div className="min-w-0">
@@ -114,7 +114,7 @@ const STEPS: Step[] = [
         <div className="space-y-3">
           <div className="rounded-[10px] border border-[#f4a6b8]/30 bg-[#f4567b]/[0.12] px-3 py-2.5">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-[13px] text-white">SQL injection · /api/auth</span>
+              <span className="font-medium text-[13px] text-[var(--cf-text)]">SQL injection · /api/auth</span>
               <span className="rounded-[5px] bg-[#f4567b] px-2 py-0.5 text-[10px] text-white">critical</span>
             </div>
             <div className="mt-1 text-[11.5px] text-[var(--cf-muted)]">
@@ -124,10 +124,10 @@ const STEPS: Step[] = [
           <div>
             <div className="mb-1.5 flex items-center justify-between text-[11px]">
               <span className="text-[var(--cf-muted)]">Coverage</span>
-              <span className="font-medium text-white">82%</span>
+              <span className="font-medium text-[var(--cf-text)]">82%</span>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-[82%] rounded-full bg-white" />
+            <div className="h-1.5 overflow-hidden rounded-full bg-[var(--cf-border)]">
+              <div className="h-full w-[82%] rounded-full bg-[var(--cf-accent)]" />
             </div>
           </div>
         </div>
@@ -181,7 +181,7 @@ export function FlowStepper() {
                 >
                   {s.n}
                 </span>
-                {i < STEPS.length - 1 ? <span className="mt-2 w-px flex-1 bg-white/12" /> : null}
+                {i < STEPS.length - 1 ? <span className="mt-2 w-px flex-1 bg-[var(--cf-border)]" /> : null}
               </div>
               <div className="pb-2">
                 <h3 className="font-medium text-[26px] text-[var(--cf-text)] tracking-[-0.02em]">{s.label}</h3>

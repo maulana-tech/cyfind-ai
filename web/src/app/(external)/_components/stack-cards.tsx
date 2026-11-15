@@ -44,14 +44,14 @@ export function StackCards() {
     <div className="relative mx-auto max-w-[860px]">
       {CARDS.map((c, i) => (
         <div key={c.n} className="sticky mb-5" style={{ top: `${112 + i * 20}px`, zIndex: i + 1 }}>
-          <div className="relative overflow-hidden rounded-[20px] border border-white/12 bg-[#101a33]/80 p-8 shadow-[var(--cf-shadow-lg)] backdrop-blur-xl sm:p-10">
+          <div className="relative overflow-hidden rounded-[20px] border border-[var(--cf-border)] bg-[var(--cf-card)] p-8 shadow-[var(--cf-shadow-lg)] sm:p-10">
             <div
-              className="pointer-events-none absolute top-5 right-7 font-light text-[88px] text-white/[0.06] leading-none tracking-tight"
+              className="pointer-events-none absolute top-5 right-7 font-light text-[88px] text-[var(--cf-accent)]/[0.08] leading-none tracking-tight"
               aria-hidden="true"
             >
               {c.n}
             </div>
-            <span className="inline-flex size-11 items-center justify-center rounded-[12px] border border-white/12 bg-white/[0.08] text-white">
+            <span className="inline-flex size-11 items-center justify-center rounded-[12px] border border-[var(--cf-border)] bg-[var(--cf-accent-soft)] text-[var(--cf-accent)]">
               {c.icon}
             </span>
             <h3 className="mt-6 max-w-[520px] font-medium text-[28px] text-[var(--cf-text)] leading-[1.1] tracking-[-0.02em] sm:text-[34px]">

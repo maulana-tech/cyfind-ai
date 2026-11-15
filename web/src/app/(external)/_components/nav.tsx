@@ -14,40 +14,33 @@ const LINKS = [
 ];
 
 export function LandingNav() {
-  const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-200 ${
-        scrolled ? "border-[var(--cf-border)] bg-[var(--cf-bg)]/85 backdrop-blur-xl" : "border-transparent"
-      }`}
-    >
-      <nav className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-5 sm:px-6">
+    <header className="fixed inset-x-0 top-0 z-50">
+      <nav className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 sm:px-6">
+        {/* brand */}
         <Link href="/" className="flex items-center gap-2">
           <Logo />
           <span className="font-medium text-[16px] text-[var(--cf-text)] tracking-[-0.012em]">Cyfind AI</span>
         </Link>
 
-        <div className="hidden items-center gap-1 md:flex">
-          {LINKS.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="rounded-[8px] px-3 py-2 text-[13px] text-[var(--cf-muted)] transition-colors hover:text-[var(--cf-text)]"
-            >
-              {l.label}
-            </a>
-          ))}
+        {/* centered floating pill */}
+        <div className="-translate-x-1/2 absolute left-1/2 hidden md:block">
+          <div className="flex items-center gap-0.5 rounded-full border border-[var(--cf-border)] bg-[color-mix(in_oklch,var(--cf-card),transparent_10%)] p-1 shadow-[var(--cf-shadow)] backdrop-blur-md">
+            {LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="rounded-full px-3.5 py-1.5 text-[13px] text-[var(--cf-muted)] transition-colors hover:bg-[var(--cf-surface)] hover:text-[var(--cf-text)]"
+              >
+                {l.label}
+              </a>
+            ))}
+          </div>
         </div>
 
+        {/* actions */}
         <div className="hidden items-center gap-3 md:flex">
           <a
             href="https://github.com/maulana-tech/cyfind-ai"
@@ -59,7 +52,7 @@ export function LandingNav() {
           </a>
           <Link
             href="/function/tasks"
-            className="rounded-full bg-[var(--cf-accent)] px-4 py-[7px] font-medium text-[13px] text-[var(--cf-on-accent)] transition-colors hover:bg-[var(--cf-accent-hover)]"
+            className="rounded-full bg-[var(--cf-accent)] px-4 py-[7px] font-medium text-[13px] text-[var(--cf-on-accent)] shadow-[var(--cf-shadow-sm)] transition-colors hover:bg-[var(--cf-accent-hover)]"
           >
             Open app
           </Link>
@@ -75,8 +68,8 @@ export function LandingNav() {
         </button>
       </nav>
 
-      {open && (
-        <div className="border-[var(--cf-border)] border-t bg-[var(--cf-bg)] px-5 py-3 md:hidden">
+      {open ? (
+        <div className="mx-4 rounded-2xl border border-[var(--cf-border)] bg-[var(--cf-card)] p-3 shadow-[var(--cf-shadow-lg)] md:hidden">
           <div className="flex flex-col gap-0.5">
             {LINKS.map((l) => (
               <a
@@ -96,7 +89,7 @@ export function LandingNav() {
             </Link>
           </div>
         </div>
-      )}
+      ) : null}
     </header>
   );
 }
