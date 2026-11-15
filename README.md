@@ -4,12 +4,15 @@
 
 Autonomous AI penetration-testing system. Multi-agent LLM, Go backend, Next.js frontend.
 
+[![Live demo](https://img.shields.io/badge/live%20demo-cyfind.utdi.me-2f49c0)](https://cyfind.utdi.me)
 [![Release](https://img.shields.io/github/v/release/maulana-tech/cyfind-ai)](https://github.com/maulana-tech/cyfind-ai/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 </div>
 
 Cyfind AI is a multi-agent system for autonomous penetration testing in an isolated lab: a planner and workers share an asset graph and an exploration graph, with human-in-the-loop approval and full traffic recording. It ships as one binary or a Docker Compose stack.
+
+**🔗 Live demo: [cyfind.utdi.me](https://cyfind.utdi.me)** — demo password `Cyfind-Lab-2026!` (pre-filled on the login page).
 
 ---
 
