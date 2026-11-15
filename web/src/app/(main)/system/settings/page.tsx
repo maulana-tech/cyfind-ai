@@ -262,18 +262,16 @@ export default function SystemSettingsPage() {
   return (
     <div className="flex flex-1 flex-col gap-4 md:gap-6">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">{t("系统配置")}</h1>
+        <h1 className="font-semibold text-xl tracking-tight">{t("系统配置")}</h1>
         <p className="text-muted-foreground text-sm">{t("全局运行时开关")}</p>
       </div>
 
-      {/* Multi-column rather than grid: the web-search card is several times taller than the rest, and its height varies with the chosen backend (the brave/tavily
-          key inputs are conditionally rendered). A grid would stretch every row to the tallest card, leaving large gaps beside it,
-          whereas multi-column balances the fill by content height automatically. Card spacing uses mb rather than gap — in a multi-column layout
-          column-gap only controls the gap between columns, so row spacing must come from the children themselves. */}
-      <div className="columns-1 gap-4 md:gap-6 lg:columns-2">
+      {/* Two-column grid, top-aligned (items-start) so each card sits at its natural height and short cards don't stretch to the tallest in the row.
+          We deliberately avoid CSS multi-column here: a card taller than the column fragments and its content overlaps. Each card is h-fit. */}
+      <div className="grid grid-cols-1 items-start gap-4 md:gap-6 lg:grid-cols-2">
         <UpdateCard />
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <RadioTowerIcon className="size-4" />
@@ -292,7 +290,7 @@ export default function SystemSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-between gap-4">
-            <Label htmlFor="traffic-capture" className="text-sm font-normal text-muted-foreground">
+            <Label htmlFor="traffic-capture" className="font-normal text-muted-foreground text-sm">
               {trafficCapture ? t("已开启 · 正在记录流量并注入代理") : t("已关闭 · 不记录、不注入代理")}
             </Label>
             <Switch
@@ -304,7 +302,7 @@ export default function SystemSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <RadioTowerIcon className="size-4" />
@@ -320,7 +318,7 @@ export default function SystemSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-between gap-4">
-            <Label htmlFor="agent-traffic-binding" className="text-sm font-normal text-muted-foreground">
+            <Label htmlFor="agent-traffic-binding" className="font-normal text-muted-foreground text-sm">
               {agentTrafficBinding ? t("已开启 · 会增加 Token 消耗") : t("已关闭 · 可继续人工绑定")}
             </Label>
             <Switch
@@ -333,7 +331,7 @@ export default function SystemSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <RadioTowerIcon className="size-4" />
@@ -366,7 +364,7 @@ export default function SystemSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <Label htmlFor="global-proxy" className="text-sm font-normal text-muted-foreground">
+            <Label htmlFor="global-proxy" className="font-normal text-muted-foreground text-sm">
               {t("代理地址")}
             </Label>
             <div className="flex items-center gap-2">
@@ -388,7 +386,7 @@ export default function SystemSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ShieldAlertIcon className="size-4" />
@@ -410,7 +408,7 @@ export default function SystemSettingsPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="inject-planner" className="text-sm font-normal text-muted-foreground">
+              <Label htmlFor="inject-planner" className="font-normal text-muted-foreground text-sm">
                 {t("注入规划者（planner）")}
                 {injectPlanner ? t(" · 已开启") : t(" · 已关闭")}
               </Label>
@@ -422,7 +420,7 @@ export default function SystemSettingsPage() {
               />
             </div>
             <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="inject-worker" className="text-sm font-normal text-muted-foreground">
+              <Label htmlFor="inject-worker" className="font-normal text-muted-foreground text-sm">
                 {t("注入执行者（worker）")}
                 {injectWorker ? t(" · 已开启") : t(" · 已关闭")}
               </Label>
@@ -436,7 +434,7 @@ export default function SystemSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <FlaskConicalIcon className="size-4" />
@@ -454,7 +452,7 @@ export default function SystemSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-between gap-4">
-            <Label htmlFor="noa-compaction" className="text-sm font-normal text-muted-foreground">
+            <Label htmlFor="noa-compaction" className="font-normal text-muted-foreground text-sm">
               {t("noa 上下文压缩")}
               {noaCompaction ? t(" · 已开启") : t(" · 已关闭")}
             </Label>
@@ -467,7 +465,7 @@ export default function SystemSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <SearchIcon className="size-4" />
@@ -496,7 +494,7 @@ export default function SystemSettingsPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="web-search" className="text-sm font-normal text-muted-foreground">
+              <Label htmlFor="web-search" className="font-normal text-muted-foreground text-sm">
                 {webSearch ? t("总开关已开启 · 可在各 Agent 配置里单独启用") : t("已关闭 · 各 Agent 无法启用网络搜索")}
               </Label>
               <Switch
@@ -512,7 +510,7 @@ export default function SystemSettingsPage() {
 
             {webSearch && (
               <div className="flex items-center justify-between gap-4">
-                <Label className="text-sm font-normal text-muted-foreground">{t("搜索来源")}</Label>
+                <Label className="font-normal text-muted-foreground text-sm">{t("搜索来源")}</Label>
                 <Select
                   value={backend}
                   disabled={!loaded || saving}
@@ -535,8 +533,8 @@ export default function SystemSettingsPage() {
             )}
 
             {webSearch && backend === "deepseek" && (
-              <div className="border-border/60 bg-muted/30 flex flex-col gap-2 rounded-md border p-3">
-                <p className="text-sm font-medium">{t("DeepSeek 官方联网搜索")}</p>
+              <div className="flex flex-col gap-2 rounded-md border border-border/60 bg-muted/30 p-3">
+                <p className="font-medium text-sm">{t("DeepSeek 官方联网搜索")}</p>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   {t("该来源直接复用")}
                   <b>{t("当前激活的 LLM 配置")}</b>
@@ -565,9 +563,9 @@ export default function SystemSettingsPage() {
 
             {webSearch && backend === "brave-free" && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="brave-key" className="text-sm font-normal text-muted-foreground">
+                <Label htmlFor="brave-key" className="font-normal text-muted-foreground text-sm">
                   Brave Search API Key
-                  {braveKeySet && <span className="ml-2 text-xs text-emerald-500">{t("已配置")}</span>}
+                  {braveKeySet && <span className="ml-2 text-emerald-500 text-xs">{t("已配置")}</span>}
                 </Label>
                 <div className="flex items-center gap-2">
                   <Input
@@ -588,7 +586,7 @@ export default function SystemSettingsPage() {
                   </Button>
                 </div>
                 {braveNeedsKey && (
-                  <p className="text-xs text-amber-500">
+                  <p className="text-amber-500 text-xs">
                     {t("已选择 Brave 但尚未配置 Key —— 在保存 Key 之前，搜索工具不会启用。")}
                   </p>
                 )}
@@ -600,9 +598,9 @@ export default function SystemSettingsPage() {
 
             {webSearch && backend === "tavily" && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="tavily-key" className="text-sm font-normal text-muted-foreground">
+                <Label htmlFor="tavily-key" className="font-normal text-muted-foreground text-sm">
                   Tavily Search API Key
-                  {tavilyKeySet && <span className="ml-2 text-xs text-emerald-500">{t("已配置")}</span>}
+                  {tavilyKeySet && <span className="ml-2 text-emerald-500 text-xs">{t("已配置")}</span>}
                 </Label>
                 <div className="flex items-center gap-2">
                   <Input
@@ -623,7 +621,7 @@ export default function SystemSettingsPage() {
                   </Button>
                 </div>
                 {webSearch && backend === "tavily" && !tavilyKeySet && (
-                  <p className="text-xs text-amber-500">
+                  <p className="text-amber-500 text-xs">
                     {t("已选择 Tavily 但尚未配置 Key —— 在保存 Key 之前，搜索工具不会启用。")}
                   </p>
                 )}
@@ -633,7 +631,7 @@ export default function SystemSettingsPage() {
 
             {webSearch && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="ws-proxy" className="text-sm font-normal text-muted-foreground">
+                <Label htmlFor="ws-proxy" className="font-normal text-muted-foreground text-sm">
                   {t("出口代理（可选）")}
                 </Label>
                 <div className="flex items-center gap-2">
@@ -676,7 +674,7 @@ export default function SystemSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <RadioTowerIcon className="size-4" />
@@ -709,7 +707,7 @@ export default function SystemSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <CpuIcon className="size-4" />
@@ -739,7 +737,7 @@ export default function SystemSettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="mb-4 break-inside-avoid md:mb-6">
+        <Card className="h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <KeyboardIcon className="size-4" />
@@ -754,7 +752,7 @@ export default function SystemSettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-between gap-4">
-            <Label htmlFor="chat-send-mode" className="text-sm font-normal text-muted-foreground">
+            <Label htmlFor="chat-send-mode" className="font-normal text-muted-foreground text-sm">
               {t("发送方式")}
             </Label>
             <Select value={sendMode} onValueChange={(v) => setChatSendMode(v as ChatSendMode)}>

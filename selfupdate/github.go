@@ -13,7 +13,7 @@ import (
 // Repo is the release source. Hardcoded rather than made configurable: a configurable update source
 // would be a remote-code-execution channel for anyone who can change the config, and for a
 // penetration-testing platform that hole must not be opened.
-const Repo = "Autumn-27/cyfind"
+const Repo = "maulana-tech/cyfind-ai"
 
 // latestURL is GitHub's "latest official release" interface. It automatically skips prereleases and
 // drafts.

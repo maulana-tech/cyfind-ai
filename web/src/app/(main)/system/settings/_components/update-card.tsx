@@ -6,6 +6,7 @@ import {
   CheckCircle2Icon,
   DownloadIcon,
   ExternalLinkIcon,
+  InfoIcon,
   RefreshCwIcon,
   RotateCcwIcon,
   TriangleAlertIcon,
@@ -49,23 +50,26 @@ export function UpdateCard() {
 
   // quiet also decides whether to bypass the backend cache: the automatic check on page entry uses the cache (the top bar just checked),
   // while a manual "Check for updates" forces a refresh, otherwise a just-released version would only appear after the cache expires.
-  const check = React.useCallback((quiet = false) => {
-    setChecking(true);
-    api
-      .checkUpdate(!quiet)
-      .then((r) => {
-        setInfo(r);
-        if (!quiet) {
-          if (r.error) toast.error(t("检查更新失败：{message}", { message: r.error }));
-          else if (r.has_update) toast.success(t("发现新版本 {version}", { version: r.latest }));
-          else if (r.comparable) toast.success(t("当前已是最新版本"));
-        }
-      })
-      .catch((e) => {
-        if (!quiet) toast.error(t("检查更新失败：{message}", { message: (e as Error).message }));
-      })
-      .finally(() => setChecking(false));
-  }, []);
+  const check = React.useCallback(
+    (quiet = false) => {
+      setChecking(true);
+      api
+        .checkUpdate(!quiet)
+        .then((r) => {
+          setInfo(r);
+          if (!quiet) {
+            if (r.error) toast.error(t("检查更新失败：{message}", { message: r.error }));
+            else if (r.has_update) toast.success(t("发现新版本 {version}", { version: r.latest }));
+            else if (r.comparable) toast.success(t("当前已是最新版本"));
+          }
+        })
+        .catch((e) => {
+          if (!quiet) toast.error(t("检查更新失败：{message}", { message: (e as Error).message }));
+        })
+        .finally(() => setChecking(false));
+    },
+    [t],
+  );
 
   React.useEffect(() => {
     check(true);
@@ -75,29 +79,32 @@ export function UpdateCard() {
   //
   // The criterion must be "the version changed" rather than "it is reachable": during the swap the old version briefly comes back up once
   // (that run only puts cyfind.new in place and then exits immediately), so looking only at connectivity would falsely report success.
-  const waitForNewVersion = React.useCallback(async (fromVersion: string) => {
-    setRestarting(true);
-    const deadline = Date.now() + RESTART_TIMEOUT_MS;
-    while (Date.now() < deadline) {
-      await sleep(2000);
-      try {
-        const r = await fetch("/api/health", { cache: "no-store" });
-        if (r.ok) {
-          const j = (await r.json()) as { version?: string };
-          if (j.version && j.version !== fromVersion) {
-            toast.success(t("已更新到 {version}，正在重新加载页面", { version: j.version }));
-            await sleep(800);
-            window.location.reload();
-            return;
+  const waitForNewVersion = React.useCallback(
+    async (fromVersion: string) => {
+      setRestarting(true);
+      const deadline = Date.now() + RESTART_TIMEOUT_MS;
+      while (Date.now() < deadline) {
+        await sleep(2000);
+        try {
+          const r = await fetch("/api/health", { cache: "no-store" });
+          if (r.ok) {
+            const j = (await r.json()) as { version?: string };
+            if (j.version && j.version !== fromVersion) {
+              toast.success(t("已更新到 {version}，正在重新加载页面", { version: j.version }));
+              await sleep(800);
+              window.location.reload();
+              return;
+            }
           }
+        } catch {
+          // Being unreachable within the restart window is expected; keep polling.
         }
-      } catch {
-        // Being unreachable within the restart window is expected; keep polling.
       }
-    }
-    setRestarting(false);
-    toast.error(t("等待服务重启超时。请检查后端日志，或确认 cyfind 是通过 start.sh / start.bat 启动的。"));
-  }, []);
+      setRestarting(false);
+      toast.error(t("等待服务重启超时。请检查后端日志，或确认 cyfind 是通过 start.sh / start.bat 启动的。"));
+    },
+    [t],
+  );
 
   // Subscribe to update progress. SSE does not go through Next's /api rewrite (that layer buffers and events cannot be pushed out).
   const openStream = React.useCallback(
@@ -129,7 +136,7 @@ export function UpdateCard() {
       };
       return es;
     },
-    [waitForNewVersion],
+    [waitForNewVersion, t],
   );
 
   const doUpdate = () => {
@@ -189,7 +196,7 @@ export function UpdateCard() {
 
   return (
     // The settings page is a multi-column masonry layout; cards handle their own row spacing and forbid breaking across columns (see the comment in page.tsx).
-    <Card className="mb-4 break-inside-avoid md:mb-6">
+    <Card className="h-fit">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <DownloadIcon className="size-4" />
@@ -224,7 +231,7 @@ export function UpdateCard() {
               href={info.html_url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-muted-foreground underline-offset-4 hover:underline"
+              className="inline-flex items-center gap-1 text-muted-foreground text-xs underline-offset-4 hover:underline"
             >
               {t("更新日志")} <ExternalLinkIcon className="size-3" />
             </a>
@@ -232,26 +239,27 @@ export function UpdateCard() {
         </div>
 
         {info?.boot_notice && (
-          <p className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-xs text-amber-700 dark:text-amber-400">
+          <p className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-amber-700 text-xs dark:text-amber-400">
             <TriangleAlertIcon className="mt-0.5 size-3.5 shrink-0" />
             {t(info.boot_notice)}
           </p>
         )}
 
         {info?.error && (
-          <p className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive">
-            <TriangleAlertIcon className="mt-0.5 size-3.5 shrink-0" />
-            {t("无法连接 GitHub：")}
-            {info.error}
-            {"　"}
-            {t("可在上方配置全局代理后重试。")}
+          <p className="text-muted-foreground flex items-start gap-2 rounded-md border p-2 text-xs">
+            <InfoIcon className="mt-0.5 size-3.5 shrink-0" />
+            <span>
+              {info.error}
+              {"　"}
+              {t("可在上方配置全局代理后重试。")}
+            </span>
           </p>
         )}
 
-        {info && !info.comparable && info.reason && <p className="text-xs text-muted-foreground">{t(info.reason)}</p>}
+        {info && !info.comparable && info.reason && <p className="text-muted-foreground text-xs">{t(info.reason)}</p>}
 
         {info?.has_update && info.asset_available === false && (
-          <p className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive">
+          <p className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-destructive text-xs">
             <TriangleAlertIcon className="mt-0.5 size-3.5 shrink-0" />
             {t("{latest} 没有提供 {os}/{arch} 的发布包（缺少 {asset}），无法自动更新。", {
               latest: info.latest,
@@ -263,7 +271,7 @@ export function UpdateCard() {
         )}
 
         {info?.has_update && info.asset_available !== false && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             {t("将下载 ")}
             <span className="font-mono">{info.asset}</span>
             {info.size ? t("（{size}）", { size: humanSize(info.size) }) : ""}
@@ -272,14 +280,14 @@ export function UpdateCard() {
         )}
 
         {info && !info.has_update && info.comparable && !info.error && (
-          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+          <p className="flex items-center gap-2 text-muted-foreground text-xs">
             <CheckCircle2Icon className="size-3.5 text-emerald-600" />
             {t("当前已是最新版本。")}
           </p>
         )}
 
         {info?.mode === "docker" && info.has_update && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             {t("Docker 下的更新只替换程序本身，不更新镜像里的 playwright / nmap 等工具链，且")}
             <span className="font-mono"> docker compose up -d </span>
             {t("重建容器后会退回镜像自带的版本。需要连镜像一起升级请执行")}
@@ -291,7 +299,7 @@ export function UpdateCard() {
         {showProgress && (
           <div className="space-y-1.5">
             <Progress value={pct} className={downloading ? undefined : "animate-pulse"} />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {restarting ? t("正在重启并应用新版本，请稍候（页面会自动刷新）…") : t(progress?.message ?? "")}
             </p>
           </div>
@@ -318,7 +326,7 @@ export function UpdateCard() {
           )}
         </div>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           {t("一键更新依赖守护脚本重启程序。请通过 ")}
           <span className="font-mono">start.sh</span>
           {t("（Windows 为")}
