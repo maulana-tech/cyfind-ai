@@ -992,7 +992,7 @@ func (s *Server) Handler() http.Handler {
 	root.Handle("/api/", api)
 	root.HandleFunc("/oast/{token}", s.oastCallback)
 	root.Handle("/", s.webuiHandler())
-	return root
+	return securityHeaders(root)
 }
 
 // --- handlers ---
@@ -3946,6 +3946,22 @@ func cors(next http.Handler) http.Handler {
 			w.WriteHeader(204)
 			return
 		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// securityHeaders adds baseline hardening headers to every response. We deliberately
+// do NOT set a script-src CSP: the embedded Next.js export and the bundled diagram
+// pages rely on inline scripts, which a strict policy would break. frame-ancestors
+// 'self' (plus X-Frame-Options) blocks clickjacking without touching scripts. HSTS is
+// left to the TLS terminator (Cloudflare) so a plain-HTTP local run isn't pinned to HTTPS.
+func securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h := w.Header()
+		h.Set("X-Content-Type-Options", "nosniff")
+		h.Set("X-Frame-Options", "SAMEORIGIN")
+		h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		h.Set("Content-Security-Policy", "frame-ancestors 'self'")
 		next.ServeHTTP(w, r)
 	})
 }

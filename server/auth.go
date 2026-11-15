@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log"
 	"math/big"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 	"unicode/utf8"
 
@@ -258,8 +260,72 @@ func (s *Server) authChangePassword(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{"ok": true})
 }
 
+// loginRateLimiter is a small in-memory per-IP sliding window that throttles
+// password guessing. bcrypt already makes each attempt costly; this caps the
+// attempt rate so a determined attacker can't parallelize brute-force.
+type loginRateLimiter struct {
+	mu       sync.Mutex
+	attempts map[string][]time.Time
+	max      int
+	window   time.Duration
+}
+
+func newLoginRateLimiter(max int, window time.Duration) *loginRateLimiter {
+	return &loginRateLimiter{attempts: make(map[string][]time.Time), max: max, window: window}
+}
+
+// allow records an attempt for ip and reports whether it is within the limit.
+func (l *loginRateLimiter) allow(ip string) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	cutoff := time.Now().Add(-l.window)
+	kept := l.attempts[ip][:0]
+	for _, t := range l.attempts[ip] {
+		if t.After(cutoff) {
+			kept = append(kept, t)
+		}
+	}
+	// Opportunistic cleanup so the map doesn't grow without bound.
+	if len(kept) == 0 {
+		delete(l.attempts, ip)
+	} else {
+		l.attempts[ip] = kept
+	}
+	if len(kept) >= l.max {
+		return false
+	}
+	l.attempts[ip] = append(l.attempts[ip], time.Now())
+	return true
+}
+
+// loginLimiter: at most 10 login attempts per client IP per 5 minutes.
+var loginLimiter = newLoginRateLimiter(10, 5*time.Minute)
+
+// clientIP resolves the caller's address, trusting Cloudflare / proxy headers
+// first (the deployment sits behind a Cloudflare tunnel) and falling back to the
+// socket peer.
+func clientIP(r *http.Request) string {
+	if ip := strings.TrimSpace(r.Header.Get("CF-Connecting-IP")); ip != "" {
+		return ip
+	}
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		if i := strings.IndexByte(xff, ','); i >= 0 {
+			return strings.TrimSpace(xff[:i])
+		}
+		return strings.TrimSpace(xff)
+	}
+	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		return host
+	}
+	return r.RemoteAddr
+}
+
 // POST /api/auth/login — validates username/password and returns a JWT.
 func (s *Server) authLogin(w http.ResponseWriter, r *http.Request) {
+	if !loginLimiter.allow(clientIP(r)) {
+		writeErr(w, http.StatusTooManyRequests, "too many login attempts; please wait a minute and try again")
+		return
+	}
 	pg := s.pg(w)
 	if pg == nil {
 		return
