@@ -13,6 +13,8 @@ import {
   ListChecksIcon,
   Loader2Icon,
   MoreHorizontalIcon,
+  PanelLeftCloseIcon,
+  PanelLeftOpenIcon,
   PaperclipIcon,
   PencilIcon,
   PinIcon,
@@ -101,6 +103,7 @@ const CONVERSATION_LIST_PAGE = 100;
 // rail looks the same after a reload; unknown keys are harmless (a deleted agent
 // simply never renders a group again).
 const COLLAPSED_AGENTS_KEY = "cyfind.chat.collapsed-agents";
+const HISTORY_COLLAPSED_KEY = "cyfind.chat.history-collapsed";
 
 function conversationIsPinned(conversation: Conversation): boolean {
   return conversation.pinned ?? Boolean(conversation.pinned_at);
@@ -381,6 +384,8 @@ function DraftChat({
   agents,
   profiles,
   onStarted,
+  historyCollapsed,
+  onShowHistory,
 }: {
   agents: Agent[];
   profiles: LLMProfile[];
@@ -388,6 +393,8 @@ function DraftChat({
     c: Conversation,
     pending?: { input?: string; attachments?: ChatAttachment[]; pentest?: PentestDetection },
   ) => void;
+  historyCollapsed?: boolean;
+  onShowHistory?: () => void;
 }) {
   const t = useT();
   const [agentKey, setAgentKey] = React.useState("");
@@ -463,6 +470,13 @@ function DraftChat({
 
   return (
     <>
+      {historyCollapsed && onShowHistory && (
+        <div className="hidden border-b px-2 py-1.5 md:block">
+          <Button size="icon" variant="ghost" onClick={onShowHistory} title="Show history" aria-label="Show history">
+            <PanelLeftOpenIcon />
+          </Button>
+        </div>
+      )}
       {/* empty / landing state fills the panel */}
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 px-4 text-center">
         <div className="bg-primary/10 flex size-12 items-center justify-center rounded-full">
@@ -531,7 +545,7 @@ function PentestTaskCard({
   }
 
   return (
-    <div className="mx-4 mb-2 rounded-xl border border-primary/30 bg-primary/5 p-3">
+    <div className="mb-2 rounded-xl border border-primary/30 bg-primary/5 p-3">
       {taskId ? (
         <div className="flex items-center gap-3">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
@@ -611,6 +625,8 @@ function ChatView({
   initial,
   onTitleMaybeChanged,
   onConvUpdated,
+  historyCollapsed,
+  onShowHistory,
 }: {
   conv: Conversation;
   agents: Agent[];
@@ -620,6 +636,8 @@ function ChatView({
   initial?: { input?: string; attachments?: ChatAttachment[]; pentest?: PentestDetection };
   onTitleMaybeChanged: () => void;
   onConvUpdated: () => void;
+  historyCollapsed?: boolean;
+  onShowHistory?: () => void;
 }) {
   const t = useT();
   const approvalFocus = useApprovalFocus({ conversationId: conv.id });
@@ -908,6 +926,18 @@ function ChatView({
       <SideQuestionWorkspace side={side} label={agent?.name ?? conv.agent_key} composerLayout="inline">
         {/* header: which agent + live + token meta */}
         <div className="flex min-w-0 flex-wrap items-center gap-2 border-b px-4 py-2.5">
+          {historyCollapsed && onShowHistory && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="-ml-1 hidden shrink-0 md:inline-flex"
+              onClick={onShowHistory}
+              title="Show history"
+              aria-label="Show history"
+            >
+              <PanelLeftOpenIcon />
+            </Button>
+          )}
           <Bot className="text-muted-foreground size-4 shrink-0" />
           <span className="min-w-0 max-w-48 truncate text-sm font-medium">{agent?.name ?? conv.agent_key}</span>
           <span className="text-muted-foreground hidden shrink-0 font-mono text-xs sm:inline">{conv.agent_key}</span>
@@ -940,7 +970,7 @@ function ChatView({
         {/* messages + inline detail panel */}
         <div className="flex min-h-0 flex-1">
           <ScrollArea type="auto" className="min-h-0 min-w-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:block!">
-            <div className="min-w-0 max-w-full px-4 py-3" ref={contentRef}>
+            <div className="mx-auto min-w-0 max-w-3xl px-4 py-5 sm:px-6" ref={contentRef}>
               {messages.length === 0 && !running ? (
                 <div className="text-muted-foreground py-10 text-center text-sm">
                   {t("开始和「{name}」对话", { name: agent?.name ?? conv.agent_key })}
@@ -966,36 +996,38 @@ function ChatView({
           <DetailPanelView />
         </div>
 
-        {pentestSuggestion && (
-          <PentestTaskCard
-            detection={pentestSuggestion}
-            llmProfileId={currentProfileId}
-            onDismiss={() => setPentestSuggestion(null)}
-          />
-        )}
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+          {pentestSuggestion && (
+            <PentestTaskCard
+              detection={pentestSuggestion}
+              llmProfileId={currentProfileId}
+              onDismiss={() => setPentestSuggestion(null)}
+            />
+          )}
 
-        <Composer
-          value={input}
-          onChange={setInput}
-          onSend={send}
-          disabled={running || sending}
-          allowBtw
-          placeholder={running ? t("Agent 正在回复，可输入 /btw 提问…") : t("输入消息，@ 引用记录，Enter 发送")}
-          running={running}
-          onStop={stop}
-          stopDisabled={stopping}
-          attachments={attachments}
-          onPickFiles={pickFiles}
-          onRemoveAttachment={(path) => setAttachments((p) => p.filter((x) => x.path !== path))}
-          uploading={uploading}
-        />
-        <LLMProfileRow
-          profiles={profiles}
-          selected={currentProfileId}
-          onChange={changeProfile}
-          disabled={running || sending}
-          rightSlot={<TodoPopover seq={latestTodoSeq} fetchDetail={fetchDetail} />}
-        />
+          <Composer
+            value={input}
+            onChange={setInput}
+            onSend={send}
+            disabled={running || sending}
+            allowBtw
+            placeholder={running ? t("Agent 正在回复，可输入 /btw 提问…") : t("输入消息，@ 引用记录，Enter 发送")}
+            running={running}
+            onStop={stop}
+            stopDisabled={stopping}
+            attachments={attachments}
+            onPickFiles={pickFiles}
+            onRemoveAttachment={(path) => setAttachments((p) => p.filter((x) => x.path !== path))}
+            uploading={uploading}
+          />
+          <LLMProfileRow
+            profiles={profiles}
+            selected={currentProfileId}
+            onChange={changeProfile}
+            disabled={running || sending}
+            rightSlot={<TodoPopover seq={latestTodoSeq} fetchDetail={fetchDetail} />}
+          />
+        </div>
       </SideQuestionWorkspace>
     </DetailPanelProvider>
   );
@@ -1238,6 +1270,17 @@ export default function ChatPage() {
   // checkboxes); the header "Multi-select" button turns it on, "Done" turns it off and
   // clears the selection.
   const [selectionMode, setSelectionMode] = React.useState(false);
+  // Collapsible conversation-history panel (desktop), persisted — mirrors the app sidebar.
+  const [historyCollapsed, setHistoryCollapsed] = React.useState<boolean>(
+    () => getLocalStorageValue(HISTORY_COLLAPSED_KEY) === "1",
+  );
+  const toggleHistory = React.useCallback(() => {
+    setHistoryCollapsed((v) => {
+      const next = !v;
+      setLocalStorageValue(HISTORY_COLLAPSED_KEY, next ? "1" : "0");
+      return next;
+    });
+  }, []);
   const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
   const [bulkDeleting, setBulkDeleting] = React.useState(false);
   const [visibleConversationCount, setVisibleConversationCount] = React.useState(CONVERSATION_LIST_PAGE);
@@ -1536,13 +1579,31 @@ export default function ChatPage() {
       data-content-padding="false"
       className="flex h-[calc(100svh-3rem)] min-w-0 flex-col overflow-hidden p-3 sm:p-4 md:h-[calc(100svh-4rem)] md:p-6"
     >
-      <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 grid-rows-[minmax(10rem,15rem)_minmax(0,1fr)] gap-3 md:grid-cols-[18rem_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)] md:gap-4">
-        {/* left: conversation list */}
-        <div className="bg-card flex flex-col overflow-hidden rounded-lg border">
+      <div
+        className={`grid min-h-0 min-w-0 flex-1 grid-cols-1 grid-rows-[minmax(10rem,15rem)_minmax(0,1fr)] gap-3 md:grid-rows-[minmax(0,1fr)] md:gap-4 ${
+          historyCollapsed ? "md:grid-cols-[minmax(0,1fr)]" : "md:grid-cols-[18rem_minmax(0,1fr)]"
+        }`}
+      >
+        {/* left: conversation list (collapsible on desktop) */}
+        <div
+          className={`bg-card flex-col overflow-hidden rounded-lg border ${historyCollapsed ? "flex md:hidden" : "flex"}`}
+        >
           <div className="flex flex-col gap-2 border-b p-2">
-            <Button size="sm" className="w-full" onClick={() => selectConversation(null)}>
-              <PlusIcon /> {t("新建对话")}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button size="sm" className="min-w-0 flex-1" onClick={() => selectConversation(null)}>
+                <PlusIcon /> {t("新建对话")}
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="hidden shrink-0 md:inline-flex"
+                onClick={toggleHistory}
+                title="Collapse history"
+                aria-label="Collapse history"
+              >
+                <PanelLeftCloseIcon />
+              </Button>
+            </div>
             <Select
               value={agentFilter === null ? "all" : `agent:${agentFilter}`}
               onValueChange={(value) => changeAgentFilter(value === "all" ? null : value.slice(6))}
@@ -1702,6 +1763,8 @@ export default function ChatPage() {
               initial={pendingByConv[selected.id]}
               onTitleMaybeChanged={reloadConvs}
               onConvUpdated={reloadConvs}
+              historyCollapsed={historyCollapsed}
+              onShowHistory={toggleHistory}
             />
           ) : sourceRequested ? (
             <div role="status" className="p-6 text-sm text-muted-foreground">
@@ -1711,6 +1774,8 @@ export default function ChatPage() {
             <DraftChat
               agents={chatAgents}
               profiles={profiles}
+              historyCollapsed={historyCollapsed}
+              onShowHistory={toggleHistory}
               onStarted={(c, pending) => {
                 if (agentFilter !== null && agentFilter !== c.agent_key) changeAgentFilter(null);
                 // Insert the new conversation immediately so `selected` resolves to
