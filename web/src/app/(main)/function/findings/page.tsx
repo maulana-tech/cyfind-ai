@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { BrandEmpty } from "@/components/brand-empty";
 import { FindingRetestDialog } from "@/components/finding-retest-dialog";
 import { StatusBadge } from "@/components/status-badge";
 import { TablePagination } from "@/components/table-pagination";
@@ -181,7 +182,8 @@ export default function FindingsPage() {
         setActiveRetests(Object.fromEntries(rows.map((item) => [item.finding_id, item])));
         failed = false;
       } catch (error) {
-        if (!disposed && !failed) toast.error(tFn("加载复测状态失败：{message}", { message: (error as Error).message }));
+        if (!disposed && !failed)
+          toast.error(tFn("加载复测状态失败：{message}", { message: (error as Error).message }));
         failed = true;
       } finally {
         if (!disposed) timer = setTimeout(() => void refreshRetests(), 3000);
@@ -1012,9 +1014,7 @@ export default function FindingsPage() {
                     </button>
                   </React.Fragment>
                 ))}
-                <span className="ml-auto shrink-0 text-xs tabular-nums">
-                  {tFn("共 {n} 条", { n: flat.total })}
-                </span>
+                <span className="ml-auto shrink-0 text-xs tabular-nums">{tFn("共 {n} 条", { n: flat.total })}</span>
               </div>
               {flatListCard}
             </div>
@@ -1099,7 +1099,11 @@ export default function FindingsPage() {
                         </div>
                       ) : (
                         <>
-                          <FindingsTable items={state.items} selectAllLabel="Select all on this page in this group" {...rowProps} />
+                          <FindingsTable
+                            items={state.items}
+                            selectAllLabel="Select all on this page in this group"
+                            {...rowProps}
+                          />
                           <TablePagination
                             page={state.page}
                             pageSize={state.pageSize}
@@ -1115,11 +1119,11 @@ export default function FindingsPage() {
               );
             })}
             {groups.length === 0 && (
-              <Card>
-                <CardContent className="py-12 text-center text-sm text-muted-foreground">
-                  {tFn("没有匹配的发现。")}
-                </CardContent>
-              </Card>
+              <BrandEmpty
+                className="py-12"
+                title={tFn("没有匹配的发现。")}
+                description={tFn("调整筛选条件，或启动一个任务开始探测目标。")}
+              />
             )}
             <TablePagination
               page={page}

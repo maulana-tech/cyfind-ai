@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 
 import { AssetDslSearch } from "@/components/asset-dsl-search";
+import { BrandEmpty } from "@/components/brand-empty";
 import { ScopeTextEditor } from "@/components/scope-text-editor";
 import {
   AlertDialog,
@@ -405,8 +406,12 @@ export default function AssetsPage() {
                   ))}
                   {companies.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className="py-10 text-center text-sm text-muted-foreground">
-                        {tFn("还没有企业。点击右上角「新增企业」并填写资产范围，系统会自动认领命中的资产。")}
+                      <TableCell colSpan={4} className="p-0">
+                        <BrandEmpty
+                          className="border-0 py-10"
+                          title={tFn("还没有企业")}
+                          description={tFn("点击右上角「新增企业」并填写资产范围，系统会自动认领命中的资产。")}
+                        />
                       </TableCell>
                     </TableRow>
                   )}
