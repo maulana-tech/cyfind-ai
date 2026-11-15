@@ -273,6 +273,16 @@ In this version, history is viewed through the finding detail and sessions. It i
 
 ## System technical architecture
 
+### Interactive diagrams
+
+Explorable, zoomable diagrams generated from the real codebase. Open the interactive
+versions (full-screen, pan & zoom) on the live site, or preview them here:
+
+| Detailed system architecture | Agent flow · exploration lifecycle |
+| :---: | :---: |
+| [![Architecture](web/public/diagrams/architecture-preview.png)](https://cyfind.utdi.me/diagrams/architecture.html) | [![Agent flow](web/public/diagrams/agent-flow-preview.png)](https://cyfind.utdi.me/diagrams/agent-flow.html) |
+| [Open interactive →](https://cyfind.utdi.me/diagrams/architecture.html) | [Open interactive →](https://cyfind.utdi.me/diagrams/agent-flow.html) |
+
 Cyfind AI is an **LLM multi-agent-driven autonomous penetration system**: a Go monolith backend (with the Next.js frontend embedded) + PostgreSQL, where agent capabilities are provided by the in-tree `aera` SDK (`agentcore` / `tool` / `permission` / `harness` / `memory` / `transcript`). At its core is the **dual-graph architecture**, and the two autonomy mechanisms built around it: **process-level information exchange between workers** and the **planner's cross-round shared todolist for a stable attack chain**.
 
 ### Overall layering

@@ -9,6 +9,7 @@ import { Menu, X } from "lucide-react";
 const LINKS = [
   { label: "Platform", href: "#platform" },
   { label: "Dual-Graph", href: "#dual-graph" },
+  { label: "Architecture", href: "#architecture" },
   { label: "How it works", href: "#flow" },
   { label: "Safety", href: "#safety" },
 ];

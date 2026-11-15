@@ -38,6 +38,7 @@ export default function LandingPage() {
         <CapabilityStrip />
         <Platform />
         <DualGraph />
+        <Diagrams />
         <Metrics />
         <Flow />
         <Safety />
@@ -262,6 +263,67 @@ function DualGraph() {
             </p>
           </div>
         </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------- Diagrams */
+
+const DIAGRAMS = [
+  {
+    href: "/diagrams/architecture.html",
+    img: "/diagrams/architecture-preview.png",
+    title: "Detailed system architecture",
+    desc: "Frontend, the Go binary, the agent runtime, the dual-graph store, the safety layer and every LLM provider — one explorable map.",
+  },
+  {
+    href: "/diagrams/agent-flow.html",
+    img: "/diagrams/agent-flow-preview.png",
+    title: "Agent flow · exploration lifecycle",
+    desc: "How a goal becomes intents, workers, facts and findings — the planner / worker loop traced step by step.",
+  },
+];
+
+function Diagrams() {
+  return (
+    <section id="architecture" className="scroll-mt-20 px-5 py-24 sm:px-6">
+      <div className="mx-auto max-w-[1200px]">
+        <SectionHeading
+          eyebrow="Under the hood"
+          title="Explore the architecture"
+          sub="Interactive, zoomable diagrams generated from the real codebase — open them full-screen and pan around."
+        />
+        <div className="mt-12 grid gap-4 lg:grid-cols-2">
+          {DIAGRAMS.map((d, i) => (
+            <Reveal key={d.href} delay={i * 80}>
+              <a
+                href={d.href}
+                target="_blank"
+                rel="noreferrer"
+                className="cf-card cf-solid group block h-full overflow-hidden rounded-[18px] shadow-[var(--cf-shadow-sm)] transition hover:-translate-y-[2px] hover:shadow-[var(--cf-shadow-lg)]"
+              >
+                <div className="overflow-hidden border-[var(--cf-border)] border-b bg-white">
+                  {/* biome-ignore lint/performance/noImgElement: static export, raw img is intended */}
+                  <img
+                    src={d.img}
+                    alt={d.title}
+                    loading="lazy"
+                    className="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="font-medium text-[18px] text-[var(--cf-text)] tracking-[-0.011em]">{d.title}</h3>
+                  <p className="mt-2 text-[14px] text-[var(--cf-muted)] leading-[1.6]">{d.desc}</p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 font-medium text-[13.5px] text-[var(--cf-accent)]">
+                    Open interactive diagram
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                </div>
+              </a>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );
