@@ -835,7 +835,7 @@ export default function SkillsPage() {
           </Popover>
         )}
       </div>
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* ── Left file tree ── */}
         <div className="flex w-64 shrink-0 flex-col border-r">
           <div className="flex flex-col gap-2 border-b p-2">
@@ -967,7 +967,7 @@ export default function SkillsPage() {
         </div>
 
         {/* ── Right panel ── */}
-        <div className="flex flex-1 flex-col overflow-auto p-4">
+        <div className="flex min-h-0 flex-1 flex-col overflow-auto p-4">
           {!selected && (
             <SkillsOverview
               skills={skills}
@@ -1106,20 +1106,31 @@ export default function SkillsPage() {
           )}
 
           {selected && selected.path !== null && (
-            <div className="flex h-full flex-col gap-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">{selected.skill}</span>
-                <span>/</span>
-                <span className="font-mono">{selected.path}</span>
+            <div className="flex min-h-0 flex-1 flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-foreground text-sm">{selected.skill}</span>
+                <span className="text-muted-foreground">/</span>
+                <span className="font-mono text-foreground text-sm">{selected.path}</span>
+                {dirty && (
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/12 px-2 py-0.5 text-[11px] text-amber-600 dark:text-amber-400"
+                    title="Unsaved changes"
+                  >
+                    <span className="size-1.5 rounded-full bg-amber-500" />
+                    unsaved
+                  </span>
+                )}
                 <Button size="sm" className="ml-auto" onClick={saveFile} disabled={!dirty || saving}>
                   {saving ? t("保存中…") : t("保存")}
                 </Button>
               </div>
               {fileLoading ? (
-                <p className="text-xs text-muted-foreground">{t("加载中…")}</p>
+                <div className="flex flex-1 items-center justify-center text-muted-foreground text-sm">
+                  {t("加载中…")}
+                </div>
               ) : (
                 <Textarea
-                  className="flex-1 resize-none font-mono text-xs"
+                  className="min-h-0 flex-1 resize-none rounded-lg font-mono text-xs leading-relaxed"
                   value={fileContent}
                   onChange={(e) => {
                     setFileContent(e.target.value);
