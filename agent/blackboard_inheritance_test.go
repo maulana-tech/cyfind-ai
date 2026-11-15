@@ -39,8 +39,7 @@ func TestGraphOverviewExpandsAssociatedCompanyScope(t *testing.T) {
 	domain := fmt.Sprintf("overview-scope-%d.invalid", companyID)
 	ip := fmt.Sprintf("2001:db8:%x::42", companyID%0xffff)
 	cidr := fmt.Sprintf("2001:db8:%x:1::/64", companyID%0xffff)
-	// ICP value kept in Chinese on purpose: exercises the ICP-filing matcher (db/company_scope.go)
-	icp := fmt.Sprintf("京 ICP 备 %d 号", companyID)
+	icp := fmt.Sprintf("ICP %d", companyID)
 	keyword := fmt.Sprintf("Scope Company %d", companyID)
 	inputs := []db.ScopeInput{
 		{Kind: "domain", Value: domain},

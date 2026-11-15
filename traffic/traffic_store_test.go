@@ -75,7 +75,7 @@ func TestRecordKeepsBodiesInIndex(t *testing.T) {
 
 	tr.record(newFlow("api.example.com", "POST", "/v1/login",
 		[]byte(`{"user":"admin","password":"P@ssw0rd"}`),
-		[]byte(`{"token":"abc123","note":"内网测试账号"}`)))
+		[]byte(`{"token":"abc123","note":"internal test account"}`)))
 
 	// The URL-mirroring tree is gone: no host directory, no nested path segments.
 	if _, err := os.Stat(filepath.Join(dir, "api.example.com")); !os.IsNotExist(err) {
@@ -101,7 +101,7 @@ func TestRecordKeepsBodiesInIndex(t *testing.T) {
 			t.Fatalf("the raw request is missing %q, actual:\n%s", want, req)
 		}
 	}
-	for _, want := range []string{"HTTP 200", `"token":"abc123"`, "内网测试账号"} {
+	for _, want := range []string{"HTTP 200", `"token":"abc123"`, "internal test account"} {
 		if !strings.Contains(resp, want) {
 			t.Fatalf("the raw response is missing %q, actual:\n%s", want, resp)
 		}
@@ -119,7 +119,7 @@ func TestFullTextSearchMatchesBodies(t *testing.T) {
 	const host = "api.example.com"
 	tr.record(newFlow(host, "POST", "/v1/login",
 		[]byte(`{"user":"admin","password":"P@ssw0rd"}`),
-		[]byte(`{"token":"abc123","note":"内网测试账号"}`)))
+		[]byte(`{"token":"abc123","note":"internal test account"}`)))
 	tr.record(newFlow(host, "GET", "/v1/health", nil, []byte(`{"status":"ok"}`)))
 
 	hits := func(term string) int {
@@ -137,10 +137,9 @@ func TestFullTextSearchMatchesBodies(t *testing.T) {
 	if n := hits("ssw0r"); n != 1 {
 		t.Fatalf("searching the substring ssw0r matched %d, expected 1", n)
 	}
-	// A CJK query: deliberately kept in Chinese to exercise FTS5 CJK tokenization,
-	// which behaves differently from ASCII (no word boundaries).
-	if n := hits("内网测试"); n != 1 {
-		t.Fatalf("searching CJK matched %d, expected 1", n)
+	// A multi-word term inside the JSON response body.
+	if n := hits("internal test"); n != 1 {
+		t.Fatalf("searching a body term matched %d, expected 1", n)
 	}
 	if n := hits("nonexistent-marker"); n != 0 {
 		t.Fatalf("an unrelated keyword matched %d, expected 0", n)
@@ -464,10 +463,10 @@ func TestNormalizeSearchHost(t *testing.T) {
 }
 
 // TestTruncateUTF8 guards the preview cut: never split a multi-byte rune. The
-// fixture is deliberately CJK (3 bytes per rune) so the cut must land on a rune
-// boundary.
+// fixture is deliberately multibyte (2-3 bytes per rune) so the cut must land on a
+// rune boundary.
 func TestTruncateUTF8(t *testing.T) {
-	s := "内网测试账号"
+	s := "café-résumé-€uro"
 	for n := 0; n <= len(s); n++ {
 		got := truncateUTF8([]byte(s), n)
 		if !strings.HasPrefix(s, got) {

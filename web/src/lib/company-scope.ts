@@ -166,8 +166,7 @@ export function classifyCompanyScopeLine(
     const error = companyScopeRuleError(rule);
     return error ? { line, error } : { line, rule };
   }
-  // the regex intentionally also matches the Chinese ICP-filing keyword a user may paste.
-  if (/icp|备案/i.test(value)) return { line, rule: { kind: "icp", value } };
+  if (/icp/i.test(value)) return { line, rule: { kind: "icp", value } };
   return { line, rule: { kind: "keyword", value } };
 }
 

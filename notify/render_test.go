@@ -8,16 +8,16 @@ import (
 
 func TestTruncateBytesKeepsValidUTF8(t *testing.T) {
 	// This is the most important invariant in this package. WeCom limits by
-	// **byte**, a Chinese character is 3 bytes, and any implementation that cuts
-	// hard by byte would cut a Chinese character in half, producing invalid UTF-8
-	// rejected by the platform. The CJK/Latin-mixed inputs below (lengths chosen
+	// **byte**, a multibyte character is 2-3 bytes, and any implementation that cuts
+	// hard by byte would cut such a character in half, producing invalid UTF-8
+	// rejected by the platform. The multibyte/Latin-mixed inputs below (lengths chosen
 	// coprime) are deliberate multibyte fixtures that hit every possible cut point.
 	inputs := []string{
-		"中文测试内容",
-		"混合 mixed 内容 content",
-		"a中b文c测d试e",
+		"ßÄÖÜäöü",
+		"café mixed résumé content",
+		"aàbébîcödüe",
 		"🔴🟠🟡🔵", // 4-byte emoji, a wrong cut is more obvious
-		strings.Repeat("漏洞", 100),
+		strings.Repeat("€", 100),
 	}
 	for _, in := range inputs {
 		for max := 1; max <= len(in)+2; max++ {
@@ -61,10 +61,10 @@ func TestTruncateBytesEllipsisBudget(t *testing.T) {
 
 func TestTruncateRunesCountsCharactersNotBytes(t *testing.T) {
 	// The measure difference from TruncateBytes must be kept: Telegram limits by
-	// character, and the byte measure would cut a Chinese message to a third. The
-	// Chinese input here is a deliberate multibyte fixture (ASCII cannot
+	// character, and the byte measure would cut a multibyte message short. The
+	// multibyte input here is a deliberate fixture (ASCII cannot
 	// distinguish a rune count from a byte count).
-	s := "一二三四五六七八九十"
+	s := "αβγδεζηθικ"
 	got := TruncateRunes(s, 5)
 	if n := utf8.RuneCountInString(got); n != 5 {
 		t.Fatalf("expected 5 characters, got %d (%q)", n, got)
@@ -83,9 +83,9 @@ func TestOneLineCollapsesWhitespace(t *testing.T) {
 	if strings.Contains(got, "  ") {
 		t.Fatalf("consecutive spaces should not be kept, got %q", got)
 	}
-	// It must still be readable and valid after truncation. The Chinese input is a
-	// deliberate multibyte fixture for the character-count truncation.
-	got = OneLine("一二三四五六七八九十", 4)
+	// It must still be readable and valid after truncation. The multibyte input is a
+	// deliberate fixture for the character-count truncation.
+	got = OneLine("αβγδεζηθικ", 4)
 	if n := utf8.RuneCountInString(got); n != 4 {
 		t.Fatalf("expected 4 characters, got %d (%q)", n, got)
 	}

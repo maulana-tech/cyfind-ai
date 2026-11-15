@@ -93,9 +93,9 @@ func TestSideBudgetCountsContentNotJSONCharacters(t *testing.T) {
 		t.Fatal("snapshot mutated")
 	}
 	baseline := EstimateInputTokens(llm.CompletionRequest{Messages: []llm.Message{llm.UserText("x")}})
-	// The system string is deliberately CJK: it verifies the byte-based estimate
+	// The system string is deliberately multibyte: it verifies the byte-based estimate
 	// counts multibyte text (3 bytes/rune), not just rune count.
-	if EstimateInputTokens(llm.CompletionRequest{Messages: []llm.Message{llm.UserText("x")}, System: []string{strings.Repeat("中", 3000)}, Tools: fixture().Tools}) <= baseline+3000 {
+	if EstimateInputTokens(llm.CompletionRequest{Messages: []llm.Message{llm.UserText("x")}, System: []string{strings.Repeat("€", 3000)}, Tools: fixture().Tools}) <= baseline+3000 {
 		t.Fatal("system/schema/CJK omitted")
 	}
 }

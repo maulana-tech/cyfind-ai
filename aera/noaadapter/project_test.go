@@ -312,7 +312,7 @@ func TestTagAppendStripRoundTrip(t *testing.T) {
 	for _, body := range []string{
 		"plain body",
 		"body\nwith newlines\n",
-		"中文正文 🔐",
+		"\u4e2d\u6587\u6b63\u6587 🔐",
 		"",
 		"body that mentions <noa-ref> in passing",
 	} {

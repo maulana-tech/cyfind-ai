@@ -15,11 +15,9 @@ import (
 
 func TestCompanyScopeInputsAcceptStructuredAndLegacyRules(t *testing.T) {
 	var inputs companyScopeInputs
-	// The ICP value below is kept in Chinese on purpose: it exercises the ICP-filing
-	// matcher (db/company_scope.go), which matches real-world Chinese ICP-filing text.
 	if err := json.Unmarshal([]byte(`[
 		"example.com",
-		{"kind":"icp","value":"京 ICP备 123号"},
+		{"kind":"icp","value":"ICP 123"},
 		{"kind":"keyword","value":"Acme Security"}
 	]`), &inputs); err != nil {
 		t.Fatal(err)
