@@ -270,7 +270,7 @@ In this version, history is viewed through the finding detail and sessions. It i
 
 ## System technical architecture
 
-Cyfind AI is an **LLM multi-agent-driven autonomous penetration system**: a Go monolith backend (with the Next.js frontend embedded) + PostgreSQL, where agent capabilities are provided by the [`norma`](https://github.com/Autumn-27/norma) SDK (`agentcore` / `tool` / `permission` / `harness` / `memory` / `transcript`). At its core is the **dual-graph architecture**, and the two autonomy mechanisms built around it: **process-level information exchange between workers** and the **planner's cross-round shared todolist for a stable attack chain**.
+Cyfind AI is an **LLM multi-agent-driven autonomous penetration system**: a Go monolith backend (with the Next.js frontend embedded) + PostgreSQL, where agent capabilities are provided by the in-tree `aera` SDK (`agentcore` / `tool` / `permission` / `harness` / `memory` / `transcript`). At its core is the **dual-graph architecture**, and the two autonomy mechanisms built around it: **process-level information exchange between workers** and the **planner's cross-round shared todolist for a stable attack chain**.
 
 ### Overall layering
 
