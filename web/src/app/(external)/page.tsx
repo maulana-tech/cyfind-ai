@@ -2,26 +2,16 @@ import type { ReactNode } from "react";
 
 import Link from "next/link";
 
-import {
-  ArrowRight,
-  Boxes,
-  GitBranch,
-  Layers,
-  Lock,
-  Network,
-  Radar,
-  ScanLine,
-  ShieldCheck,
-  Terminal,
-  Workflow,
-} from "lucide-react";
+import { ArrowRight, GitBranch, Layers, Lock, Network, ShieldCheck, Terminal, Workflow } from "lucide-react";
 import type { Metadata } from "next";
 
+import { FeatureBento } from "./_components/feature-bento";
 import { FlowStepper } from "./_components/flow-stepper";
 import { HeroVisual } from "./_components/hero-visual";
 import { CountUp } from "./_components/motion";
 import { LandingNav } from "./_components/nav";
 import { Reveal } from "./_components/reveal";
+import { StackCards } from "./_components/stack-cards";
 
 export const metadata: Metadata = {
   title: "Cyfind AI — Autonomous AI Penetration Testing",
@@ -41,6 +31,7 @@ export default function LandingPage() {
         <Metrics />
         <Flow />
         <Safety />
+        <WhyStack />
         <CTA />
       </main>
       <Footer />
@@ -162,29 +153,6 @@ function CapabilityStrip() {
 
 /* --------------------------------------------------------------- Platform */
 
-const FEATURES = [
-  {
-    icon: <Boxes className="size-5" />,
-    title: "Concurrent workers",
-    body: "N workers run in parallel, each owning one intent and sharing execution traces so observations flow between them in real time.",
-  },
-  {
-    icon: <Radar className="size-5" />,
-    title: "Recon to exploit",
-    body: "From root domains down to endpoints — discovery, fingerprinting and exploitation on one continuous surface.",
-  },
-  {
-    icon: <Network className="size-5" />,
-    title: "Multi-provider LLM",
-    body: "Anthropic, OpenAI and AWS Bedrock behind one failover pool with health tracking and per-task profiles.",
-  },
-  {
-    icon: <ScanLine className="size-5" />,
-    title: "Traffic recording",
-    body: "A built-in MITM proxy records every request so agents search prior traffic instead of re-probing the same URL.",
-  },
-];
-
 function Platform() {
   return (
     <section id="platform" className="scroll-mt-20 px-5 py-24 sm:px-6">
@@ -218,17 +186,9 @@ function Platform() {
           </div>
         </Reveal>
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          {FEATURES.map((f, i) => (
-            <Reveal key={f.title} delay={i * 60}>
-              <div className="h-full rounded-[18px] cf-card p-6 shadow-[var(--cf-shadow-sm)] transition-shadow hover:shadow-[var(--cf-shadow)]">
-                <IconChip>{f.icon}</IconChip>
-                <h3 className="mt-4 font-medium text-[16px] text-[var(--cf-text)] tracking-[-0.011em]">{f.title}</h3>
-                <p className="mt-2 text-[14px] text-[var(--cf-muted)] leading-[1.6]">{f.body}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal className="mt-4">
+          <FeatureBento />
+        </Reveal>
       </div>
     </section>
   );
@@ -384,6 +344,25 @@ function Safety() {
         <Reveal delay={100} variant="fade">
           <ApprovalCard />
         </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* --------------------------------------------------------------- Why stack */
+
+function WhyStack() {
+  return (
+    <section className="px-5 py-24 sm:px-6">
+      <div className="mx-auto max-w-[1200px]">
+        <SectionHeading
+          eyebrow="Why Cyfind AI"
+          title="Built different, by design"
+          sub="Four things that set an autonomous pentest apart from a scanner."
+        />
+        <div className="mt-10">
+          <StackCards />
+        </div>
       </div>
     </section>
   );
