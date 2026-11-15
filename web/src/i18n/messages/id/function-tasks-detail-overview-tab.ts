@@ -142,6 +142,11 @@ const messages = {
   "备注(可选)": "Catatan (opsional)",
   "暂无任务级规则。「拦截」命中即禁止测试；「允许」为白名单——配置后本任务只允许命中允许规则的资产（未配置则不启用白名单）。":
     "Belum ada aturan tingkat tugas. Kecocokan “Blokir” melarang pengujian; “Izinkan” adalah whitelist — setelah dikonfigurasi, hanya aset yang cocok dengan aturan izin yang boleh diuji (tidak ada whitelist aktif sebelum itu).",
+  // Overview exploration-graph preview
+  探索图谱: "Grafik eksplorasi",
+  "（{n} 个节点 · {e} 条关系；完整交互视图见「探索」标签页）":
+    "({n} node · {e} relasi — buka tab Explore untuk tampilan interaktif penuh)",
+  "等待探索开始……": "Menunggu eksplorasi dimulai…",
 } satisfies Record<string, string>;
 
 export default messages;

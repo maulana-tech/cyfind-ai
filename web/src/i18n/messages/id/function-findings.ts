@@ -86,6 +86,8 @@ const messages = {
   折叠: "Ciutkan",
   展开: "Perluas",
   "共 {n} 条发现": "{n} temuan",
+  "调整筛选条件，或启动一个任务开始探测目标。":
+    "Sesuaikan filter, atau mulai sebuah task untuk mulai menyelidiki target.",
 } satisfies Record<string, string>;
 
 export default messages;

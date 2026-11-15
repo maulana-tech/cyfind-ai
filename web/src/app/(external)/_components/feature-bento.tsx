@@ -271,6 +271,52 @@ function Redact() {
   );
 }
 
+function Providers() {
+  // row 0 is primary (active); on hover it "rate-limits" and fails over to row 1.
+  const rows = [
+    { name: "anthropic", model: "claude-opus", def: "active", hov: "limited" },
+    { name: "openai", model: "gpt-4o", def: "standby", hov: "active" },
+    { name: "bedrock", model: "qwen3-coder", def: "standby", hov: "standby" },
+  ] as const;
+  const pill = (state: string) => {
+    const map: Record<string, { c: string; bg: string; t: string; dot: boolean }> = {
+      active: { c: "#1f9d57", bg: "rgba(31,157,87,0.14)", t: "active", dot: true },
+      standby: { c: "var(--cf-faint)", bg: "var(--cf-surface)", t: "standby", dot: false },
+      limited: { c: "#b06f10", bg: "rgba(176,111,16,0.14)", t: "429", dot: false },
+    };
+    const m = map[state];
+    return (
+      <span
+        className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-[family-name:var(--font-geist-mono)] text-[10px]"
+        style={{ background: m.bg, color: m.c }}
+      >
+        {m.dot ? <span className="size-1.5 animate-pulse rounded-full" style={{ background: m.c }} /> : null}
+        {m.t}
+      </span>
+    );
+  };
+  return (
+    <div className="flex w-full max-w-[300px] flex-col gap-2">
+      {rows.map((p) => (
+        <div key={p.name} className={`flex items-center justify-between gap-3 px-3 py-2.5 ${panel}`}>
+          <span className="min-w-0">
+            <span className="block truncate font-medium text-[12.5px] text-[var(--cf-text)]">{p.name}</span>
+            <span className="block truncate font-[family-name:var(--font-geist-mono)] text-[10.5px] text-[var(--cf-faint)]">
+              {p.model}
+            </span>
+          </span>
+          <span className="relative grid shrink-0">
+            <span className="transition-opacity duration-300 group-hover/card:opacity-0">{pill(p.def)}</span>
+            <span className="absolute inset-0 flex items-center justify-end opacity-0 transition-opacity duration-300 group-hover/card:opacity-100">
+              {pill(p.hov)}
+            </span>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ----------------------------------------------------------------- grid */
 
 type Feat = { id: string; title: string; desc: string; size: string; visual: React.ReactNode };
@@ -319,6 +365,13 @@ export function FeatureBento() {
       title: "Traffic recorded, secrets masked",
       desc: "The MITM proxy keeps every request for replay — tokens and cookies masked before they're stored.",
       visual: <Redact />,
+    },
+    {
+      id: "providers",
+      size: "sm:col-span-2 lg:col-span-2",
+      title: "Multi-provider, with failover",
+      desc: "Anthropic, OpenAI and Bedrock in one pool — a rate-limited provider fails over mid-run.",
+      visual: <Providers />,
     },
   ];
 

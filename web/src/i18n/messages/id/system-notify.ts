@@ -72,6 +72,8 @@ const messages = {
   // stat-tile (system/notify/_components/stat-tile)
   分钟: "mnt",
   小时: "jam",
+  "读取推送配置失败：{message}": "Gagal memuat konfigurasi push: {message}",
+  "读取渠道列表失败：{message}": "Gagal memuat daftar channel: {message}",
 } satisfies Record<string, string>;
 
 export default messages;

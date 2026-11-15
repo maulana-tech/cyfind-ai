@@ -28,6 +28,10 @@ const messages = {
 
   "修改中…": "Menyimpan…",
   确认修改: "Konfirmasi Perubahan",
+
+  // Sidebar engine indicator
+  引擎空闲: "Mesin idle",
+  引擎运行中: "Mesin berjalan",
 } satisfies Record<string, string>;
 
 export default messages;

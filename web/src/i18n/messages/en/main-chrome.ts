@@ -28,6 +28,10 @@ const messages = {
 
   "修改中…": "Saving…",
   确认修改: "Confirm Change",
+
+  // Sidebar engine indicator
+  引擎空闲: "Engine idle",
+  引擎运行中: "Engine running",
 } satisfies Record<string, string>;
 
 export default messages;

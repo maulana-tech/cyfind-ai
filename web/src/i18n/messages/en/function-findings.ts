@@ -86,6 +86,7 @@ const messages = {
   折叠: "Collapse",
   展开: "Expand",
   "共 {n} 条发现": "{n} findings",
+  "调整筛选条件，或启动一个任务开始探测目标。": "Adjust the filters, or start a task to begin probing the target.",
 } satisfies Record<string, string>;
 
 export default messages;

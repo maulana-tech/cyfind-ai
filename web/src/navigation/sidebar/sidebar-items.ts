@@ -1,4 +1,5 @@
 import {
+  Bell,
   Bot,
   Brain,
   Bug,
@@ -7,9 +8,13 @@ import {
   type LucideIcon,
   MessageSquare,
   Network,
+  Plug,
+  ScrollText,
   Settings2,
   ShieldAlert,
+  Sparkles,
   Target,
+  Wrench,
 } from "lucide-react";
 
 export type NavBadge = "new" | "soon";
@@ -68,8 +73,13 @@ export const sidebarItems: NavGroup[] = [
     items: [
       { id: "llm", title: "LLM", url: "/system/llm", icon: Brain },
       { id: "agents", title: "Agent", url: "/system/agents", icon: Bot },
+      { id: "tools", title: "Tools", url: "/system/tools", icon: Wrench },
+      { id: "skills", title: "Skills", url: "/system/skills", icon: Sparkles },
+      { id: "mcp", title: "MCP", url: "/system/mcp", icon: Plug },
       { id: "intercept", title: "Intercept rules", url: "/system/intercept", icon: ShieldAlert },
       { id: "approvals", title: "Approval records", url: "/system/intercept/approvals", icon: ClipboardList },
+      { id: "notify", title: "Notifications", url: "/system/notify", icon: Bell },
+      { id: "logs", title: "Logs", url: "/system/logs", icon: ScrollText },
       { id: "settings", title: "System settings", url: "/system/settings", icon: Settings2 },
     ],
   },

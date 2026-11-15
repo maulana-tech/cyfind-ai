@@ -142,6 +142,11 @@ const messages = {
   "备注(可选)": "Note (optional)",
   "暂无任务级规则。「拦截」命中即禁止测试；「允许」为白名单——配置后本任务只允许命中允许规则的资产（未配置则不启用白名单）。":
     "No task-level rules yet. A “Block” match forbids testing; “Allow” is a whitelist — once configured, only assets matching an allow rule may be tested (no whitelist is active until then).",
+  // Overview exploration-graph preview
+  探索图谱: "Exploration graph",
+  "（{n} 个节点 · {e} 条关系；完整交互视图见「探索」标签页）":
+    "({n} nodes · {e} relations — open the Explore tab for the full interactive view)",
+  "等待探索开始……": "Waiting for exploration to start…",
 } satisfies Record<string, string>;
 
 export default messages;

@@ -128,6 +128,9 @@ const messages = {
   "新范围会追加到现有范围。ICP 精确匹配资产，企业关键词仅作为 Agent 提示。":
     "New scope will be appended to the existing scope. ICP entries match assets exactly; company keywords only serve as hints for the Agent.",
   追加: "Append",
+  还没有企业: "No companies yet",
+  "点击右上角「新增企业」并填写资产范围，系统会自动认领命中的资产。":
+    "Click “Add company” at the top right and define the asset scope — matching assets are claimed automatically.",
 } satisfies Record<string, string>;
 
 export default messages;

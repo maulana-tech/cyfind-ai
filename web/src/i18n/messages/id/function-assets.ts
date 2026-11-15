@@ -129,6 +129,9 @@ const messages = {
   "新范围会追加到现有范围。ICP 精确匹配资产，企业关键词仅作为 Agent 提示。":
     "Cakupan baru akan ditambahkan ke cakupan yang ada. Entri ICP cocok persis dengan aset; kata kunci perusahaan hanya menjadi petunjuk bagi Agent.",
   追加: "Tambah",
+  还没有企业: "Belum ada perusahaan",
+  "点击右上角「新增企业」并填写资产范围，系统会自动认领命中的资产。":
+    "Klik “Tambah perusahaan” di kanan atas dan isi cakupan aset — aset yang cocok diklaim otomatis.",
 } satisfies Record<string, string>;
 
 export default messages;
