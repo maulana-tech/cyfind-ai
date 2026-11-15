@@ -33,7 +33,7 @@ export function LandingNav() {
       <nav className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-5 sm:px-6">
         <Link href="/" className="flex items-center gap-2">
           <Logo />
-          <span className="font-medium text-[16px] text-[var(--cf-text)] tracking-[-0.012em]">CYFIND</span>
+          <span className="font-medium text-[16px] text-[var(--cf-text)] tracking-[-0.012em]">Cyfind AI</span>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

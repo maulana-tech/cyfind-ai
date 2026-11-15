@@ -24,7 +24,7 @@ import { LandingNav } from "./_components/nav";
 import { Reveal } from "./_components/reveal";
 
 export const metadata: Metadata = {
-  title: "CYFIND — Autonomous AI Penetration Testing",
+  title: "Cyfind AI — Autonomous AI Penetration Testing",
   description:
     "A multi-agent AI system that explores, exploits and reports on an isolated lab target on its own — built on a dual-graph model of assets and reasoning.",
 };
@@ -73,7 +73,7 @@ function Hero() {
 
           <Reveal delay={100}>
             <p className="mt-6 max-w-[560px] text-pretty text-[17px] text-[var(--cf-muted)] leading-[1.6]">
-              CYFIND is a team of LLM agents that recon, reason and exploit a target on their own. A planner emits
+              Cyfind AI is a team of LLM agents that recon, reason and exploit a target on their own. A planner emits
               intents, concurrent workers execute with real tooling, and every discovery flows into a live dual-graph of
               assets and findings.
             </p>
@@ -192,7 +192,7 @@ function Platform() {
         <SectionHeading
           eyebrow="The platform"
           title="An autonomous testing engine, not a scanner"
-          sub="CYFIND wires LLM agents to real tools and a shared knowledge graph, so exploration compounds instead of resetting with every scan."
+          sub="Cyfind AI wires LLM agents to real tools and a shared knowledge graph, so exploration compounds instead of resetting with every scan."
         />
 
         <Reveal className="mt-12">
@@ -246,7 +246,7 @@ function DualGraph() {
         <SectionHeading
           eyebrow="The dual-graph model"
           title="Two graphs, joined by anchors"
-          sub="The core idea behind CYFIND: separate what you found from how you reasoned about it, then tie them together for full coverage."
+          sub="The core idea behind Cyfind AI: separate what you found from how you reasoned about it, then tie them together for full coverage."
         />
 
         <div className="mt-12 grid gap-4 lg:grid-cols-2">
@@ -370,7 +370,7 @@ function Safety() {
               <SafetyRow
                 icon={<Lock className="size-5" />}
                 title="Isolated lab only"
-                body="CYFIND is built and licensed for lab targets you own — never real-world systems."
+                body="Cyfind AI is built and licensed for lab targets you own — never real-world systems."
               />
               <SafetyRow
                 icon={<Terminal className="size-5" />}
@@ -413,7 +413,7 @@ function CTA() {
               href="/function/tasks"
               className="rounded-full bg-[var(--cf-accent)] px-5 py-2.5 font-medium text-[14px] text-[var(--cf-on-accent)] shadow-[var(--cf-shadow-sm)] transition-colors hover:bg-[var(--cf-accent-hover)]"
             >
-              Open CYFIND
+              Open Cyfind AI
             </Link>
             <a
               href="https://github.com/maulana-tech/cyfind-ai"
@@ -469,7 +469,7 @@ function Footer() {
             <span className="inline-flex size-6 items-center justify-center rounded-[7px] bg-white/15">
               <Network className="size-3.5 text-white" />
             </span>
-            <span className="font-medium text-[15px] text-[var(--cf-text)]">CYFIND</span>
+            <span className="font-medium text-[15px] text-[var(--cf-text)]">Cyfind AI</span>
           </div>
           <p className="mt-4 max-w-[280px] text-[13px] text-[var(--cf-muted)] leading-[1.6]">
             A multi-agent AI system for autonomous penetration testing — isolated lab only.
@@ -491,7 +491,7 @@ function Footer() {
         ))}
       </div>
       <div className="mx-auto flex max-w-[1200px] flex-col gap-2 border-white/[0.1] border-t px-5 py-6 text-[12px] text-[var(--cf-faint)] sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <span>© {new Date().getFullYear()} CYFIND · AGPL-3.0</span>
+        <span>© {new Date().getFullYear()} Cyfind AI · AGPL-3.0</span>
         <span>Built for authorized, isolated-lab testing only.</span>
       </div>
     </footer>
