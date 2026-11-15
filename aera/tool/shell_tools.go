@@ -12,7 +12,7 @@ import (
 
 // The interactive-shell tool family (opt-in; NOT in DefaultTools). ShellSessionTools
 // returns all five. They require a task Manager on the ToolContext (tc.Tasks) — that is
-// where the PTY sessions live and get cleaned up. See docs/交互式shell设计.md.
+// where the PTY sessions live and get cleaned up. See docs/interactive-shell-design.md.
 
 // ShellSessionTools returns the five interactive-shell tools. Callers add them to
 // Options.Tools only when interactive shell is enabled for the agent.
@@ -73,7 +73,7 @@ func ms(v int, def int) time.Duration {
 	return time.Duration(v) * time.Millisecond
 }
 
-// NewShellOpen 开一个交互会话。
+// NewShellOpen opens an interactive session.
 func NewShellOpen() CoreTool {
 	desc := "开一个持久 PTY 交互会话运行【交互式/需真 TTY 的程序】(msfconsole/ssh 交互/mysql、python 等 REPL/密码提示/nc 会话)，返回 session_id。**一次性、非交互命令用 Bash**。mode: interactive=阻塞到首个提示符/静默再返回启动输出; hands-free(默认)=立即返回, 之后用 shell_read 轮询; dispatch=立即返回, 完成时发通知; monitor=立即返回, 后台盯 watch 关键词命中即发通知(会话不结束, 仅本次运行内存活)。可设 prompt_regex(如 'msf6? >\\s*$')精确判定完成。用完务必 shell_close。"
 	schema := obj(map[string]any{
@@ -162,7 +162,7 @@ func NewShellOpen() CoreTool {
 	})
 }
 
-// NewShellSend 向会话发送输入/按键。
+// NewShellSend sends input/keystrokes to a session.
 func NewShellSend() CoreTool {
 	desc := "向一个交互会话发送输入：text/submit/keys/hex/paste 可组合，按出现顺序发送(各参数含义见字段)。wait=true(默认)等命令完成并带回增量输出。"
 	schema := obj(map[string]any{
@@ -248,7 +248,7 @@ func NewShellSend() CoreTool {
 	})
 }
 
-// NewShellRead 读输出：增量流 或 整屏快照。
+// NewShellRead reads output: an incremental stream or a full-screen snapshot.
 func NewShellRead() CoreTool {
 	desc := "读一个交互会话的输出(不发输入)。view=stream(默认)增量原始流(流式首选,续读/可 drain 取全量); view=screen 整屏 vt 快照(适合 vim/htop 等全屏程序)。"
 	schema := obj(map[string]any{
@@ -306,7 +306,7 @@ func NewShellRead() CoreTool {
 	})
 }
 
-// NewShellClose 关闭会话。
+// NewShellClose closes a session.
 func NewShellClose() CoreTool {
 	schema := obj(map[string]any{"session_id": strProp("会话 id")}, "session_id")
 	return sessTool("shell_close", "关闭一个交互会话(杀掉进程、释放 PTY)。", schema, false, func(_ context.Context, in json.RawMessage, tc *ToolContext) (Result, error) {
@@ -331,7 +331,7 @@ func NewShellClose() CoreTool {
 	})
 }
 
-// NewShellList 列出会话。
+// NewShellList lists sessions.
 func NewShellList() CoreTool {
 	return sessTool("shell_list", "列出当前所有交互会话及状态。", obj(map[string]any{}), true, func(_ context.Context, _ json.RawMessage, tc *ToolContext) (Result, error) {
 		m, errR := sessManager(tc)

@@ -1,10 +1,10 @@
 /**
- * CYFIND UI i18n module (client-side).
+ * Cyfind AI UI i18n module (client-side).
  *
  * Usage in components:
- *   const t = useT();            // re-renders on language change
- *   <span>{t("仪表盘")}</span>   // keys are the original zh-CN strings
- *   t("共 {n} 个任务", { n })    // {param} interpolation
+ *   const t = useT();        // re-renders on language change
+ *   <span>{t(key)}</span>    // keys are the original source (zh-CN) strings
+ *   t(key, { n })            // {param} interpolation
  *
  * Non-React helpers can import { t } from "@/i18n" directly (module-level
  * language, synced by LanguageProvider).

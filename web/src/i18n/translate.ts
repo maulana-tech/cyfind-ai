@@ -7,7 +7,7 @@
  *   id   → id dictionary, else en dictionary, else the key itself
  *
  * `{name}` placeholders are replaced from params:
- *   t("共 {n} 个任务", { n: 3 }) → "3 tasks"
+ *   t(key, { n: 3 }) → "3 tasks"   // where key is e.g. the "… {n} …" source string
  */
 
 import type { Lang } from "./config";
@@ -16,8 +16,8 @@ import { messages } from "./messages";
 export type TParams = Record<string, string | number | undefined>;
 
 export function translate(lang: Lang, key: string, params?: TParams): string {
-  // Homograph disambiguation: a key may carry a "::<ctx>" suffix (e.g.
-  // "关闭::state" = the toggle state vs plain "关闭" = a dialog Close button).
+  // Homograph disambiguation: a key may carry a "::<ctx>" suffix (e.g. a
+  // "<word>::state" toggle-state key vs the plain "<word>" dialog Close button).
   // en/id try the suffixed entry first, then the base entry. Only "::<ascii
   // word>" counts — plain "@" (emails) or ":" (times) in text are left alone.
   const ctx = key.indexOf("::");
