@@ -288,31 +288,33 @@ html {
    not depend on dashboard theme presets.
    ===================================================================== */
 .cf-root {
-  /* aera look: a soft brand-blue CANVAS with pure-white cards floating on it,
-     navy text (reads on the light-blue page), brand blue (hue 258) accent. */
-  --cf-bg: oklch(0.905 0.045 258); /* soft denim-blue page canvas */
-  --cf-surface: oklch(0.945 0.028 258); /* lighter panel band (inside cards) */
-  --cf-card: oklch(1 0 0); /* pure-white card */
-  --cf-text: oklch(0.22 0.05 255); /* headings: deep navy */
-  --cf-body: oklch(0.34 0.05 255); /* body */
-  --cf-muted: oklch(0.44 0.05 258); /* muted/secondary */
-  --cf-faint: oklch(0.52 0.045 258); /* captions */
-  --cf-border: oklch(0.85 0.03 258); /* hairline border (reads on blue + white) */
-  --cf-border-strong: oklch(0.78 0.04 258);
-  /* accent — cyfind brand blue, white label on the filled button */
-  --cf-accent: oklch(0.42 0.16 258);
-  --cf-on-accent: oklch(1 0 0);
-  --cf-accent-hover: oklch(0.36 0.15 258);
-  --cf-accent-soft: oklch(0.955 0.03 258); /* near-white blue chip fill */
+  /* aera look, exact brand values (aera app/globals.css): a deep brand-blue
+     CANVAS (#0647b3) with white text and FROSTED-white cards — white reads on
+     both the canvas and the frosted cards, so no dual-text scoping is needed.
+     Crisp product-window mocks opt into `.cf-solid` for an opaque-white surface. */
+  --cf-bg: #0647b3; /* aera --canvas */
+  --cf-surface: #05399a; /* slightly deeper band on the canvas */
+  --cf-card: rgba(255, 255, 255, 0.09); /* frosted card (aera lp-blue-card) */
+  --cf-text: #ffffff; /* aera --on-canvas */
+  --cf-body: rgba(255, 255, 255, 0.82); /* aera --on-canvas-dim */
+  --cf-muted: rgba(255, 255, 255, 0.68);
+  --cf-faint: rgba(255, 255, 255, 0.54);
+  --cf-border: rgba(255, 255, 255, 0.14); /* white hairline */
+  --cf-border-strong: rgba(255, 255, 255, 0.26);
+  /* accent — white action on the blue canvas, with a brand-blue label */
+  --cf-accent: #ffffff;
+  --cf-on-accent: #0647b3;
+  --cf-accent-hover: #eef4fd;
+  --cf-accent-soft: rgba(255, 255, 255, 0.12); /* frosted chip fill */
   /* supporting tag accents (product-mock chips only) */
-  --cf-green: #1f9d57;
-  --cf-teal: #0e8fb0;
-  --cf-iris: #4f5bd5;
-  --cf-lavender: #7c5cf0;
-  /* soft brand-tinted shadows (match aera) */
-  --cf-shadow-sm: 0 1px 3px oklch(0.2 0.08 258 / 8%);
-  --cf-shadow: 0 6px 20px oklch(0.2 0.08 258 / 12%);
-  --cf-shadow-lg: 0 22px 56px oklch(0.2 0.08 258 / 20%);
+  --cf-green: #34d399;
+  --cf-teal: #22b8cf;
+  --cf-iris: #8aa6f0;
+  --cf-lavender: #b2a6f5;
+  /* shadows tuned for the deep blue canvas */
+  --cf-shadow-sm: 0 1px 3px rgba(3, 18, 56, 0.3);
+  --cf-shadow: 0 8px 24px rgba(3, 18, 56, 0.34);
+  --cf-shadow-lg: 0 26px 64px rgba(2, 14, 48, 0.46);
 
   font-family: "Inter", "Inter Variable", var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   font-feature-settings:
@@ -323,11 +325,36 @@ html {
   color: var(--cf-body);
 }
 
-/* Frosted card that sits on the blue canvas — a lighter blue with a hairline
-   (mirrors the app's aera `lp-blue-card`). */
+/* Frosted card that sits on the blue canvas (mirrors aera `lp-blue-card`). */
 .cf-card {
   background: var(--cf-card);
   border: 1px solid var(--cf-border);
+}
+
+/* Opaque-white product surface: re-scopes the tokens to the light palette so a
+   mock app window (hero, flow stepper, feature bento) reads like a real screen
+   floating on the blue canvas — the way aera renders its product shots. */
+.cf-solid {
+  --cf-card: #ffffff;
+  --cf-surface: #f6f9fe;
+  --cf-text: #142745; /* aera --fg */
+  --cf-body: #3a5177; /* aera --body */
+  --cf-muted: #4b5e7f;
+  --cf-faint: #6b7d9c;
+  --cf-border: rgba(6, 35, 89, 0.1);
+  --cf-border-strong: rgba(6, 35, 89, 0.18);
+  --cf-accent: #0647b3;
+  --cf-on-accent: #ffffff;
+  --cf-accent-hover: #0a5fe0;
+  --cf-accent-soft: #eaf1fc;
+  --cf-green: #126c34;
+  --cf-teal: #0e8fb0;
+  --cf-iris: #4f5bd5;
+  --cf-lavender: #7c5cf0;
+  --cf-shadow-sm: 0 1px 3px rgba(6, 35, 89, 0.08);
+  --cf-shadow: 0 10px 30px rgba(6, 35, 89, 0.14);
+  --cf-shadow-lg: 0 24px 60px rgba(6, 35, 89, 0.2);
+  background: var(--cf-card);
 }
 
 /* Pill eyebrow (mirrors aera `lp-eyebrow`). */

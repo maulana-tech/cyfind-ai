@@ -676,7 +676,7 @@ function SafetyRow({ icon, title, body }: { icon: ReactNode; title: string; body
 
 function ApprovalCard() {
   return (
-    <div className="mx-auto max-w-md rounded-[18px] cf-card p-5 shadow-[var(--cf-shadow-lg)]">
+    <div className="cf-card cf-solid mx-auto max-w-md rounded-[18px] p-5 shadow-[var(--cf-shadow-lg)]">
       <div className="flex items-center gap-2 border-[var(--cf-border)] border-b pb-3">
         <ShieldCheck className="size-4 text-[var(--cf-accent)]" />
         <span className="font-medium text-[13px] text-[var(--cf-text)]">Approval required</span>

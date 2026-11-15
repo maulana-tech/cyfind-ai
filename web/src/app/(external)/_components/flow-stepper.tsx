@@ -17,7 +17,7 @@ type Step = {
 
 function WindowChrome({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-[18px] border border-[var(--cf-border)] bg-[var(--cf-card)] shadow-[var(--cf-shadow-lg)] backdrop-blur-sm">
+    <div className="cf-solid overflow-hidden rounded-[18px] border border-[var(--cf-border)] bg-[var(--cf-card)] shadow-[var(--cf-shadow-lg)]">
       <div className="flex items-center gap-2 border-[var(--cf-border)] border-b bg-[var(--cf-surface)] px-4 py-3">
         <span className="size-[10px] rounded-full bg-[var(--cf-border-strong)]" />
         <span className="size-[10px] rounded-full bg-[var(--cf-border-strong)]" />

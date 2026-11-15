@@ -49,6 +49,8 @@ export default function LoginPage() {
   return (
     <AsciiLiquidLogin
       passwordOnly
+      initialPassword="Cyfind-Lab-2026!"
+      demoHint="Demo credentials pre-filled — just click Sign in"
       title={"Autonomous\nSecurity, Alive"}
       subtitle="Sign in to Cyfind AI"
       enterLabel="Sign in"

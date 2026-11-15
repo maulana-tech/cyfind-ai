@@ -33,6 +33,10 @@ export interface AsciiLiquidLoginProps {
   enterLabel?: string;
   /** Password-only mode (no email field, no sign-up toggle) — for single-secret auth. */
   passwordOnly?: boolean;
+  /** Pre-fill the password field (e.g. demo credentials). */
+  initialPassword?: string;
+  /** Small hint shown under the password field (e.g. "Demo credentials pre-filled"). */
+  demoHint?: string;
   onEnterFromCover?: () => void;
   onSubmit?: (data: { mode: AuthMode; email: string; password: string }) => unknown;
   onDissolveEnd?: () => void;
@@ -791,6 +795,8 @@ export function AsciiLiquidLogin({
   isCoverMode = false,
   enterLabel = "Continue",
   passwordOnly = false,
+  initialPassword = "",
+  demoHint,
   onEnterFromCover,
   onSubmit,
   onDissolveEnd,
@@ -806,7 +812,7 @@ export function AsciiLiquidLogin({
 
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(initialPassword);
   const [showPassword, setShowPassword] = useState(false);
   const [pending, setPending] = useState(false);
   const [feedback, setFeedback] = useState(null as Feedback | null);
@@ -1572,6 +1578,13 @@ export function AsciiLiquidLogin({
                     {passwordInvalid && (
                       <p id="alq-password-error" role="alert" className="mt-2 text-[12px] text-rose-600">
                         {feedback?.text}
+                      </p>
+                    )}
+
+                    {demoHint && !passwordInvalid && (
+                      <p className="mt-2 flex items-center gap-1.5 text-[12px] text-[#151310]/55">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        {demoHint}
                       </p>
                     )}
 
